@@ -1,0 +1,48 @@
+[gd_scene load_steps=7 format=3 uid="uid://cj6fwwvs7rtf0"]
+
+[ext_resource type="Texture2D" uid="uid://drndlygkcwaww" path="res://Textures/Spot.png" id="1_r1dvg"]
+[ext_resource type="Script" path="res://Objects/tag_particle.gd" id="1_togpw"]
+[ext_resource type="Material" uid="uid://duape764mhx1t" path="res://Materials/TagParticle.tres" id="2_q2nes"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_6xkxd"]
+material = ExtResource("2_q2nes")
+size = Vector2(0.15, 0.15)
+
+[sub_resource type="Curve" id="Curve_xfe0m"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sulyq"]
+transparency = 1
+albedo_texture = ExtResource("1_r1dvg")
+emission_enabled = true
+emission = Color(1, 1, 1, 1)
+emission_energy_multiplier = 1.62
+emission_texture = ExtResource("1_r1dvg")
+billboard_mode = 1
+
+[node name="TagParticle" type="Node3D"]
+script = ExtResource("1_togpw")
+
+[node name="Trail" type="CPUParticles3D" parent="."]
+amount = 30
+lifetime = 0.6
+mesh = SubResource("QuadMesh_6xkxd")
+gravity = Vector3(0, 0, 0)
+scale_amount_min = 2.0
+scale_amount_max = 2.0
+scale_amount_curve = SubResource("Curve_xfe0m")
+
+[node name="Blob" type="Sprite3D" parent="."]
+material_override = SubResource("StandardMaterial3D_sulyq")
+cast_shadow = 0
+pixel_size = 0.004
+billboard = 1
+texture = ExtResource("1_r1dvg")
+
+[node name="DeathTimer" type="Timer" parent="."]
+wait_time = 10.0
+one_shot = true
+autostart = true
+
+[connection signal="timeout" from="DeathTimer" to="." method="_on_death_timer_timeout"]

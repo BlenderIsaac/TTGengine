@@ -1,0 +1,95 @@
+[gd_scene load_steps=10 format=3 uid="uid://bq7wxnjypj24o"]
+
+[ext_resource type="ArrayMesh" uid="uid://d0mblli3cjcwb" path="res://Models/TTG Heart Model.obj" id="1_1oxfo"]
+[ext_resource type="Script" path="res://Objects/HeartPickup.gd" id="1_g3w0h"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_oovjt"]
+bounce = 0.6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4cama"]
+albedo_color = Color(0.756863, 0, 0, 1)
+roughness = 0.28
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_brlfk"]
+radius = 0.284
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_ldu1n"]
+radius = 0.001
+
+[sub_resource type="Animation" id="Animation_qs3k3"]
+resource_name = "Die"
+length = 10.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Mesh:transparency")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7, 8.8, 8.9, 9, 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7, 9.8, 9.9, 10),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0]
+}
+
+[sub_resource type="Animation" id="Animation_p3yic"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Mesh:transparency")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_54s0k"]
+_data = {
+"Die": SubResource("Animation_qs3k3"),
+"RESET": SubResource("Animation_p3yic")
+}
+
+[node name="Heart" type="RigidBody3D"]
+collision_layer = 4
+mass = 30.0
+center_of_mass_mode = 1
+center_of_mass = Vector3(0, -1, 0)
+physics_material_override = SubResource("PhysicsMaterial_oovjt")
+script = ExtResource("1_g3w0h")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0.364837, 0)
+material_override = SubResource("StandardMaterial3D_4cama")
+mesh = ExtResource("1_1oxfo")
+
+[node name="Col" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.285025, 0)
+shape = SubResource("SphereShape3D_brlfk")
+
+[node name="PickupRange" type="Area3D" parent="."]
+collision_layer = 4
+collision_mask = 2
+
+[node name="AreaCol" type="CollisionShape3D" parent="PickupRange"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.285025, 0)
+shape = SubResource("SphereShape3D_ldu1n")
+disabled = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "Die"
+libraries = {
+"": SubResource("AnimationLibrary_54s0k")
+}
+
+[node name="PickupDelay" type="Timer" parent="."]
+wait_time = 0.6
+one_shot = true
+autostart = true
+
+[connection signal="body_entered" from="PickupRange" to="." method="_on_pickup_range_body_entered"]
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_animation_player_animation_finished"]
+[connection signal="timeout" from="PickupDelay" to="." method="_on_timer_timeout"]

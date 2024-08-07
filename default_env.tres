@@ -1,0 +1,21 @@
+[gd_resource type="Environment" load_steps=3 format=3 uid="uid://c8gke36c13pfd"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_373a5"]
+sky_top_color = Color(0.376471, 0.462745, 0.517647, 1)
+ground_bottom_color = Color(0.133333, 0.223529, 0.235294, 1)
+sun_angle_max = 32.48
+
+[sub_resource type="Sky" id="Sky_drdfy"]
+sky_material = SubResource("ProceduralSkyMaterial_373a5")
+
+[resource]
+sky = SubResource("Sky_drdfy")
+ssao_radius = 10.88
+ssao_intensity = 13.48
+glow_intensity = 6.52
+glow_strength = 0.54
+glow_bloom = 0.03
+glow_blend_mode = 4
+glow_hdr_threshold = 4.0
+glow_hdr_scale = 0.0
+volumetric_fog_density = 0.0

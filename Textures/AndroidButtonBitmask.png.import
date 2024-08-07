@@ -1,0 +1,16 @@
+[remap]
+
+importer="bitmap"
+type="BitMap"
+uid="uid://bv8vu6tokiqtw"
+path="res://.godot/imported/AndroidButtonBitmask.png-d1a2a337f03ea105db97b79beed2b263.res"
+
+[deps]
+
+source_file="res://Textures/AndroidButtonBitmask.png"
+dest_files=["res://.godot/imported/AndroidButtonBitmask.png-d1a2a337f03ea105db97b79beed2b263.res"]
+
+[params]
+
+create_from=0
+threshold=0.5

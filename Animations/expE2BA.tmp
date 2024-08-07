@@ -1,0 +1,3 @@
+[gd_scene format=3 uid="uid://dtrwjnnfdno6w"]
+
+[node name="export_anims" type="Node3D"]

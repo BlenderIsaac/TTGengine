@@ -1,0 +1,82 @@
+[gd_scene load_steps=9 format=3 uid="uid://3ix1fp3sllsx"]
+
+[ext_resource type="Script" path="res://Levels/LevelGeneratorTTGL.gd" id="1_qvxlj"]
+[ext_resource type="Script" path="res://Levels/Cam.gd" id="2_mq7dq"]
+[ext_resource type="Script" path="res://Interfaces/OnUI.gd" id="3_np2bf"]
+[ext_resource type="PackedScene" uid="uid://d2bsp27ml58jg" path="res://Debug/debugsymbol.tscn" id="4_twfmp"]
+[ext_resource type="Script" path="res://Scripts/AdvanceFrame.gd" id="8_ksvp1"]
+[ext_resource type="Environment" uid="uid://bxkijjqiqadqk" path="res://Levels/SkyEnv.tres" id="9_3smm1"]
+[ext_resource type="Script" path="res://Levels/FreeLookCam.gd" id="13_2gvu3"]
+
+[sub_resource type="PrismMesh" id="PrismMesh_h1qod"]
+size = Vector3(0.12, 1.47, 0.08)
+
+[node name="Level" type="Node3D" groups=["LEVELROOT"]]
+process_mode = 1
+script = ExtResource("1_qvxlj")
+
+[node name="GameCam" type="Camera3D" parent="." groups=["GAMECAM"]]
+transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, 6.99549, 5.14845, 15.0885)
+cull_mask = 1
+current = true
+fov = 90.0
+script = ExtResource("2_mq7dq")
+move_type = "Navigation"
+follow_path = true
+
+[node name="OnUI" type="Node3D" parent="GameCam"]
+top_level = true
+script = ExtResource("3_np2bf")
+
+[node name="Sprite3D" parent="GameCam" instance=ExtResource("4_twfmp")]
+top_level = true
+visible = false
+
+[node name="Sprite3D2" parent="GameCam" instance=ExtResource("4_twfmp")]
+top_level = true
+visible = false
+modulate = Color(1, 0.415686, 0.721569, 1)
+
+[node name="Debug" parent="GameCam" instance=ExtResource("4_twfmp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.09201, -4.14845, -5.60454)
+top_level = true
+visible = false
+
+[node name="Debug2" parent="GameCam" instance=ExtResource("4_twfmp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.09201, -4.14845, -5.60454)
+top_level = true
+visible = false
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="GameCam"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -0.651805)
+visible = false
+mesh = SubResource("PrismMesh_h1qod")
+skeleton = NodePath("../..")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="GameCam"]
+navigation_layers = 128
+height = 0.01
+
+[node name="Camera3D" type="Camera3D" parent="."]
+process_mode = 3
+transform = Transform3D(1, 0, 0, 0, 0.258819, 0.965926, 0, -0.965926, 0.258819, 2.37689, 9.04958, 3.60411)
+script = ExtResource("13_2gvu3")
+
+[node name="Node" type="Node" parent="."]
+process_mode = 4
+script = ExtResource("8_ksvp1")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.5
+autostart = true
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = ExtResource("9_3smm1")
+
+[node name="DefaultSun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.945941, 0.192996, -0.260669, -0.193372, 0.309641, 0.930983, 0.26039, 0.931061, -0.255582, -10.0085, 6.63122, -16.3197)
+shadow_enabled = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

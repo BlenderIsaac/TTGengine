@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://d2bsp27ml58jg"]
+
+[ext_resource type="Texture2D" uid="uid://bgabdyttt6qgq" path="res://icon.png" id="1_etd3o"]
+
+[node name="Sprite3D" type="Sprite3D"]
+pixel_size = 0.0006
+billboard = 1
+no_depth_test = true
+fixed_size = true
+texture = ExtResource("1_etd3o")

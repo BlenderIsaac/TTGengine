@@ -1,0 +1,168 @@
+[gd_scene load_steps=10 format=3 uid="uid://cf8vhh57rpyam"]
+
+[ext_resource type="Script" path="res://Interfaces/android_buttons.gd" id="1_8on27"]
+[ext_resource type="Texture2D" uid="uid://ikq82hy4e2qr" path="res://Textures/AndroidButtonNormal.png" id="1_lfx4k"]
+[ext_resource type="Texture2D" uid="uid://0jsnl5v2jmdx" path="res://Textures/AndroidButtonPressed.png" id="2_8254o"]
+[ext_resource type="BitMap" uid="uid://bv8vu6tokiqtw" path="res://Textures/AndroidButtonBitmask.png" id="3_rq01a"]
+[ext_resource type="Texture2D" uid="uid://cgqa0adleqdcc" path="res://Interfaces/thoughts-on-lsw-tcs-on-mobile-v0-vjfjyyndr7ia1.webp" id="4_oyeas"]
+[ext_resource type="Texture2D" uid="uid://65ddusuxsr3u" path="res://Interfaces/hqdefault.jpg" id="5_7x0kj"]
+[ext_resource type="Texture2D" uid="uid://b3xk0gylgait3" path="res://Textures/BlueBack.png" id="6_no6s3"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_2y235"]
+radius = 48.08
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_qdgo5"]
+radius = 128.09
+
+[node name="Android Buttons" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_8on27")
+
+[node name="Thoughts-on-lsw-tcs-on-mobile-v0-vjfjyyndr7Ia1" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(704, 318)
+scale = Vector2(0.555555, 0.555556)
+texture = ExtResource("4_oyeas")
+
+[node name="Hqdefault" type="Sprite2D" parent="."]
+position = Vector2(576, 321)
+scale = Vector2(3.20556, 3.20556)
+texture = ExtResource("5_7x0kj")
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer2"]
+layout_mode = 2
+alignment = 2
+
+[node name="BottomRight" type="Control" parent="HBoxContainer2/VBoxContainer"]
+layout_mode = 2
+
+[node name="ChangeRight" type="TouchScreenButton" parent="HBoxContainer2/VBoxContainer/BottomRight" groups=["AndroidButtons"]]
+position = Vector2(-333, -634)
+texture_normal = ExtResource("1_lfx4k")
+texture_pressed = ExtResource("2_8254o")
+bitmask = ExtResource("3_rq01a")
+shape = SubResource("CircleShape2D_2y235")
+visibility_mode = 1
+
+[node name="ChangeLeft" type="TouchScreenButton" parent="HBoxContainer2/VBoxContainer/BottomRight" groups=["AndroidButtons"]]
+position = Vector2(-450, -636)
+texture_normal = ExtResource("1_lfx4k")
+texture_pressed = ExtResource("2_8254o")
+bitmask = ExtResource("3_rq01a")
+shape = SubResource("CircleShape2D_2y235")
+visibility_mode = 1
+
+[node name="Tag" type="TouchScreenButton" parent="HBoxContainer2/VBoxContainer/BottomRight" groups=["AndroidButtons"]]
+position = Vector2(-354, -346)
+scale = Vector2(1.24286, 1.24286)
+texture_normal = ExtResource("1_lfx4k")
+texture_pressed = ExtResource("2_8254o")
+bitmask = ExtResource("3_rq01a")
+shape = SubResource("CircleShape2D_2y235")
+visibility_mode = 1
+
+[node name="Fight" type="TouchScreenButton" parent="HBoxContainer2/VBoxContainer/BottomRight" groups=["AndroidButtons"]]
+position = Vector2(-449, -251)
+scale = Vector2(1.24286, 1.24286)
+texture_normal = ExtResource("1_lfx4k")
+texture_pressed = ExtResource("2_8254o")
+bitmask = ExtResource("3_rq01a")
+shape = SubResource("CircleShape2D_2y235")
+visibility_mode = 1
+
+[node name="Jump" type="TouchScreenButton" parent="HBoxContainer2/VBoxContainer/BottomRight" groups=["AndroidButtons"]]
+position = Vector2(-355, -157)
+scale = Vector2(1.24286, 1.24286)
+texture_normal = ExtResource("1_lfx4k")
+texture_pressed = ExtResource("2_8254o")
+bitmask = ExtResource("3_rq01a")
+shape = SubResource("CircleShape2D_2y235")
+visibility_mode = 1
+
+[node name="Special" type="TouchScreenButton" parent="HBoxContainer2/VBoxContainer/BottomRight" groups=["AndroidButtons"]]
+position = Vector2(-261, -252)
+scale = Vector2(1.25714, 1.25714)
+texture_normal = ExtResource("1_lfx4k")
+texture_pressed = ExtResource("2_8254o")
+bitmask = ExtResource("3_rq01a")
+shape = SubResource("CircleShape2D_2y235")
+visibility_mode = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+alignment = 2
+
+[node name="BottomLeft" type="Control" parent="HBoxContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="HBoxContainer/VBoxContainer/BottomLeft"]
+position = Vector2(176, -159)
+texture = ExtResource("6_no6s3")
+
+[node name="Wheel" type="TouchScreenButton" parent="HBoxContainer/VBoxContainer/BottomLeft/Sprite2D"]
+shape = SubResource("CircleShape2D_qdgo5")
+shape_centered = false
+visibility_mode = 1
+
+[node name="Point" type="Sprite2D" parent="HBoxContainer/VBoxContainer/BottomLeft/Sprite2D"]
+texture = ExtResource("1_lfx4k")
+
+[node name="Up" type="TouchScreenButton" parent="HBoxContainer/VBoxContainer/BottomLeft" groups=["AndroidButtons"]]
+visible = false
+position = Vector2(136, -279)
+texture_normal = ExtResource("1_lfx4k")
+texture_pressed = ExtResource("2_8254o")
+bitmask = ExtResource("3_rq01a")
+shape = SubResource("CircleShape2D_2y235")
+visibility_mode = 1
+
+[node name="Down" type="TouchScreenButton" parent="HBoxContainer/VBoxContainer/BottomLeft" groups=["AndroidButtons"]]
+visible = false
+position = Vector2(137, -140)
+texture_normal = ExtResource("1_lfx4k")
+texture_pressed = ExtResource("2_8254o")
+bitmask = ExtResource("3_rq01a")
+shape = SubResource("CircleShape2D_2y235")
+visibility_mode = 1
+
+[node name="Left" type="TouchScreenButton" parent="HBoxContainer/VBoxContainer/BottomLeft" groups=["AndroidButtons"]]
+visible = false
+position = Vector2(-3, -140)
+texture_normal = ExtResource("1_lfx4k")
+texture_pressed = ExtResource("2_8254o")
+bitmask = ExtResource("3_rq01a")
+shape = SubResource("CircleShape2D_2y235")
+visibility_mode = 1
+
+[node name="Right" type="TouchScreenButton" parent="HBoxContainer/VBoxContainer/BottomLeft" groups=["AndroidButtons"]]
+visible = false
+position = Vector2(277, -140)
+texture_normal = ExtResource("1_lfx4k")
+texture_pressed = ExtResource("2_8254o")
+bitmask = ExtResource("3_rq01a")
+shape = SubResource("CircleShape2D_2y235")
+visibility_mode = 1

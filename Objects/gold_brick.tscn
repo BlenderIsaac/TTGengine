@@ -1,0 +1,405 @@
+[gd_scene load_steps=69 format=3 uid="uid://cjgmn2kqa6sgy"]
+
+[ext_resource type="Texture2D" uid="uid://del06gdxptkar" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0000.png" id="1_ofndm"]
+[ext_resource type="Texture2D" uid="uid://b75fxufsrfj2f" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0001.png" id="2_kg8fc"]
+[ext_resource type="Texture2D" uid="uid://canjnwlygd17x" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0002.png" id="3_x8grc"]
+[ext_resource type="Texture2D" uid="uid://dlp30p1rv4p1a" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0003.png" id="4_cvexq"]
+[ext_resource type="Texture2D" uid="uid://dc07s42pome7r" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0004.png" id="5_smwyr"]
+[ext_resource type="Texture2D" uid="uid://b6wv4shth51m" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0005.png" id="6_7t3qo"]
+[ext_resource type="Texture2D" uid="uid://7skpdd10sld5" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0006.png" id="7_lo15e"]
+[ext_resource type="Texture2D" uid="uid://dfadfq2sjyqlq" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0007.png" id="8_jd472"]
+[ext_resource type="Texture2D" uid="uid://bm54s1hde3cr8" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0008.png" id="9_pwbk7"]
+[ext_resource type="Texture2D" uid="uid://cyg2jbbejg6pm" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0009.png" id="10_qn7f1"]
+[ext_resource type="Texture2D" uid="uid://dj2qkq4jtsw5j" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0010.png" id="11_wtydt"]
+[ext_resource type="Texture2D" uid="uid://cpov8ufo6xoo2" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0011.png" id="12_ier3x"]
+[ext_resource type="Texture2D" uid="uid://cnvc47rmbovjf" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0012.png" id="13_qs16i"]
+[ext_resource type="Texture2D" uid="uid://oppcw80cvejj" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0013.png" id="14_fv55n"]
+[ext_resource type="Texture2D" uid="uid://cw7kk0rkiaf2g" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0014.png" id="15_qet6m"]
+[ext_resource type="Texture2D" uid="uid://dwuixvk54vsg3" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0015.png" id="16_sqvp6"]
+[ext_resource type="Texture2D" uid="uid://dac48aosakdxo" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0016.png" id="17_s1fsl"]
+[ext_resource type="Texture2D" uid="uid://q22kxt32gb0b" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0017.png" id="18_rtb70"]
+[ext_resource type="Texture2D" uid="uid://duebh46oe48l6" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0018.png" id="19_qmfl4"]
+[ext_resource type="Texture2D" uid="uid://c4h7j3di0fivo" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0019.png" id="20_p58q3"]
+[ext_resource type="Texture2D" uid="uid://yvhovksor7ls" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0020.png" id="21_b6weo"]
+[ext_resource type="Texture2D" uid="uid://b5lv77d4ux68x" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0021.png" id="22_kho1a"]
+[ext_resource type="Texture2D" uid="uid://xhwg37mhketo" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0022.png" id="23_tbebd"]
+[ext_resource type="Texture2D" uid="uid://bsx147vf3g21d" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0023.png" id="24_jsetn"]
+[ext_resource type="Texture2D" uid="uid://ddhl77it8wn0n" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0024.png" id="25_nbtt6"]
+[ext_resource type="Texture2D" uid="uid://d3pg1c7wmpugu" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0025.png" id="26_4hrx8"]
+[ext_resource type="Texture2D" uid="uid://j8ohk4df0sqn" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0026.png" id="27_yctmy"]
+[ext_resource type="Texture2D" uid="uid://cyqm0v3he6dq0" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0027.png" id="28_j7qga"]
+[ext_resource type="Texture2D" uid="uid://b4ij8aalir0ip" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0028.png" id="29_3o2j0"]
+[ext_resource type="Texture2D" uid="uid://bj2jjnxaoc3aw" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0029.png" id="30_kfoma"]
+[ext_resource type="Texture2D" uid="uid://bu85fseuw2kau" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0030.png" id="31_wni63"]
+[ext_resource type="Texture2D" uid="uid://dbf6yjju684mo" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0031.png" id="32_bi2oy"]
+[ext_resource type="Texture2D" uid="uid://dmtlqbhg5pnqm" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0032.png" id="33_dqa03"]
+[ext_resource type="Texture2D" uid="uid://d35dn8bmjakjt" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0033.png" id="34_ecvdn"]
+[ext_resource type="Texture2D" uid="uid://bt3jdy4253ayc" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0034.png" id="35_y534h"]
+[ext_resource type="Texture2D" uid="uid://cchr80m1socln" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0035.png" id="36_p6fay"]
+[ext_resource type="Texture2D" uid="uid://dwbug1yf57y58" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0036.png" id="37_b3gnk"]
+[ext_resource type="Texture2D" uid="uid://bnxvd8yo33vpr" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0037.png" id="38_tmtxk"]
+[ext_resource type="Texture2D" uid="uid://b5pmnsm2j8l21" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0038.png" id="39_5h0ct"]
+[ext_resource type="Texture2D" uid="uid://bvx53n7aq5i6" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0039.png" id="40_py06h"]
+[ext_resource type="Texture2D" uid="uid://dn8n61exnnknc" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0040.png" id="41_56v30"]
+[ext_resource type="Texture2D" uid="uid://cueiedytxk3uh" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0041.png" id="42_peqvy"]
+[ext_resource type="Texture2D" uid="uid://d4db7v5vkxtd4" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0042.png" id="43_d4478"]
+[ext_resource type="Texture2D" uid="uid://c0wivwr3tdotd" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0043.png" id="44_aqqbf"]
+[ext_resource type="Texture2D" uid="uid://27nv0e1tx0i2" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0044.png" id="45_6tddu"]
+[ext_resource type="Texture2D" uid="uid://h44k3vk7jsbl" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0045.png" id="46_jvtiy"]
+[ext_resource type="Texture2D" uid="uid://bu1o84ymx5q2a" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0046.png" id="47_7yvvm"]
+[ext_resource type="Texture2D" uid="uid://bwlr63yt1qknl" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0047.png" id="48_egb5g"]
+[ext_resource type="Texture2D" uid="uid://b3r2h0nkq430r" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0048.png" id="49_fjmjd"]
+[ext_resource type="Texture2D" uid="uid://63801e423ewm" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0049.png" id="50_jcveo"]
+[ext_resource type="Texture2D" uid="uid://dv4yikhu6lo2k" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0050.png" id="51_188s5"]
+[ext_resource type="Texture2D" uid="uid://c5uv3rye42jyj" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0051.png" id="52_3rbyo"]
+[ext_resource type="Texture2D" uid="uid://dt5br74w2lghm" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0052.png" id="53_7o62j"]
+[ext_resource type="Texture2D" uid="uid://cd6gullrr3u27" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0053.png" id="54_tpxxy"]
+[ext_resource type="Texture2D" uid="uid://dym1j4t8qq84e" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0054.png" id="55_erw4v"]
+[ext_resource type="Texture2D" uid="uid://d1x6dpw67671w" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0055.png" id="56_6qevx"]
+[ext_resource type="Texture2D" uid="uid://rr4h0h816cb5" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0056.png" id="57_n81f5"]
+[ext_resource type="Texture2D" uid="uid://devvc5oqc74yc" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0057.png" id="58_84yxf"]
+[ext_resource type="Texture2D" uid="uid://dlupx675kbq5x" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0058.png" id="59_74t3o"]
+[ext_resource type="Texture2D" uid="uid://ce7qm86or0eql" path="res://Textures/HiResBricks/GoldBrick/GoldBrick0059.png" id="60_rt6hi"]
+
+[sub_resource type="SystemFont" id="SystemFont_3tpe0"]
+font_names = PackedStringArray("Franklin Gothic")
+subpixel_positioning = 0
+
+[sub_resource type="LabelSettings" id="LabelSettings_jv6g5"]
+line_spacing = -5.056
+font = SubResource("SystemFont_3tpe0")
+font_size = 34
+font_color = Color(1, 0.192157, 0.894118, 1)
+outline_size = 6
+outline_color = Color(0.254902, 0, 0.192157, 1)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ipsno"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_ofndm")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_kg8fc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_x8grc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_cvexq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_smwyr")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_7t3qo")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_lo15e")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_jd472")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_pwbk7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_qn7f1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_wtydt")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_ier3x")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_qs16i")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_fv55n")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_qet6m")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_sqvp6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_s1fsl")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_rtb70")
+}, {
+"duration": 1.0,
+"texture": ExtResource("19_qmfl4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_p58q3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("21_b6weo")
+}, {
+"duration": 1.0,
+"texture": ExtResource("22_kho1a")
+}, {
+"duration": 1.0,
+"texture": ExtResource("23_tbebd")
+}, {
+"duration": 1.0,
+"texture": ExtResource("24_jsetn")
+}, {
+"duration": 1.0,
+"texture": ExtResource("25_nbtt6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("26_4hrx8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("27_yctmy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("28_j7qga")
+}, {
+"duration": 1.0,
+"texture": ExtResource("29_3o2j0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("30_kfoma")
+}, {
+"duration": 1.0,
+"texture": ExtResource("31_wni63")
+}, {
+"duration": 1.0,
+"texture": ExtResource("32_bi2oy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("33_dqa03")
+}, {
+"duration": 1.0,
+"texture": ExtResource("34_ecvdn")
+}, {
+"duration": 1.0,
+"texture": ExtResource("35_y534h")
+}, {
+"duration": 1.0,
+"texture": ExtResource("36_p6fay")
+}, {
+"duration": 1.0,
+"texture": ExtResource("37_b3gnk")
+}, {
+"duration": 1.0,
+"texture": ExtResource("38_tmtxk")
+}, {
+"duration": 1.0,
+"texture": ExtResource("39_5h0ct")
+}, {
+"duration": 1.0,
+"texture": ExtResource("40_py06h")
+}, {
+"duration": 1.0,
+"texture": ExtResource("41_56v30")
+}, {
+"duration": 1.0,
+"texture": ExtResource("42_peqvy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("43_d4478")
+}, {
+"duration": 1.0,
+"texture": ExtResource("44_aqqbf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("45_6tddu")
+}, {
+"duration": 1.0,
+"texture": ExtResource("46_jvtiy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("47_7yvvm")
+}, {
+"duration": 1.0,
+"texture": ExtResource("48_egb5g")
+}, {
+"duration": 1.0,
+"texture": ExtResource("49_fjmjd")
+}, {
+"duration": 1.0,
+"texture": ExtResource("50_jcveo")
+}, {
+"duration": 1.0,
+"texture": ExtResource("51_188s5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("52_3rbyo")
+}, {
+"duration": 1.0,
+"texture": ExtResource("53_7o62j")
+}, {
+"duration": 1.0,
+"texture": ExtResource("54_tpxxy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("55_erw4v")
+}, {
+"duration": 1.0,
+"texture": ExtResource("56_6qevx")
+}, {
+"duration": 1.0,
+"texture": ExtResource("57_n81f5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("58_84yxf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("59_74t3o")
+}, {
+"duration": 1.0,
+"texture": ExtResource("60_rt6hi")
+}],
+"loop": true,
+"name": &"GoldBrick",
+"speed": 24.0
+}]
+
+[sub_resource type="Animation" id="Animation_774vd"]
+resource_name = "Default"
+length = 0.192
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("GoldBrick:scale")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1e-05, 1e-05)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Add:modulate")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_64lom"]
+resource_name = "Off"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Add:modulate")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("GoldBrick:scale")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0.204101, 0.204101), Vector2(1e-05, 1e-05)]
+}
+
+[sub_resource type="Animation" id="Animation_2odl1"]
+resource_name = "On"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("GoldBrick:scale")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(1e-05, 1e-05), Vector2(0.204101, 0.204101)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Add:modulate")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_vy3no"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("GoldBrick:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0.204101, 0.204101)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Add:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_wfyhb"]
+_data = {
+"Default": SubResource("Animation_774vd"),
+"Off": SubResource("Animation_64lom"),
+"On": SubResource("Animation_2odl1"),
+"RESET": SubResource("Animation_vy3no")
+}
+
+[node name="GoldBrick" type="Node2D"]
+position = Vector2(83, 56)
+
+[node name="Add" type="Label" parent="."]
+offset_left = -19.45
+offset_top = 36.49
+offset_right = 20.55
+offset_bottom = 76.49
+text = "+1"
+label_settings = SubResource("LabelSettings_jv6g5")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="GoldBrick" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.204101, 0.204101)
+sprite_frames = SubResource("SpriteFrames_ipsno")
+animation = &"GoldBrick"
+autoplay = "GoldBrick"
+frame_progress = 0.769807
+
+[node name="Anim" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_wfyhb")
+}
+autoplay = "Default"

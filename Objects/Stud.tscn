@@ -1,0 +1,123 @@
+[gd_scene load_steps=12 format=3 uid="uid://8318005bmn3t"]
+
+[ext_resource type="Script" path="res://Objects/Stud.gd" id="1_feqe2"]
+[ext_resource type="SpriteFrames" uid="uid://d4lndggo86ea7" path="res://Objects/StudAnims.tres" id="2_aka8s"]
+[ext_resource type="Texture2D" uid="uid://5boy2nmhka18" path="res://Textures/Point.png" id="3_rflnj"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_jykng"]
+friction = 0.78
+bounce = 0.47
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_k162e"]
+size = Vector3(0.354, 0.354, 0.354)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_8eqjd"]
+radius = 0.001
+
+[sub_resource type="Animation" id="Animation_p4ik4"]
+length = 0.001
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_838yv"]
+resource_name = "die"
+length = 10.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7, 8.8, 8.9, 9, 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7, 9.8, 9.9, 10),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_c3xdy"]
+_data = {
+"RESET": SubResource("Animation_p4ik4"),
+"die": SubResource("Animation_838yv")
+}
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_snpvy"]
+transparency = 1
+blend_mode = 1
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("3_rflnj")
+roughness = 0.0
+billboard_mode = 1
+
+[sub_resource type="QuadMesh" id="QuadMesh_h0k3b"]
+lightmap_size_hint = Vector2i(2, 2)
+size = Vector2(0.1, 0.1)
+
+[node name="Stud" type="RigidBody3D"]
+collision_layer = 4
+physics_material_override = SubResource("PhysicsMaterial_jykng")
+linear_damp = 0.9
+script = ExtResource("1_feqe2")
+
+[node name="Col" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_k162e")
+
+[node name="Sprite" type="AnimatedSprite3D" parent="." groups=["StudVisual"]]
+transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0, 0)
+billboard = 1
+double_sided = false
+alpha_cut = 2
+sprite_frames = ExtResource("2_aka8s")
+animation = &"Blue"
+autoplay = "Silver"
+metadata/PickupPos = Vector3(0, 0, 0)
+metadata/Value = 0
+metadata/CharacterNumber = -1
+metadata/Type = "Silver"
+
+[node name="PickupRange" type="Area3D" parent="."]
+collision_mask = 2
+
+[node name="AreaCol" type="CollisionShape3D" parent="PickupRange"]
+shape = SubResource("SphereShape3D_8eqjd")
+disabled = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_c3xdy")
+}
+
+[node name="PickupDelay" type="Timer" parent="."]
+wait_time = 0.6
+one_shot = true
+
+[node name="BlueStudGlow" type="CPUParticles3D" parent="."]
+material_override = SubResource("StandardMaterial3D_snpvy")
+cast_shadow = 0
+emitting = false
+amount = 15
+mesh = SubResource("QuadMesh_h0k3b")
+emission_shape = 2
+emission_sphere_radius = 0.1
+spread = 180.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 0.1
+initial_velocity_max = 0.2
+angular_velocity_min = 105.88
+angular_velocity_max = 105.88
+color = Color(0.243137, 0.462745, 0.984314, 1)
+
+[connection signal="body_entered" from="PickupRange" to="." method="_on_area_body_entered"]
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_animation_player_animation_finished"]
+[connection signal="timeout" from="PickupDelay" to="." method="_on_pickup_delay_timeout"]

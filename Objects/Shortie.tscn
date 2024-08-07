@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://t8ov3cjgrxgc"]
+
+[ext_resource type="Script" path="res://Objects/Shortie.gd" id="1_1yjvd"]
+
+[node name="Shortie" type="Node3D" groups=["Interactable", "Shortie"]]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -9.2969, 1.66372, 7.44716)
+script = ExtResource("1_1yjvd")
+play_animation = false

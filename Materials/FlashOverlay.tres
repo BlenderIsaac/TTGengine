@@ -1,0 +1,7 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://ca76f5udm3j1r"]
+
+[ext_resource type="Shader" path="res://Materials/flash_overlay.gdshader" id="1_8eiop"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_8eiop")

@@ -1,0 +1,51 @@
+[gd_scene load_steps=2 format=3 uid="uid://c8ekyhkhtb4u5"]
+
+[sub_resource type="GDScript" id="GDScript_t7d7s"]
+script/source = "extends CharacterBody3D
+
+
+var mesh_path = {}
+var col_path = {}
+
+var mod = \"\"#\"Ahsoka Show\"
+
+var mesh_config = {}
+var col_config = {}
+
+var activated = true
+
+var col = null
+var mesh = null
+
+func _ready():
+	
+	var level = Levels.current_level
+	
+	var other_path = SETTINGS.mod_path+\"/\"+mod+\"/levels\"
+	
+	mesh = level.generate_mesh(f.get_data_path(mesh_path, mod), mesh_config)
+	col = level.generate_convex_col(f.get_data_path(col_path, mod), col_config)
+	
+	var aabb = mesh.mesh.get_aabb()
+	var origin_pos = Vector3(aabb.position.x+aabb.size.x/2, aabb.position.y, aabb.position.z+aabb.size.z/2)
+	
+	position += origin_pos
+	mesh.position -= origin_pos
+	col.position -= origin_pos
+	
+	add_child(mesh)
+	add_child(col)
+	
+	mesh.visible = activated
+	col.disabled = !activated
+
+func _process(_delta):
+	mesh.visible = activated
+	col.disabled = !activated
+
+"
+
+[node name="LaserWall" type="CharacterBody3D" groups=["NightsisterMagicObject", "OBJCHANGE"]]
+collision_mask = 2051
+script = SubResource("GDScript_t7d7s")
+metadata/obj_changes = ["activated"]

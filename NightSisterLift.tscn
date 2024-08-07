@@ -1,0 +1,97 @@
+[gd_scene load_steps=11 format=3 uid="uid://c3yeberagi4xp"]
+
+[ext_resource type="Script" path="res://NightSisterLift.gd" id="1_4jyg6"]
+[ext_resource type="Texture2D" uid="uid://cj4ebgv7jgolj" path="res://Textures/circle_05.png" id="1_qfx4y"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pkgjs"]
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_color = Color(0.52549, 0.886275, 0.478431, 1)
+albedo_texture = ExtResource("1_qfx4y")
+billboard_mode = 2
+billboard_keep_scale = true
+
+[sub_resource type="QuadMesh" id="QuadMesh_7k6jd"]
+material = SubResource("StandardMaterial3D_pkgjs")
+size = Vector2(0.1, 1)
+
+[sub_resource type="Curve" id="Curve_a8p8m"]
+min_value = -10.0
+max_value = 10.0
+_data = [Vector2(0, 0), 1291.03, 0.0, 0, 0, Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 10), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_nsoe7"]
+max_value = 6.0
+_data = [Vector2(0, 4.47179), 0.0, 0.0, 0, 0, Vector2(0.117424, 1.77596), -4.61083, -4.61083, 0, 0, Vector2(1, 0), -1.44828, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_gnqlk"]
+max_value = 2.0
+_data = [Vector2(0, 0.534125), 0.0, -0.164673, 0, 0, Vector2(0.215909, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -1.05247, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ocbp1"]
+blend_mode = 1
+cull_mode = 2
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_color = Color(0.52549, 0.886275, 0.478431, 1)
+albedo_texture = ExtResource("1_qfx4y")
+billboard_keep_scale = true
+
+[sub_resource type="QuadMesh" id="QuadMesh_e1e4r"]
+material = SubResource("StandardMaterial3D_ocbp1")
+size = Vector2(0.353, 0.608)
+
+[sub_resource type="Curve" id="Curve_s1kwi"]
+min_value = -10.0
+max_value = 10.0
+_data = [Vector2(0, 0), 1291.03, 0.0, 0, 0, Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 10), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[node name="NightSisterLift" type="Node3D"]
+script = ExtResource("1_4jyg6")
+
+[node name="Bulb" type="CPUParticles3D" parent="."]
+transform = Transform3D(3.74, 0, 0, 0, 3.74, 0, 0, 0, 3.74, 0, 0, 0)
+emitting = false
+amount = 20
+lifetime = 0.01
+local_coords = true
+mesh = SubResource("QuadMesh_7k6jd")
+emission_shape = 1
+emission_sphere_radius = 0.05
+particle_flag_align_y = true
+direction = Vector3(0, 1, 0)
+spread = 0.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 2.0
+initial_velocity_max = 4.0
+angle_curve = SubResource("Curve_a8p8m")
+split_scale = true
+scale_curve_x = SubResource("Curve_nsoe7")
+scale_curve_y = SubResource("Curve_gnqlk")
+scale_curve_z = SubResource("Curve_nsoe7")
+
+[node name="Push" type="CPUParticles3D" parent="."]
+emitting = false
+amount = 50
+lifetime = 0.2
+local_coords = true
+mesh = SubResource("QuadMesh_e1e4r")
+particle_flag_align_y = true
+direction = Vector3(0, 0, 1)
+spread = 180.0
+flatness = 1.0
+gravity = Vector3(0, 5.135, 0)
+initial_velocity_min = 2.07
+initial_velocity_max = 2.17
+angle_curve = SubResource("Curve_s1kwi")
+
+[node name="DeathTimer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+
+[connection signal="timeout" from="DeathTimer" to="." method="_on_death_timer_timeout"]

@@ -1,0 +1,143 @@
+[gd_scene load_steps=12 format=3 uid="uid://bxapwt6p41rba"]
+
+[ext_resource type="Script" path="res://Character/Character.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://cqw4hb5r7ayyx" path="res://Animations/GenRig.tscn" id="3_rb4k0"]
+[ext_resource type="Texture2D" uid="uid://5boy2nmhka18" path="res://Textures/Point.png" id="4_mwcyx"]
+[ext_resource type="AnimationLibrary" uid="uid://b5aamplbxewy4" path="res://Animations/FlashAnims/FlashAnims.res" id="5_17ga1"]
+[ext_resource type="PackedScene" uid="uid://b1h60hmsedkrs" path="res://Scripts/AudioPlayer.tscn" id="5_gg81l"]
+
+[sub_resource type="Animation" id="Animation_1ot5x"]
+resource_name = "DropIn"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:flash_value")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(-0.0100001, 0.3, 0.59, 0.9, 1.19, 1.5, 1.8, 2),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector4(1, 1, 1, 0.3), Vector4(1, 1, 1, 0), Vector4(1, 1, 1, 0.3), Vector4(1, 1, 1, 0), Vector4(1, 1, 1, 0.3), Vector4(1, 1, 1, 0), Vector4(1, 1, 1, 0.3), Vector4(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_pnov4"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:flash_value")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector4(1, 0, 0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_hckq3"]
+_data = {
+"DropIn": SubResource("Animation_1ot5x"),
+"RESET": SubResource("Animation_pnov4")
+}
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hrxsp"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+albedo_texture = ExtResource("4_mwcyx")
+billboard_mode = 3
+billboard_keep_scale = true
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_tlcag"]
+material = SubResource("StandardMaterial3D_hrxsp")
+size = Vector2(0.4, 0.4)
+
+[sub_resource type="Curve" id="Curve_mgo1q"]
+_data = [Vector2(0, 1), 0.0, 0.140351, 0, 0, Vector2(1, 0), -2.84211, 0.0, 0, 0]
+point_count = 2
+
+[node name="Character" type="CharacterBody3D" groups=["AttackLockOn", "Attackable", "Character", "Pushaway", "Taggable"]]
+collision_layer = 2
+collision_mask = 17
+script = ExtResource("1")
+AI = true
+flash_value = Vector4(1, 0, 0, 0)
+
+[node name="Modulation" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_hckq3"),
+"FlashAnims": ExtResource("5_17ga1")
+}
+autoplay = "RESET"
+
+[node name="Mesh" parent="." instance=ExtResource("3_rb4k0")]
+visible = false
+
+[node name="Skeleton3D" parent="Mesh/Armature" index="0"]
+bones/3/rotation = Quaternion(3.36011e-08, -0.707107, 0.707107, 5.3385e-08)
+bones/6/rotation = Quaternion(-7.7581e-08, 0.707107, -0.707107, 5.33851e-08)
+bones/8/rotation = Quaternion(-7.4309e-08, 1.07284e-07, 3.24816e-15, 1)
+bones/9/rotation = Quaternion(-1.77636e-15, -7.10545e-15, -8.47035e-22, 1)
+bones/10/rotation = Quaternion(-1.77636e-15, 7.10545e-15, 1.01939e-34, 1)
+bones/11/rotation = Quaternion(-1.77636e-15, 1.1921e-07, 4.23517e-22, 1)
+bones/12/rotation = Quaternion(0.971424, 0.237187, -0.00810583, 0.0034553)
+bones/13/scale = Vector3(1, 0.999999, 1)
+bones/14/rotation = Quaternion(-0.0491596, 0.997555, -0.0443154, -0.0224456)
+bones/16/rotation = Quaternion(0.97143, -0.237212, -0.0073394, -0.000316104)
+bones/17/scale = Vector3(1, 0.999999, 1)
+bones/18/rotation = Quaternion(0.0560234, 0.952082, -0.0352407, 0.298596)
+bones/19/rotation = Quaternion(0.600586, 0.10894, -0.0747862, 0.788566)
+
+[node name="SwitchParticles" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.861041, 0)
+emitting = false
+amount = 20
+lifetime = 0.15
+one_shot = true
+explosiveness = 0.81
+local_coords = true
+mesh = SubResource("QuadMesh_tlcag")
+emission_shape = 3
+emission_box_extents = Vector3(0.415, 0.9, 0.415)
+spread = 180.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 0.1
+initial_velocity_max = 0.2
+scale_amount_curve = SubResource("Curve_mgo1q")
+
+[node name="Tail" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+visible = false
+target_position = Vector3(0, -20, 0)
+
+[node name="Agent" type="NavigationAgent3D" parent="."]
+navigation_layers = 0
+
+[node name="AgentTimer" type="Timer" parent="."]
+wait_time = 0.1
+autostart = true
+
+[node name="Logic" type="Node3D" parent="."]
+
+[node name="Pushaway" type="Area3D" parent="."]
+collision_layer = 2
+collision_mask = 2
+
+[node name="Label3D" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.14289, 0)
+billboard = 2
+
+[node name="AudioPlayer" parent="." instance=ExtResource("5_gg81l")]
+
+[connection signal="link_reached" from="Agent" to="." method="_on_agent_link_reached"]
+[connection signal="timeout" from="AgentTimer" to="." method="_on_target_update"]
+[connection signal="body_entered" from="Pushaway" to="." method="_on_pushaway_body_entered"]
+[connection signal="body_exited" from="Pushaway" to="." method="_on_pushaway_body_exited"]
+
+[editable path="Mesh"]

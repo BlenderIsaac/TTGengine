@@ -1,0 +1,484 @@
+extends Control
+
+var selected_chars = []
+var selected_indexes = {
+	"0" : 0,
+	"1" : 1,}
+var player_back = {
+	"0" : "Blue",
+	"1" : "Green",}
+var player_amount = 1
+var currently_pressed_keys = [
+	[],
+	[]]
+
+var char_data = []
+
+
+func _ready():
+	
+	$FreePlaySelect.hide()
+	$ModeSelect.hide()
+	$Pause.hide()
+	$Icons.hide()
+	
+	load_icons("Basic Characters", 1)
+
+func _process(_delta):
+	
+	if $ModeSelect.visible:
+		var char_num = 0
+		
+		for player in Players.dropped_in[char_num]:
+			
+			if key_just_unpressed("Special", char_num):
+				pass
+			
+			char_num += 1
+	
+	if $FreePlaySelect.visible:
+		FreePlaySelect_tick()
+	
+	if $Pause.visible:
+		Pause_tick()
+	#else:
+		#if Input.is_action_just_pressed("esc"):
+			#Pause(null)
+	
+	update_currently_pressed_keys()
+
+#region >< Pause Menu ><
+
+var pause_owner = null
+func Pause_tick():
+	
+	if pause_owner != null:
+		
+		var button = get_viewport().gui_get_focus_owner()
+		
+		if button != null:
+			
+			if key_just_unpressed("Jump", pause_owner):
+				
+				var method_name = str("Button_", button.name)
+				
+				if has_method(method_name):
+					call(method_name)
+			
+			if key_just_pressed("Up", pause_owner):
+				button.find_valid_focus_neighbor(SIDE_TOP).grab_focus()
+			
+			if key_just_pressed("Down", pause_owner):
+				button.find_valid_focus_neighbor(SIDE_BOTTOM).grab_focus()
+
+
+func Button_DropOut():
+	if pause_owner != null:
+		Players.drop_out_char(pause_owner, get_tree().get_first_node_in_group("LEVELROOT"))
+		Players.dropped_in[pause_owner].control_type = "keyboard"
+		Players.dropped_in[pause_owner].active = false
+		unPause()
+
+func Button_Resume():
+	unPause()
+
+func Button_Quit():
+	# go to main menu or hub
+	
+	var levelroot = get_tree().get_first_node_in_group("LEVELROOT")
+	
+	if levelroot.is_hub:
+		$Pause/Center/Quit/QuitHub.hide()
+	else:
+		$Pause/Center/Quit/QuitHub.show()
+	
+	$"Pause/Center/Main Pause".hide()
+	$Pause/Center/Quit.show()
+	
+	$Pause/Center/Quit/QuitCancel.grab_focus()
+
+func Button_QuitCancel():
+	$"Pause/Center/Main Pause".show()
+	$Pause/Center/Quit.hide()
+	
+	$"Pause/Center/Main Pause/Quit".grab_focus()
+
+func Button_QuitHub():
+	var levelroot = get_tree().get_first_node_in_group("LEVELROOT")
+	
+	var hub_mod = levelroot.mod
+	
+	levelroot.free()
+	
+	unPause()
+	
+	Levels.load_hub(hub_mod)
+
+func Button_QuitMenu():
+	var levelroot = get_tree().get_first_node_in_group("LEVELROOT")
+	
+	levelroot.free()
+	
+	unPause()
+	
+	$Icons.hide()
+	
+	get_tree().change_scene_to_file("res://Interfaces/main_menu.tscn")
+
+func Button_QuitDesktop():
+	get_tree().quit()
+
+
+var is_paused = false
+func Pause(owner_num):
+	is_paused = true
+	pause_owner = owner_num
+	
+	var only_one_left = true
+	var player_num = 0
+	for player in Players.dropped_in:
+		if player.active and player_num != owner_num:
+			only_one_left = false
+		
+		player_num += 1
+	
+	if pause_owner == null or only_one_left:
+		$"Pause/Center/Main Pause/DropOut".hide()
+		$"Pause/Center/Main Pause/Resume".grab_focus()
+	else:
+		$"Pause/Center/Main Pause/DropOut".show()
+		$"Pause/Center/Main Pause/DropOut".grab_focus()
+	
+	for menu in $Pause/Center.get_children():
+		menu.hide()
+	
+	$"Pause/Center/Main Pause".show()
+	
+	get_tree().paused = true
+	$Pause.show()
+
+func unPause():
+	is_paused = false
+	get_tree().paused = false
+	$Pause.hide()
+
+#endregion
+
+#region >< Free Play Select ><
+
+var load_level_name = ""
+var load_level_mod = ""
+
+func FreePlaySelect_tick():
+	var new_selected_indexes = {
+	"0" : 0,
+	"1" : 0,
+	}
+	
+	var columns = $FreePlaySelect/Container/Grid.columns
+	var full_rows = $FreePlaySelect/Container/Grid.get_child_count()/columns
+	var rows = ceil(float($FreePlaySelect/Container/Grid.get_child_count())/columns)
+	
+	var incomplete_row_columns = $FreePlaySelect/Container/Grid.get_child_count()-full_rows*columns
+	#var num_spaces_missing = columns-incomplete_row_columns
+	
+	for player_number in selected_indexes.keys():
+		
+		if Players.dropped_in[int(player_number)].active == true:
+			
+			var select_index = selected_indexes.get(player_number)
+			
+			var pos_y = select_index/columns
+			var pos_x = select_index-pos_y*columns
+			
+			var vec = Vector2(pos_x, pos_y)
+			
+			if key_just_pressed("Jump", player_number):
+				add_to_team(select_index)
+			
+			if key_just_pressed("Up", player_number):
+				vec.y -= 1
+				
+				if vec.y < 0:
+					vec.y = rows-1
+					
+					if !full_rows == rows:
+						if vec.x >= incomplete_row_columns:
+							vec.y = rows-2
+			
+			if key_just_pressed("Down", player_number):
+				vec.y += 1
+				
+				if vec.y > rows-1:
+					vec.y = 0
+					
+				if !full_rows == rows:
+					if vec.y > rows-2:
+						if vec.x >= incomplete_row_columns:
+							vec.y = 0
+			
+			if key_just_pressed("Left", player_number):
+				vec.x -= 1
+				
+				if vec.x < 0:
+					vec.x = columns-1
+					
+					if vec.y == rows-1:
+						if !full_rows == rows:
+							vec.x = incomplete_row_columns-1
+			
+			if key_just_pressed("Right", player_number):
+				vec.x += 1
+				
+				if vec.x > columns-1:
+					vec.x = 0
+				if vec.y == rows-1:
+					if !full_rows == rows:
+						if vec.x >= incomplete_row_columns:
+							vec.x = 0
+			
+			var new_select_index = int(vec.y)*int(columns) + int(vec.x)
+			
+			new_selected_indexes[str(player_number)] = new_select_index
+	
+	for new_selected_index in new_selected_indexes.keys():
+		var new_select_index = new_selected_indexes.get(new_selected_index)
+		
+		if Players.dropped_in[int(new_selected_index)].active:
+			select(new_selected_index, new_select_index)
+	
+	for new_selected_index in new_selected_indexes.keys():
+		var new_select_index = new_selected_indexes.get(new_selected_index)
+		
+		if Players.dropped_in[int(new_selected_index)].active:
+			select(new_selected_index, new_select_index)
+
+func update_freeplay_select_interface():
+	if $FreePlaySelect.visible:
+		var char_num = 0
+		for player in Players.dropped_in:
+			if player.active:
+				$FreePlaySelect/Center/PlayerContainers.get_node(str("Player", char_num, "Container")).show()
+				$FreePlaySelect.get_node(str("Player", char_num)).show()
+			else:
+				$FreePlaySelect/Center/PlayerContainers.get_node(str("Player", char_num, "Container")).hide()
+				$FreePlaySelect.get_node(str("Player", char_num)).hide()
+			
+			select(str(char_num), selected_indexes.get(str(char_num)))
+			
+			char_num += 1
+
+func load_icons(mod, times):
+	
+	char_data = []
+	
+	for c in $FreePlaySelect/Container/Grid.get_children():
+		if not c == $FreePlaySelect/Container/Grid/Norm:
+			c.free()
+	
+	var mods_path = SETTINGS.mod_path+"/"+mod+"/characters/chars"
+	
+	var chars = DirAccess.get_files_at(mods_path)
+	
+	for time in times:
+		for c in chars:
+			
+			var file = FileAccess.open(mods_path+"/"+c, FileAccess.READ)
+			var data = JSON.parse_string(file.get_as_text())
+			
+			create_icon(MATERIALS.load_texture(SETTINGS.mod_path+"/"+mod+"/characters/icons/"+data.Icon), data.Name)
+			
+			char_data.append({
+				#"Name" : data.Name,
+				"Path" : c,
+				"Mod" : mod,
+			})
+
+func create_icon(icon, char_name):
+	var norm = $FreePlaySelect/Container/Norm
+	
+	var new_icon = norm.duplicate()
+	
+	new_icon.get_node("Back/NAME").texture = icon
+	new_icon.get_node("Back/NAME").name = char_name
+	
+	$FreePlaySelect/Container/Grid.add_child(new_icon)
+	new_icon.show()
+
+func select(player, index):
+	
+	var prev_back = $FreePlaySelect/Container/Grid.get_child(selected_indexes.get(player)).get_node("Back")
+	var new_back = $FreePlaySelect/Container/Grid.get_child(index).get_node("Back")
+	var sprite = get_node("FreePlaySelect/Player"+str(player))
+	
+	if Players.dropped_in[int(player)].active:
+		# refrences to the back icons
+		
+		# Reset previous one
+		prev_back.show()
+		
+		# Set new one
+		
+		new_back.hide()
+		sprite.get_node("Back/Icon").texture = new_back.get_child(0).texture
+		
+		sprite.position = new_back.global_position
+		
+		# Set the new index
+		selected_indexes[player] = index
+		
+		# modulate based on shared icons
+		sprite.modulate.a = 1
+		
+		for p_num in selected_indexes.keys():
+			var p_index = selected_indexes[p_num]
+			
+			if !int(p_num) == int(player):
+				
+				if p_index == index:
+					
+					if Players.dropped_in[int(p_num)].active:
+						sprite.modulate.a = .5
+		
+		# middle icons
+		
+		var player_node = $FreePlaySelect/Center/PlayerContainers.get_node("Player"+str(player)+"Container")
+		
+		player_node.get_node("Back").texture = l.get_load("res://Textures/"+player_back.get(str(player))+"Back.png")
+		player_node.get_node("Back/Icon").texture = prev_back.get_child(0).texture
+		
+		player_node.get_node("Name").text = prev_back.get_child(0).name
+	else:
+		prev_back.show()
+		new_back.show()
+
+func add_to_team(_index):
+	
+	var player_data = [
+		{},
+		{}
+	]
+	
+	for str_index in selected_indexes.keys():
+		
+		var index = int(str_index)
+		var char_index = selected_indexes.get(str_index)
+		
+		player_data[index] = {
+			"Mod" : char_data[char_index].Mod,
+			"Char" : char_data[char_index].Path
+		}
+	
+	$FreePlaySelect.hide()
+	
+	for icon in Interface.get_node("Icons").get_children():
+		icon.get_node("Control/InGame").show()
+		icon.get_node("Control/InSelect").hide()
+	
+	Levels.load_freeplay_level(load_level_mod, load_level_name, player_data)
+
+#endregion
+
+#region >< Mode Select ><
+
+func load_mode_select(mod_name, level_name):
+	
+	for icon in Interface.get_node("Icons").get_children():
+		icon.get_node("Control/InGame").hide()
+		icon.get_node("Control/InSelect").show()
+	
+	get_tree().paused = true
+	
+	load_level_name = level_name
+	load_level_mod = mod_name
+	get_node("ModeSelect").show()
+
+
+func select_mode(mode):
+	$ModeSelect.hide()
+	if mode == "Story":
+		Levels.load_story_level(load_level_mod, load_level_name)
+		
+		for icon in Interface.get_node("Icons").get_children():
+			icon.get_node("Control/InGame").show()
+			icon.get_node("Control/InSelect").hide()
+	elif mode == "FreePlay":
+		$FreePlaySelect.show()
+		update_freeplay_select_interface()
+	elif mode == "SuperFreePlay":
+		$FreePlaySelect.show()
+		update_freeplay_select_interface()
+
+#endregion
+
+#region >< Keys ><
+
+func key_press(key, player):
+	var control_type = Players.dropped_in[int(player)].control_type
+	
+	if control_type == "keyboard":
+		var keys = SETTINGS.player_keys[(int(player))]
+		if Input.is_key_pressed(OS.find_keycode_from_string(keys.get(key))):
+			return true
+	else:
+		var buttons = SETTINGS.player_controller_buttons[int(player)]
+		
+		if buttons.has(key):
+			var device_num = Players.dropped_in[int(player)].controller_number
+			
+			if Input.is_joy_button_pressed(device_num, buttons.get(key)):
+				return true
+	
+	
+	return false
+
+func key_just_pressed(key, player):
+	if key_press(key, int(player)):
+		if !currently_pressed_keys[int(player)].has(key):
+			return true
+	
+	return false
+
+func key_just_unpressed(key, player):
+	if !key_press(key, int(player)):
+		if currently_pressed_keys[int(player)].has(key):
+			return true
+	
+	return false
+
+func update_currently_pressed_keys():
+	var player_num = 0
+	
+	for _1 in currently_pressed_keys:
+		
+		var keys_array = []
+		
+		var keys = SETTINGS.player_keys[int(player_num)]
+		
+		for key in keys:
+			if key_press(key, player_num):
+				keys_array.append(key)
+		
+		currently_pressed_keys[player_num] = keys_array
+		
+		player_num += 1
+
+#endregion
+
+
+func _on_timer_timeout():
+	var col_1 = Color("00ffff")
+	var col_2 = Color("9a36e7")
+	
+	var color = $Pause.theme.get("Button/colors/font_focus_color")
+	
+	if color == col_1:
+		$Pause.theme.set("Button/colors/font_focus_color", col_2)
+		$Pause.theme.set("Button/colors/font_hover_color", col_2)
+	else:
+		$Pause.theme.set("Button/colors/font_focus_color", col_1)
+		$Pause.theme.set("Button/colors/font_hover_color", col_1)
+
+
+
+

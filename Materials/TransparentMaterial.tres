@@ -1,0 +1,10 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://l2wqahkop28q"]
+
+[resource]
+transparency = 1
+albedo_color = Color(1, 1, 1, 0.4)
+emission_enabled = true
+rim = 0.0
+clearcoat_roughness = 0.15
+anisotropy = 1.0
+backlight = Color(1, 1, 1, 1)

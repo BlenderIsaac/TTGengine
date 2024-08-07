@@ -1,0 +1,384 @@
+extends "res://Logic/LOGIC.gd"
+
+var valid_logics = ["Base"]
+
+var force_delay = 0.0
+var force_delay_max = 0.5
+
+var force_target = null
+
+var selected_ability = null
+
+var force_abilities = {
+	"Up" : {
+		"Target" : "ForcePushed",
+		"TargetPath" : "ForceAbilities/ForcePushed.gd",
+		"Self" : "ForcePush",
+		"Icon" : "ForcePush.png"
+	},
+	"Right" : {
+		"Target" : "ForceMindTricked", 
+		"TargetPath" : "ForceAbilities/ForceMindTricked.gd",
+		"Self" : "ForceMindTrick",
+		"Icon" : "ForceMindTrick.png"
+	}
+}
+
+var force_colour = Color.BLUE
+
+func _ready():
+	ensureForceOutline_exists()
+
+func inclusive_physics(_delta):
+	ensureForceOutline_exists()
+	var force_outline = get_node("ForceOutline")
+	var force_anim = force_outline.get_node("Anim")
+	force_outline.hide()
+	
+	if !C.AI and !C.dead:
+		
+		if force_target and is_instance_valid(force_target) and !force_target.dead:
+			force_outline.show()
+			force_outline.global_position = force_target.global_position + force_target.aim_pos
+			
+			if C.key_press("Special") and C.is_on_floor() and valid_logics.has(C.movement_state):
+				C.set_movement_state("ForceSensitive")
+				selected_ability = null
+		else:
+			force_target = null
+		
+		if C.is_in_base_movement_state():
+			if force_delay > force_delay_max:
+				var force = update_force()
+				
+				if !force == force_target:
+					force_target = force
+					
+					if force:
+						
+						# get colours
+						var slot_colour = force_colour.lightened(.5)
+						
+						var force_colour_2 = force_colour
+						force_colour_2.h = force_colour.h+(randf()*.05)
+						
+						# hide all abilities
+						for child in force_outline.get_children():
+							if child.is_in_group("ForceSlot"):
+								child.hide()
+						
+						var Mesh1 = force_outline.get_node("Mesh1")
+						var Mesh2 = force_outline.get_node("Mesh2")
+						
+						Mesh1.modulate = force_colour
+						Mesh2.modulate = force_colour_2
+						
+						# load icons into sprite3ds
+						for slot in force_abilities.keys():
+							var data = force_abilities.get(slot)
+							var slot_node = force_outline.get_node(slot)
+							
+							var image = MATERIALS.load_texture(SETTINGS.mod_path+"/"+C.origin_mod+"/characters/textures/"+data.Icon)
+							
+							slot_node.modulate = slot_colour
+							slot_node.transparency = 0
+							slot_node.texture = image
+							slot_node.show()
+						
+						# disable the ones that don't work
+						var valid_abilities = force_target_valid_abilities_list(force_target)
+						
+						for slot in force_abilities.keys():
+							var data = force_abilities.get(slot)
+							
+							if !valid_abilities.has(data.Self):
+								force_outline.get_node(slot).transparency = 0.8
+					
+					force_anim.stop()
+					force_anim.play("ForceTurnOn")
+				
+				if not force:
+					force_target = null
+				
+				force_delay = 0.0
+			
+			force_delay += _delta
+
+
+func initiate():
+	force_delay = 0.0
+
+
+func exclusive_physics(_delta):
+	if force_target:
+		ensureForceOutline_exists()
+		# TODO: fix here
+		var rot_to_force = Basis.looking_at(C.global_position-force_target.global_position).get_euler().y+PI
+		C.mesh_angle_to = rot_to_force
+		
+		C.mesh_angle_lerp(_delta, 0.3)
+		
+		base_state.freeze()
+		
+		if selected_ability == null:
+			anim.play("ForceStatic", .2)
+			
+			# If we select a force power
+			for key in force_abilities.keys():
+				var key_pressed = false
+				
+				if C.control_type == "keyboard":
+					if C.key_press(key):
+						key_pressed = true
+				elif C.control_type == "controller":
+					key_pressed = C.controller_direction_pressed(key)
+				
+				if key_pressed:
+						var ability_data = force_abilities.get(key)
+						
+						var force_ability = ability_data.Self
+						var target_ability = ability_data.Target
+						var target_ability_path = ability_data.TargetPath
+						
+						if can_use_ability_on_target(force_target, force_ability, target_ability, target_ability_path):
+							
+							#var target_consequence = force_abilities.get(key).Target
+							#force_target.get_logic(target_consequence).opponent = C
+							#force_target.set_movement_state(target_consequence)
+							
+							C.get_logic(force_ability).force_target = force_target
+							C.set_movement_state(force_ability)
+							
+							force_delay = force_delay_max
+		
+		
+		if !C.key_press("Special") or !is_instance_valid(force_target) or !force_target or force_target.dead:
+			anim.play(C.weapon_prefix+"Idleloop", .2)
+			force_target = null
+			selected_ability = null
+			get_node("ForceOutline").hide()
+			C.reset_movement_state()
+	else:
+		C.reset_movement_state()
+
+
+var force_dist = 20
+var force_FOV = .4
+func update_force():
+	
+	# the best force we have found
+	var best_force = null
+	for local_force in get_tree().get_nodes_in_group("Character")+get_tree().get_nodes_in_group("ForceObject"):
+		
+		if !local_force == C and !local_force.dead:
+			if local_force.position.distance_to(C.position) <= force_dist:
+				
+				# the distance to the current force in the loop
+				var angle_to = get_angle_to_angle_force(local_force)
+				var local_desire = get_desire(local_force)
+				
+				# if we are facing the forceable
+				if angle_to < force_FOV:
+					if is_force_valid(local_force):
+						# This is the point where this force is a valid force to use
+						if best_force:
+							# The desirability of best_force
+							var best_desire = get_desire(best_force)
+							
+							# if the local force is closer than the best force
+							if local_desire < best_desire:
+								# set the best force to the current force, as it is closer
+								best_force = local_force
+						else:
+							# if this is the first force, then set best_force to it
+							best_force = local_force
+	
+	# return the best force we found
+	return best_force
+
+
+func is_force_valid(force_object):
+	
+	if force_target_valid_abilities_list(force_object).size() > 0:
+		return true
+
+
+func force_target_valid_abilities_list(force_object):
+	var valid_abilities_list = []
+	
+	for ability_data in force_abilities.values():
+		var force_ability = ability_data.Self
+		var target_ability = ability_data.Target
+		var target_ability_path = ability_data.TargetPath
+		
+		if can_use_ability_on_target(force_object, force_ability, target_ability, target_ability_path):
+			valid_abilities_list.append(force_ability)
+	
+	return valid_abilities_list
+
+
+func target_viable_for_ability(target, ability):
+	
+	if ability.has_method("target_viable"):
+		if !ability.target_viable(target):
+			return false
+	
+	return true
+
+
+func can_use_ability_on_target(target, ability_name, target_ability_name, target_ability_path):
+	var logics = target.get_logics_list()
+	
+	var t_viable = target_viable_for_ability(target, C.get_logic(ability_name))
+	
+	if t_viable:
+		if logics.has(target_ability_name):
+				return true
+		
+		if target_can_be_given_logic(target, ability_name):
+			target.add_logic(SETTINGS.get_logic_base_dir(C.origin_mod)+target_ability_path)
+			return true
+	
+	return false
+
+
+func target_can_be_given_logic(target, ability_name):
+	
+	# resolve force immunity first
+	if target.has_logic("ForceImmunity"):
+		if target.get_logic("ForceImmunity").abilities_immune.has(ability_name):
+			return false
+		
+		if target.get_logic("ForceImmunity").auto_immune:
+			if target.get_logic("ForceImmunity").valid_abilities.has(ability_name):
+				return true
+			return false
+	
+	# get the animations the ability needs
+	var ability_anims = get_ability_target_anims(ability_name)
+	
+	# resolve adding the logic if the rig is right (correlated to the ability)
+	if ability_needs_rig(ability_name):
+		var ability_rigs = get_ability_rigs(ability_name)
+		var target_rig = target.current_rig
+		
+		if ability_rigs.has(target_rig):
+			var anims = f.merge_arrays(ability_anims.Required, ability_anims.Other)
+			patch_up_targets_anims(target, anims)
+			return true
+		else:
+			# resolve that maybe the target has provided a custom animation
+			var target_anim = target.anim
+			var anim_list = target_anim.get_animation_list()
+			
+			# make sure every anim we need is accounted for
+			
+			for ability_anim in ability_anims.Required:
+				if !anim_list.has(ability_anim.Name):
+					return false
+	
+	
+	return true
+
+
+func patch_up_targets_anims(target, anims):
+	
+	var target_anim = target.anim
+	var anim_list = target_anim.get_animation_list()
+	
+	for animation in anims:
+		if !anim_list.has(animation.Name):
+			var anim_path = SETTINGS.mod_path+"/"+C.origin_mod+"/characters/anims/"+animation.Path
+			target.add_animation(animation.Name, l.get_load(anim_path))
+
+
+func exclusive_damage(_amount, _who_from=null):
+	C.get_logic("ForceSensitive").force_target = null
+	C.get_logic("ForceSensitive").force_delay = 0.0
+	
+	C.reset_movement_state()
+	C.generic_damage(_amount)
+
+
+func generic_force_stuff(f_target, delta):
+	var force_outline = get_node("ForceOutline")
+	
+	if !C.AI and !C.dead:
+		
+		if f_target and is_instance_valid(f_target):
+			force_outline.show()
+			force_outline.global_position = f_target.global_position + f_target.aim_pos
+	
+	var rot_to_force = Basis.looking_at(C.global_position-f_target.global_position).get_euler().y+PI
+	C.mesh_angle_to = rot_to_force
+	
+	
+	C.mesh_angle_lerp(delta, 0.3)
+	
+	base_state.freeze()
+	
+	if !C.key_press("Special") or !is_instance_valid(f_target) or !f_target or f_target.dead:
+		f_target = null
+		anim.play(C.weapon_prefix+"Idleloop", .2)
+		C.reset_movement_state()
+
+
+func ability_needs_rig(ability_name):
+	var ability = C.get_logic(ability_name)
+	
+	if "needs_rig" in ability:
+		return ability.needs_rig
+	
+	return false
+
+
+func get_ability_rigs(ability_name):
+	var ability = C.get_logic(ability_name)
+	
+	if "valid_rigs" in ability:
+		return ability.valid_rigs
+	
+	return []
+
+
+func get_ability_target_anims(ability_name):
+	var ability = C.get_logic(ability_name)
+	
+	if "target_anims" in ability:
+		return ability.target_anims
+	
+	return {"Required" : [], "Other" : []}
+
+
+func get_desire(force):
+	var angle = get_angle_to_angle_force(force)
+	var dist = C.global_position.distance_to(force.global_position)*0.1
+	
+	return angle+dist
+
+
+func get_angle_to_angle_force(force):
+	var rot_y = 0
+	if !force.global_position-C.global_position == Vector3(0, 0, 0):
+		rot_y = Basis.looking_at(force.global_position-C.global_position).get_euler().y
+	
+	var angle_to = f.angle_to_angle(rot_y, C.mesh_angle_to)/PI
+	
+	return abs(angle_to)
+
+
+func ensureForceOutline_exists():
+	if get_node_or_null("ForceOutline") == null:
+		var ForceOutline = l.get_load(SETTINGS.mod_path+"/"+C.origin_mod+"/characters/scenes/"+"forceoutline.tscn").instantiate()
+		var ForceOutlineScript = l.get_load(SETTINGS.mod_path+"/"+C.origin_mod+"/characters/scripts/"+"forceoutline.gd")
+		var ForceOutlineTexture = MATERIALS.load_texture(SETTINGS.mod_path+"/"+C.origin_mod+"/characters/textures/"+"force.png")
+		
+		ForceOutline.set_script(ForceOutlineScript)
+		
+		ForceOutline.get_node("Mesh1").texture = ForceOutlineTexture
+		ForceOutline.get_node("Mesh2").texture = ForceOutlineTexture
+		
+		add_child(ForceOutline)
+
+
+

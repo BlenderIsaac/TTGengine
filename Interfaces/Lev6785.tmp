@@ -1,0 +1,141 @@
+[gd_scene load_steps=9 format=3 uid="uid://dvgy5vxoqaq41"]
+
+[ext_resource type="Texture2D" uid="uid://b83wgmsktxguy" path="res://Interfaces/tcslevelselect.png" id="1_8uskx"]
+[ext_resource type="Script" path="res://Interfaces/LevelSelectTest.gd" id="1_20uid"]
+[ext_resource type="Texture2D" uid="uid://b3xk0gylgait3" path="res://Textures/BlueBack.png" id="4_8byni"]
+[ext_resource type="Texture2D" uid="uid://6ediol0mp3qp" path="res://Textures/BrownBack.png" id="5_55qrp"]
+[ext_resource type="Texture2D" uid="uid://dwws1m5vpiyiw" path="res://mainmenudouble.png" id="5_r5n3h"]
+[ext_resource type="Texture2D" uid="uid://badk5hii0xgof" path="res://Textures/GreenBack.png" id="5_rwx5a"]
+
+[sub_resource type="SystemFont" id="SystemFont_umr84"]
+font_names = PackedStringArray("Franklin Gothic")
+subpixel_positioning = 0
+
+[sub_resource type="LabelSettings" id="LabelSettings_saxkn"]
+line_spacing = -5.056
+font = SubResource("SystemFont_umr84")
+font_size = 34
+font_color = Color(0.996078, 0.760784, 0.0117647, 1)
+outline_size = 6
+outline_color = Color(0.172549, 0.109804, 0, 1)
+
+[node name="LevelSelect" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_20uid")
+
+[node name="Tcslevelselect" type="Sprite2D" parent="."]
+visible = false
+texture_filter = 1
+position = Vector2(576, 324)
+scale = Vector2(0.711859, 0.60788)
+texture = ExtResource("1_8uskx")
+region_enabled = true
+region_rect = Rect2(25, 29, 1226, 1066)
+
+[node name="Mainmenudouble" type="Sprite2D" parent="."]
+visible = false
+modulate = Color(1, 1, 1, 0.501961)
+position = Vector2(576, 324)
+scale = Vector2(1.52378, 1.3012)
+texture = ExtResource("5_r5n3h")
+region_enabled = true
+region_rect = Rect2(10, 27, 573, 498)
+
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 120.0
+offset_bottom = -3.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PlayerContainers" type="HBoxContainer" parent="Center"]
+layout_mode = 2
+theme_override_constants/separation = -3
+
+[node name="Player0Container" type="VBoxContainer" parent="Center/PlayerContainers"]
+custom_minimum_size = Vector2(352, 211)
+layout_mode = 2
+
+[node name="Back" type="Sprite2D" parent="Center/PlayerContainers/Player0Container"]
+position = Vector2(176, -65)
+scale = Vector2(0.585937, 0.585937)
+texture = ExtResource("4_8byni")
+
+[node name="Icon" type="Sprite2D" parent="Center/PlayerContainers/Player0Container/Back"]
+scale = Vector2(1.017, 1.017)
+region_rect = Rect2(0, 2048, 256, 256)
+
+[node name="Name" type="Label" parent="Center/PlayerContainers/Player0Container"]
+layout_mode = 2
+text = "Dexter Jettster"
+label_settings = SubResource("LabelSettings_saxkn")
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Player1Container" type="VBoxContainer" parent="Center/PlayerContainers"]
+custom_minimum_size = Vector2(352, 211)
+layout_mode = 2
+
+[node name="Back" type="Sprite2D" parent="Center/PlayerContainers/Player1Container"]
+position = Vector2(176, -65)
+scale = Vector2(0.585937, 0.585937)
+texture = ExtResource("5_rwx5a")
+
+[node name="Icon" type="Sprite2D" parent="Center/PlayerContainers/Player1Container/Back"]
+scale = Vector2(1.017, 1.017)
+region_rect = Rect2(0, 2048, 256, 256)
+
+[node name="Name" type="Label" parent="Center/PlayerContainers/Player1Container"]
+layout_mode = 2
+text = "Dexter Jettster"
+label_settings = SubResource("LabelSettings_saxkn")
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Container" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 333.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Norm" type="Control" parent="Container"]
+visible = false
+layout_mode = 2
+
+[node name="Back" type="Sprite2D" parent="Container/Norm"]
+z_as_relative = false
+scale = Vector2(0.134, 0.134)
+texture = ExtResource("5_55qrp")
+
+[node name="NAME" type="Sprite2D" parent="Container/Norm/Back"]
+scale = Vector2(1.017, 1.017)
+region_rect = Rect2(0, 2048, 256, 256)
+
+[node name="Grid" type="GridContainer" parent="Container"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/h_separation = 34
+theme_override_constants/v_separation = 34
+columns = 22
+
+[node name="Green" type="Sprite2D" parent="."]
+position = Vector2(170, 160)
+texture = ExtResource("5_rwx5a")
+
+[node name="Blue" type="Sprite2D" parent="."]
+position = Vector2(170, 160)
+texture = ExtResource("4_8byni")

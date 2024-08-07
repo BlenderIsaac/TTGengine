@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://qlvbmq10tgui"]
+
+[ext_resource type="Script" path="res://Levels/DeathZone.gd" id="1_ewrh3"]
+
+[node name="DeathZone" type="Area3D"]
+script = ExtResource("1_ewrh3")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

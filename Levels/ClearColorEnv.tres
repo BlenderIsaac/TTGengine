@@ -1,0 +1,9 @@
+[gd_resource type="Environment" format=3 uid="uid://cfik3wcs3lw4l"]
+
+[resource]
+background_mode = 1
+background_color = Color(0.509804, 0.509804, 0.509804, 1)
+ssr_enabled = true
+ssao_enabled = true
+adjustment_brightness = 1.85
+adjustment_contrast = 1.28

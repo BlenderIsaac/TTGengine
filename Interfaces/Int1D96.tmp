@@ -1,0 +1,1083 @@
+[gd_scene load_steps=35 format=3 uid="uid://dvgy5vxoqaq41"]
+
+[ext_resource type="Script" path="res://Interfaces/Interface.gd" id="1_0holg"]
+[ext_resource type="Texture2D" uid="uid://ditscyjxgo1jd" path="res://Textures/select.png" id="3_di25h"]
+[ext_resource type="Texture2D" uid="uid://b83wgmsktxguy" path="res://Interfaces/tcslevelselect.png" id="4_4pcxw"]
+[ext_resource type="Texture2D" uid="uid://dwws1m5vpiyiw" path="res://Textures/mainmenudouble.png" id="5_5swlt"]
+[ext_resource type="Texture2D" uid="uid://dtvojk1wjrc6c" path="res://Textures/fullpausemenuTCS.png" id="6_7t5wm"]
+[ext_resource type="Texture2D" uid="uid://dmhhljxrbogj1" path="res://Textures/PC Computer - LEGO Star Wars The Complete Saga - Character Icons.png" id="7_sfi47"]
+[ext_resource type="Texture2D" uid="uid://olfo5gd2ffxp" path="res://Textures/Heart.png" id="8_4ldes"]
+[ext_resource type="SpriteFrames" uid="uid://d4lndggo86ea7" path="res://Objects/StudAnims.tres" id="9_enyc4"]
+[ext_resource type="Texture2D" uid="uid://cj4ebgv7jgolj" path="res://Textures/circle_05.png" id="9_nno8u"]
+[ext_resource type="Texture2D" uid="uid://b3xk0gylgait3" path="res://Textures/BlueBack.png" id="10_87k3c"]
+[ext_resource type="Theme" uid="uid://bkv0oj6en23yc" path="res://Interfaces/ButtonsTheme.tres" id="10_u2xjo"]
+[ext_resource type="Texture2D" uid="uid://badk5hii0xgof" path="res://Textures/GreenBack.png" id="11_c2hfv"]
+[ext_resource type="Texture2D" uid="uid://6ediol0mp3qp" path="res://Textures/BrownBack.png" id="12_d0w3d"]
+
+[sub_resource type="SystemFont" id="SystemFont_umr84"]
+font_names = PackedStringArray("Franklin Gothic")
+subpixel_positioning = 0
+
+[sub_resource type="LabelSettings" id="LabelSettings_saxkn"]
+line_spacing = -5.056
+font = SubResource("SystemFont_umr84")
+font_size = 34
+font_color = Color(0.996078, 0.760784, 0.0117647, 1)
+outline_size = 6
+outline_color = Color(0.172549, 0.109804, 0, 1)
+
+[sub_resource type="SystemFont" id="SystemFont_7kh4s"]
+font_names = PackedStringArray("Franklin Gothic")
+subpixel_positioning = 0
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1ts41"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1snwa"]
+
+[sub_resource type="SystemFont" id="SystemFont_5rq0x"]
+font_names = PackedStringArray("Franklin Gothic")
+subpixel_positioning = 0
+
+[sub_resource type="LabelSettings" id="LabelSettings_q0ixu"]
+line_spacing = -5.056
+font = SubResource("SystemFont_5rq0x")
+font_size = 26
+outline_size = 6
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="Animation" id="Animation_qhmf2"]
+resource_name = "DropIn"
+length = 4.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Icon/Head:modulate")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Icon/Name:modulate")
+tracks/1/interp = 0
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_o22tm"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Icon/Head:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Icon/Name:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_wndtb"]
+_data = {
+"DropIn": SubResource("Animation_qhmf2"),
+"RESET": SubResource("Animation_o22tm")
+}
+
+[sub_resource type="Animation" id="Animation_xchji"]
+resource_name = "DropInPromptFlash"
+length = 2.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("InGame/DropInPrompt:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.9, 1.1, 1.9, 2),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0.501961), Color(1, 1, 1, 1), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 0), Color(1, 1, 1, 0.501961)]
+}
+
+[sub_resource type="Animation" id="Animation_3gihs"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("InGame/DropInPrompt:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_fuvmu"]
+_data = {
+"DropInPromptFlash": SubResource("Animation_xchji"),
+"RESET": SubResource("Animation_3gihs")
+}
+
+[sub_resource type="LabelSettings" id="LabelSettings_unepc"]
+font = SubResource("SystemFont_5rq0x")
+font_size = 28
+font_color = Color(0.952941, 0.713726, 0, 1)
+outline_size = 6
+outline_color = Color(0.160784, 0.121569, 0, 1)
+
+[sub_resource type="Animation" id="Animation_caxej"]
+resource_name = "Juice"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:scale")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(1.5, 1.5), Vector2(1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_aywl0"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_dkble"]
+_data = {
+"Juice": SubResource("Animation_caxej"),
+"RESET": SubResource("Animation_aywl0")
+}
+
+[sub_resource type="SystemFont" id="SystemFont_2jegm"]
+font_names = PackedStringArray("Franklin Gothic")
+subpixel_positioning = 0
+
+[sub_resource type="Animation" id="Animation_14e2j"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Exit:theme_override_colors/font_color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 0, 0, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Select:theme_override_colors/font_color")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(0.00784314, 0.956863, 0.00784314, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_0obeb"]
+resource_name = "flash_loop"
+length = 0.3
+loop_mode = 1
+step = 0.05
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Exit:theme_override_colors/font_color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.15, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(1, 0, 0, 1), Color(0.513726, 0, 0, 1), Color(1, 0, 0, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Select:theme_override_colors/font_color")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.15, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(0.00784314, 0.956863, 0.00784314, 1), Color(0.00784314, 0.52549, 0.00784314, 1), Color(0.00784314, 0.956863, 0.00784314, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_two08"]
+_data = {
+"RESET": SubResource("Animation_14e2j"),
+"flash_loop": SubResource("Animation_0obeb")
+}
+
+[node name="Interface" type="Control"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_0holg")
+
+[node name="Images" type="Node2D" parent="."]
+position = Vector2(578.36, 314.905)
+scale = Vector2(1.52378, 1.3012)
+
+[node name="Select" type="Sprite2D" parent="Images"]
+visible = false
+texture = ExtResource("3_di25h")
+region_enabled = true
+region_rect = Rect2(17, 28, 573, 498)
+
+[node name="Tcslevelselect" type="Sprite2D" parent="Images"]
+visible = false
+texture_filter = 1
+position = Vector2(-1.54877, 6.98972)
+scale = Vector2(0.467167, 0.467169)
+texture = ExtResource("4_4pcxw")
+region_enabled = true
+region_rect = Rect2(25, 29, 1226, 1066)
+
+[node name="Mainmenudouble" type="Sprite2D" parent="Images"]
+visible = false
+modulate = Color(1, 1, 1, 0.501961)
+position = Vector2(-1.54877, 6.98972)
+texture = ExtResource("5_5swlt")
+region_enabled = true
+region_rect = Rect2(10, 27, 573, 498)
+
+[node name="FullpausemenuTcs" type="Sprite2D" parent="Images"]
+visible = false
+position = Vector2(-1.54877, 6.98972)
+scale = Vector2(0.656263, 0.768521)
+texture = ExtResource("6_7t5wm")
+
+[node name="ExitSelectGuide" type="Sprite2D" parent="Images"]
+visible = false
+texture_filter = 1
+position = Vector2(-292.273, -175.15)
+scale = Vector2(0.554542, 0.554872)
+texture = ExtResource("4_4pcxw")
+offset = Vector2(474.125, 395.005)
+region_enabled = true
+region_rect = Rect2(25, 29, 1226, 1066)
+
+[node name="RightExitSelectGuide" type="Sprite2D" parent="Images"]
+visible = false
+position = Vector2(289.537, -175.15)
+scale = Vector2(1.19055, 1.19069)
+texture = ExtResource("5_5swlt")
+offset = Vector2(-221.94, 184.035)
+region_enabled = true
+region_rect = Rect2(10, 27, 573, 498)
+
+[node name="FreePlaySelect" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Control" type="Control" parent="FreePlaySelect"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="NinePatchRect" type="NinePatchRect" parent="FreePlaySelect/Control"]
+modulate = Color(0, 0, 0, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("9_nno8u")
+patch_margin_left = 30
+patch_margin_top = 30
+patch_margin_right = 30
+patch_margin_bottom = 30
+
+[node name="Player0" type="Control" parent="FreePlaySelect"]
+layout_mode = 2
+anchors_preset = 0
+offset_top = -50.0
+offset_bottom = -50.0
+scale = Vector2(1.4, 1.4)
+
+[node name="Back" type="Sprite2D" parent="FreePlaySelect/Player0"]
+z_index = 1
+scale = Vector2(0.134, 0.134)
+texture = ExtResource("10_87k3c")
+
+[node name="Icon" type="Sprite2D" parent="FreePlaySelect/Player0/Back"]
+scale = Vector2(1.017, 1.017)
+region_rect = Rect2(0, 2048, 256, 256)
+
+[node name="Player1" type="Control" parent="FreePlaySelect"]
+layout_mode = 2
+anchors_preset = 0
+offset_left = 50.0
+offset_top = -50.0
+offset_right = 50.0
+offset_bottom = -50.0
+scale = Vector2(1.4, 1.4)
+
+[node name="Back" type="Sprite2D" parent="FreePlaySelect/Player1"]
+z_index = 1
+scale = Vector2(0.134, 0.134)
+texture = ExtResource("11_c2hfv")
+
+[node name="Icon" type="Sprite2D" parent="FreePlaySelect/Player1/Back"]
+scale = Vector2(1.017, 1.017)
+region_rect = Rect2(0, 2048, 256, 256)
+
+[node name="Center" type="CenterContainer" parent="FreePlaySelect"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 121.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PlayerContainers" type="HBoxContainer" parent="FreePlaySelect/Center"]
+layout_mode = 2
+theme_override_constants/separation = -3
+
+[node name="Player0Container" type="VBoxContainer" parent="FreePlaySelect/Center/PlayerContainers"]
+custom_minimum_size = Vector2(352, 211)
+layout_mode = 2
+
+[node name="Back" type="Sprite2D" parent="FreePlaySelect/Center/PlayerContainers/Player0Container"]
+position = Vector2(176, -65)
+scale = Vector2(0.585937, 0.585937)
+texture = ExtResource("10_87k3c")
+
+[node name="Icon" type="Sprite2D" parent="FreePlaySelect/Center/PlayerContainers/Player0Container/Back"]
+scale = Vector2(1.017, 1.017)
+region_rect = Rect2(0, 2048, 256, 256)
+
+[node name="Name" type="Label" parent="FreePlaySelect/Center/PlayerContainers/Player0Container"]
+layout_mode = 2
+text = "Dexter Jettster"
+label_settings = SubResource("LabelSettings_saxkn")
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Player1Container" type="VBoxContainer" parent="FreePlaySelect/Center/PlayerContainers"]
+custom_minimum_size = Vector2(352, 211)
+layout_mode = 2
+
+[node name="Back" type="Sprite2D" parent="FreePlaySelect/Center/PlayerContainers/Player1Container"]
+position = Vector2(176, -65)
+scale = Vector2(0.585937, 0.585937)
+texture = ExtResource("11_c2hfv")
+
+[node name="Icon" type="Sprite2D" parent="FreePlaySelect/Center/PlayerContainers/Player1Container/Back"]
+scale = Vector2(1.017, 1.017)
+region_rect = Rect2(0, 2048, 256, 256)
+
+[node name="Name" type="Label" parent="FreePlaySelect/Center/PlayerContainers/Player1Container"]
+layout_mode = 2
+text = "Dexter Jettster"
+label_settings = SubResource("LabelSettings_saxkn")
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Container" type="VBoxContainer" parent="FreePlaySelect"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 333.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Norm" type="Control" parent="FreePlaySelect/Container"]
+visible = false
+layout_mode = 2
+
+[node name="Back" type="Sprite2D" parent="FreePlaySelect/Container/Norm"]
+z_as_relative = false
+scale = Vector2(0.134, 0.134)
+texture = ExtResource("12_d0w3d")
+
+[node name="NAME" type="Sprite2D" parent="FreePlaySelect/Container/Norm/Back"]
+scale = Vector2(1.017, 1.017)
+region_rect = Rect2(0, 2048, 256, 256)
+
+[node name="Grid" type="GridContainer" parent="FreePlaySelect/Container"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/h_separation = 34
+theme_override_constants/v_separation = 34
+columns = 22
+
+[node name="Grid2" type="GridContainer" parent="FreePlaySelect"]
+layout_mode = 2
+offset_left = 377.0
+offset_top = 319.0
+offset_right = 854.0
+offset_bottom = 429.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/h_separation = 34
+theme_override_constants/v_separation = 34
+columns = 23
+
+[node name="ModeSelect" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Control" type="Control" parent="ModeSelect"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="NinePatchRect" type="NinePatchRect" parent="ModeSelect/Control"]
+modulate = Color(0, 0, 0, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("9_nno8u")
+patch_margin_left = 30
+patch_margin_top = 30
+patch_margin_right = 30
+patch_margin_bottom = 30
+
+[node name="CenterPause" type="CenterContainer" parent="ModeSelect"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -85.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxPause" type="VBoxContainer" parent="ModeSelect/CenterPause"]
+layout_mode = 2
+theme_override_constants/separation = -2
+alignment = 1
+
+[node name="StoryMode" type="Button" parent="ModeSelect/CenterPause/VBoxPause"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.0470588, 0.47451, 0.933333, 1)
+theme_override_colors/font_pressed_color = Color(0.603922, 0.211765, 0.905882, 1)
+theme_override_colors/font_hover_color = Color(0, 1, 1, 1)
+theme_override_colors/font_focus_color = Color(0.0470588, 0.47451, 0.933333, 1)
+theme_override_colors/font_disabled_color = Color(0.00392157, 0.207843, 0.439216, 1)
+theme_override_colors/font_outline_color = Color(0, 0.0901961, 0.219608, 1)
+theme_override_constants/outline_size = 14
+theme_override_fonts/font = SubResource("SystemFont_7kh4s")
+theme_override_font_sizes/font_size = 52
+theme_override_styles/focus = SubResource("StyleBoxEmpty_1ts41")
+text = "Story Mode"
+flat = true
+
+[node name="FreePlay" type="Button" parent="ModeSelect/CenterPause/VBoxPause"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.0470588, 0.47451, 0.933333, 1)
+theme_override_colors/font_pressed_color = Color(0.603922, 0.211765, 0.905882, 1)
+theme_override_colors/font_hover_color = Color(0, 1, 1, 1)
+theme_override_colors/font_focus_color = Color(0.0470588, 0.47451, 0.933333, 1)
+theme_override_colors/font_disabled_color = Color(0.00392157, 0.207843, 0.439216, 1)
+theme_override_colors/font_outline_color = Color(0, 0.0901961, 0.219608, 1)
+theme_override_constants/outline_size = 14
+theme_override_fonts/font = SubResource("SystemFont_7kh4s")
+theme_override_font_sizes/font_size = 52
+theme_override_styles/focus = SubResource("StyleBoxEmpty_1ts41")
+text = "Free Play"
+flat = true
+
+[node name="SuperFreePlay" type="Button" parent="ModeSelect/CenterPause/VBoxPause"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.0470588, 0.47451, 0.933333, 1)
+theme_override_colors/font_pressed_color = Color(0.603922, 0.211765, 0.905882, 1)
+theme_override_colors/font_hover_color = Color(0, 1, 1, 1)
+theme_override_colors/font_focus_color = Color(0.0470588, 0.47451, 0.933333, 1)
+theme_override_colors/font_disabled_color = Color(0.00392157, 0.207843, 0.439216, 1)
+theme_override_colors/font_outline_color = Color(0, 0.0901961, 0.219608, 1)
+theme_override_constants/outline_size = 14
+theme_override_fonts/font = SubResource("SystemFont_7kh4s")
+theme_override_font_sizes/font_size = 52
+theme_override_styles/focus = SubResource("StyleBoxEmpty_1ts41")
+text = "Super Free Play"
+flat = true
+
+[node name="Pause" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("10_u2xjo")
+
+[node name="Center" type="CenterContainer" parent="Pause"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Main Pause" type="VBoxContainer" parent="Pause/Center"]
+layout_mode = 2
+theme_override_constants/separation = -11
+alignment = 1
+
+[node name="DropOut" type="Button" parent="Pause/Center/Main Pause"]
+visible = false
+layout_mode = 2
+focus_neighbor_top = NodePath("../Quit")
+focus_neighbor_bottom = NodePath("../Resume")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_1snwa")
+text = "Drop Out"
+flat = true
+
+[node name="Resume" type="Button" parent="Pause/Center/Main Pause"]
+layout_mode = 2
+focus_neighbor_top = NodePath("../DropOut")
+focus_neighbor_bottom = NodePath("../Options")
+text = "Resume"
+flat = true
+
+[node name="Options" type="Button" parent="Pause/Center/Main Pause"]
+layout_mode = 2
+focus_neighbor_top = NodePath("../Resume")
+focus_neighbor_bottom = NodePath("../ControlSetup")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_1snwa")
+text = "Options"
+flat = true
+
+[node name="ControlSetup" type="Button" parent="Pause/Center/Main Pause"]
+layout_mode = 2
+focus_neighbor_top = NodePath("../Options")
+focus_neighbor_bottom = NodePath("../VideoSettings")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_1snwa")
+text = "Control Setup"
+flat = true
+
+[node name="VideoSettings" type="Button" parent="Pause/Center/Main Pause"]
+layout_mode = 2
+focus_neighbor_top = NodePath("../ControlSetup")
+focus_neighbor_bottom = NodePath("../EffectsSettings")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_1snwa")
+text = "Video Settings"
+flat = true
+
+[node name="EffectsSettings" type="Button" parent="Pause/Center/Main Pause"]
+layout_mode = 2
+focus_neighbor_top = NodePath("../VideoSettings")
+focus_neighbor_bottom = NodePath("../Extras")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_1snwa")
+text = "Effects Settings"
+flat = true
+
+[node name="Extras" type="Button" parent="Pause/Center/Main Pause"]
+layout_mode = 2
+focus_neighbor_top = NodePath("../EffectsSettings")
+focus_neighbor_bottom = NodePath("../Quit")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_1snwa")
+text = "Extras"
+flat = true
+
+[node name="Quit" type="Button" parent="Pause/Center/Main Pause"]
+layout_mode = 2
+focus_neighbor_top = NodePath("../Extras")
+focus_neighbor_bottom = NodePath("../DropOut")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_1snwa")
+text = "Quit"
+flat = true
+
+[node name="Icons" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Player0HUD" type="Control" parent="Icons"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_right = 0.314
+anchor_bottom = 0.258
+offset_right = 85.272
+offset_bottom = 40.816
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+
+[node name="Control" type="Control" parent="Icons/Player0HUD"]
+layout_mode = 2
+anchors_preset = 0
+offset_bottom = 208.0
+size_flags_horizontal = 0
+
+[node name="Icon" type="Control" parent="Icons/Player0HUD/Control"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Outline" type="Sprite2D" parent="Icons/Player0HUD/Control/Icon"]
+position = Vector2(133, 87)
+scale = Vector2(0.617188, 0.617188)
+texture = ExtResource("7_sfi47")
+region_enabled = true
+region_rect = Rect2(2560, 2560, 128, 128)
+
+[node name="Head" type="Sprite2D" parent="Icons/Player0HUD/Control/Icon"]
+position = Vector2(133.045, 86.95)
+scale = Vector2(0.315, 0.315)
+region_rect = Rect2(1280, 1280, 256, 256)
+
+[node name="Name" type="Label" parent="Icons/Player0HUD/Control/Icon"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = 93.0
+offset_top = 123.0
+offset_right = 437.0
+offset_bottom = 194.0
+label_settings = SubResource("LabelSettings_q0ixu")
+
+[node name="NameAnim" type="AnimationPlayer" parent="Icons/Player0HUD/Control/Icon"]
+root_node = NodePath("../..")
+libraries = {
+"": SubResource("AnimationLibrary_wndtb")
+}
+
+[node name="InGame" type="Control" parent="Icons/Player0HUD/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HeartParent" type="Node2D" parent="Icons/Player0HUD/Control/InGame"]
+visible = false
+
+[node name="Heart1" type="Sprite2D" parent="Icons/Player0HUD/Control/InGame/HeartParent"]
+position = Vector2(208, 102)
+texture = ExtResource("8_4ldes")
+
+[node name="Heart2" type="Sprite2D" parent="Icons/Player0HUD/Control/InGame/HeartParent"]
+position = Vector2(238, 102)
+texture = ExtResource("8_4ldes")
+
+[node name="Heart3" type="Sprite2D" parent="Icons/Player0HUD/Control/InGame/HeartParent"]
+position = Vector2(268, 102)
+texture = ExtResource("8_4ldes")
+
+[node name="Heart4" type="Sprite2D" parent="Icons/Player0HUD/Control/InGame/HeartParent"]
+position = Vector2(296, 102)
+texture = ExtResource("8_4ldes")
+
+[node name="DropInPrompt" type="Label" parent="Icons/Player0HUD/Control/InGame"]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = -0.072
+anchor_bottom = 0.879
+offset_left = 184.28
+offset_top = 93.024
+offset_right = 358.28
+offset_bottom = 143.024
+text = "Press () or
+() to start"
+label_settings = SubResource("LabelSettings_q0ixu")
+metadata/_edit_use_anchors_ = true
+
+[node name="DropInPromptAnim" type="AnimationPlayer" parent="Icons/Player0HUD/Control/InGame/DropInPrompt"]
+root_node = NodePath("../../..")
+libraries = {
+"": SubResource("AnimationLibrary_fuvmu")
+}
+autoplay = "DropInPromptFlash"
+
+[node name="MoneyParent" type="Node2D" parent="Icons/Player0HUD/Control/InGame"]
+position = Vector2(207, 71)
+
+[node name="Money" type="Label" parent="Icons/Player0HUD/Control/InGame/MoneyParent"]
+offset_left = 25.0
+offset_top = -16.0
+offset_right = 221.0
+offset_bottom = 20.0
+text = "0"
+label_settings = SubResource("LabelSettings_unepc")
+
+[node name="CoinHUD" type="AnimatedSprite2D" parent="Icons/Player0HUD/Control/InGame/MoneyParent"]
+scale = Vector2(0.53, 0.53)
+sprite_frames = ExtResource("9_enyc4")
+animation = &"Silver"
+autoplay = "Silver"
+metadata/_edit_group_ = true
+
+[node name="Anim" type="AnimationPlayer" parent="Icons/Player0HUD/Control/InGame/MoneyParent"]
+libraries = {
+"": SubResource("AnimationLibrary_dkble")
+}
+autoplay = "RESET"
+
+[node name="InSelect" type="Control" parent="Icons/Player0HUD/Control"]
+visible = false
+anchors_preset = 0
+offset_right = 453.0
+offset_bottom = 199.0
+
+[node name="Exit" type="Label" parent="Icons/Player0HUD/Control/InSelect"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.666
+anchor_bottom = 0.849
+offset_left = 188.0
+offset_top = 37.0
+offset_right = -78.698
+offset_bottom = -101.951
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0.203922, 0, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("SystemFont_2jegm")
+theme_override_font_sizes/font_size = 23
+text = "Exit"
+metadata/_edit_use_anchors_ = true
+
+[node name="ExitPrompt" type="Label" parent="Icons/Player0HUD/Control/InSelect"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.649
+anchor_bottom = 0.842
+offset_left = 188.0
+offset_top = 55.0
+offset_right = -76.997
+offset_bottom = -82.558
+theme_override_colors/font_outline_color = Color(0.0901961, 0.0901961, 0.0901961, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("SystemFont_2jegm")
+theme_override_font_sizes/font_size = 23
+text = "(H)"
+metadata/_edit_use_anchors_ = true
+
+[node name="Select" type="Label" parent="Icons/Player0HUD/Control/InSelect"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.662
+anchor_bottom = 0.803
+offset_left = 188.0
+offset_top = 82.0
+offset_right = -50.886
+offset_bottom = -47.797
+theme_override_colors/font_color = Color(0.00784314, 0.956863, 0.00784314, 1)
+theme_override_colors/font_outline_color = Color(0, 0.156863, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("SystemFont_2jegm")
+theme_override_font_sizes/font_size = 23
+text = "Select"
+metadata/_edit_use_anchors_ = true
+
+[node name="SelectPrompt" type="Label" parent="Icons/Player0HUD/Control/InSelect"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.688
+anchor_bottom = 0.788
+offset_left = 188.0
+offset_top = 101.0
+offset_right = -94.664
+offset_bottom = -25.812
+theme_override_colors/font_outline_color = Color(0.0901961, 0.0901961, 0.0901961, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("SystemFont_2jegm")
+theme_override_font_sizes/font_size = 23
+text = "(G)"
+metadata/_edit_use_anchors_ = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Icons/Player0HUD/Control/InSelect"]
+libraries = {
+"": SubResource("AnimationLibrary_two08")
+}
+autoplay = "flash_loop"
+
+[node name="Player1HUD" type="HBoxContainer" parent="Icons"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+alignment = 2
+
+[node name="Control" type="Control" parent="Icons/Player1HUD"]
+layout_mode = 2
+
+[node name="Icon" type="Control" parent="Icons/Player1HUD/Control"]
+layout_mode = 1
+anchor_bottom = 0.231
+offset_left = -357.0
+offset_bottom = 0.311996
+mouse_filter = 2
+
+[node name="Outline" type="Sprite2D" parent="Icons/Player1HUD/Control/Icon"]
+position = Vector2(224.552, 87)
+scale = Vector2(0.617188, 0.617188)
+texture = ExtResource("7_sfi47")
+region_enabled = true
+region_rect = Rect2(2560, 2688, 128, 128)
+
+[node name="Head" type="Sprite2D" parent="Icons/Player1HUD/Control/Icon"]
+position = Vector2(224.552, 87)
+scale = Vector2(0.309, 0.309)
+region_rect = Rect2(1280, 1280, 256, 256)
+
+[node name="Name" type="Label" parent="Icons/Player1HUD/Control/Icon"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = -78.0
+offset_top = 123.0
+offset_right = 266.0
+offset_bottom = 194.0
+label_settings = SubResource("LabelSettings_q0ixu")
+horizontal_alignment = 2
+
+[node name="NameAnim" type="AnimationPlayer" parent="Icons/Player1HUD/Control/Icon"]
+root_node = NodePath("../..")
+libraries = {
+"": SubResource("AnimationLibrary_wndtb")
+}
+
+[node name="InGame" type="Control" parent="Icons/Player1HUD/Control"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="HeartParent" type="Node2D" parent="Icons/Player1HUD/Control/InGame"]
+visible = false
+
+[node name="Heart1" type="Sprite2D" parent="Icons/Player1HUD/Control/InGame/HeartParent"]
+position = Vector2(-295, 102)
+texture = ExtResource("8_4ldes")
+
+[node name="Heart2" type="Sprite2D" parent="Icons/Player1HUD/Control/InGame/HeartParent"]
+position = Vector2(-265, 102)
+texture = ExtResource("8_4ldes")
+
+[node name="Heart3" type="Sprite2D" parent="Icons/Player1HUD/Control/InGame/HeartParent"]
+position = Vector2(-235, 102)
+texture = ExtResource("8_4ldes")
+
+[node name="Heart4" type="Sprite2D" parent="Icons/Player1HUD/Control/InGame/HeartParent"]
+position = Vector2(-207, 102)
+texture = ExtResource("8_4ldes")
+
+[node name="DropInPrompt" type="Label" parent="Icons/Player1HUD/Control/InGame"]
+layout_mode = 0
+offset_left = -358.0
+offset_top = 78.192
+offset_right = -184.0
+offset_bottom = 148.753
+text = "Press () or
+() to start"
+label_settings = SubResource("LabelSettings_q0ixu")
+horizontal_alignment = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="DropInPromptAnim" type="AnimationPlayer" parent="Icons/Player1HUD/Control/InGame/DropInPrompt"]
+root_node = NodePath("../../..")
+libraries = {
+"": SubResource("AnimationLibrary_fuvmu")
+}
+autoplay = "DropInPromptFlash"
+
+[node name="MoneyParent" type="Node2D" parent="Icons/Player1HUD/Control/InGame"]
+position = Vector2(-208, 71)
+
+[node name="Money" type="Label" parent="Icons/Player1HUD/Control/InGame/MoneyParent"]
+offset_left = -219.0
+offset_top = -16.0
+offset_right = -23.0
+offset_bottom = 20.0
+text = "0"
+label_settings = SubResource("LabelSettings_unepc")
+horizontal_alignment = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="CoinHUD" type="AnimatedSprite2D" parent="Icons/Player1HUD/Control/InGame/MoneyParent"]
+scale = Vector2(0.53, 0.53)
+sprite_frames = ExtResource("9_enyc4")
+animation = &"Silver"
+autoplay = "Silver"
+frame_progress = 0.0823694
+metadata/_edit_group_ = true
+
+[node name="Anim" type="AnimationPlayer" parent="Icons/Player1HUD/Control/InGame/MoneyParent"]
+libraries = {
+"": SubResource("AnimationLibrary_dkble")
+}
+autoplay = "RESET"
+
+[node name="InSelect" type="Control" parent="Icons/Player1HUD/Control"]
+visible = false
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Exit" type="Label" parent="Icons/Player1HUD/Control/InSelect"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -13.575
+anchor_top = -0.05
+anchor_right = -2.70755
+anchor_bottom = 4.17378
+offset_left = 174.0
+offset_top = 37.0
+offset_right = -78.698
+offset_bottom = -101.951
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0.203922, 0, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("SystemFont_2jegm")
+theme_override_font_sizes/font_size = 23
+text = "Exit"
+horizontal_alignment = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="ExitPrompt" type="Label" parent="Icons/Player1HUD/Control/InSelect"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -13.0
+anchor_right = -2.72507
+anchor_bottom = 4.18895
+offset_left = 151.0
+offset_top = 55.0
+offset_right = -77.997
+offset_bottom = -82.558
+theme_override_colors/font_outline_color = Color(0.0901961, 0.0901961, 0.0901961, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("SystemFont_2jegm")
+theme_override_font_sizes/font_size = 23
+text = "(H)"
+horizontal_alignment = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="Select" type="Label" parent="Icons/Player1HUD/Control/InSelect"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -14.325
+anchor_right = -3.45285
+anchor_bottom = 3.99493
+offset_left = 204.0
+offset_top = 82.0
+offset_right = -48.886
+offset_bottom = -47.797
+theme_override_colors/font_color = Color(0.00784314, 0.956863, 0.00784314, 1)
+theme_override_colors/font_outline_color = Color(0, 0.156863, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("SystemFont_2jegm")
+theme_override_font_sizes/font_size = 23
+text = "Select"
+horizontal_alignment = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="SelectPrompt" type="Label" parent="Icons/Player1HUD/Control/InSelect"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -14.0
+anchor_right = -2.3084
+anchor_bottom = 3.9203
+offset_left = 191.0
+offset_top = 101.0
+offset_right = -94.664
+offset_bottom = -25.812
+theme_override_colors/font_outline_color = Color(0.0901961, 0.0901961, 0.0901961, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = SubResource("SystemFont_2jegm")
+theme_override_font_sizes/font_size = 23
+text = "(G)"
+horizontal_alignment = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Icons/Player1HUD/Control/InSelect"]
+libraries = {
+"": SubResource("AnimationLibrary_two08")
+}
+autoplay = "flash_loop"
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.5
+autostart = true
+
+[connection signal="pressed" from="ModeSelect/CenterPause/VBoxPause/StoryMode" to="." method="select_mode" binds= ["Story"]]
+[connection signal="pressed" from="ModeSelect/CenterPause/VBoxPause/FreePlay" to="." method="select_mode" binds= ["FreePlay"]]
+[connection signal="pressed" from="ModeSelect/CenterPause/VBoxPause/SuperFreePlay" to="." method="select_mode" binds= ["SuperFreePlay"]]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

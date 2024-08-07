@@ -1,0 +1,37 @@
+[gd_scene load_steps=8 format=3 uid="uid://det3v46kavh81"]
+
+[ext_resource type="Script" path="res://Scripts/FreeLookCam.gd" id="1_eeh3n"]
+[ext_resource type="Script" path="res://Debug/node_3d.gd" id="1_mpvws"]
+[ext_resource type="ArrayMesh" uid="uid://6gc8ooc1xj24" path="res://Textures/bullet.obj" id="2_ppwoo"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_ekuwl"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_7fvwy"]
+
+[sub_resource type="Sky" id="Sky_3h1hk"]
+sky_material = SubResource("ProceduralSkyMaterial_7fvwy")
+
+[sub_resource type="Environment" id="Environment_3cmtj"]
+background_mode = 2
+sky = SubResource("Sky_3h1hk")
+
+[node name="Node3D" type="Node3D"]
+script = ExtResource("1_mpvws")
+
+[node name="Char" type="MeshInstance3D" parent="."]
+mesh = SubResource("CapsuleMesh_ekuwl")
+
+[node name="Bullet" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.96763, 0, 0.252373, 0, 1, 0, -0.252373, 0, -0.96763, 0.103207, 0, 1.56861)
+mesh = ExtResource("2_ppwoo")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.34633)
+current = true
+script = ExtResource("1_eeh3n")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_3cmtj")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.5, -0.433013, -0.75, 0.866025, 0.25, 0.433013, 0, -0.866025, 0.5, -3, 2, 0)
