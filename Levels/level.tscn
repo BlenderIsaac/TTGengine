@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://3ix1fp3sllsx"]
+[gd_scene load_steps=12 format=3 uid="uid://3ix1fp3sllsx"]
 
 [ext_resource type="Script" path="res://Levels/LevelGeneratorTTGL.gd" id="1_qvxlj"]
 [ext_resource type="Script" path="res://Levels/Cam.gd" id="2_mq7dq"]
@@ -6,10 +6,70 @@
 [ext_resource type="PackedScene" uid="uid://d2bsp27ml58jg" path="res://Debug/debugsymbol.tscn" id="4_twfmp"]
 [ext_resource type="Script" path="res://Scripts/AdvanceFrame.gd" id="8_ksvp1"]
 [ext_resource type="Environment" uid="uid://bxkijjqiqadqk" path="res://Levels/SkyEnv.tres" id="9_3smm1"]
+[ext_resource type="Texture2D" uid="uid://bgabdyttt6qgq" path="res://icon.png" id="9_62kjh"]
 [ext_resource type="Script" path="res://Levels/FreeLookCam.gd" id="13_2gvu3"]
 
 [sub_resource type="PrismMesh" id="PrismMesh_h1qod"]
 size = Vector3(0.12, 1.47, 0.08)
+
+[sub_resource type="Shader" id="Shader_3wwrs"]
+code = "// NOTE: Shader automatically converted from Godot Engine 4.2.2.stable's StandardMaterial3D.
+shader_type spatial;
+
+
+instance uniform float current_angle;
+uniform float start_angle;
+uniform bool flip;
+
+render_mode blend_add,depth_draw_opaque,cull_back,unshaded;
+uniform vec4 albedo : source_color;
+uniform sampler2D texture_albedo : source_color,filter_linear_mipmap,repeat_enable;
+uniform float point_size : hint_range(0,128);
+uniform vec3 uv1_scale;
+uniform vec3 uv1_offset;
+uniform vec3 uv2_scale;
+uniform vec3 uv2_offset;
+
+
+void vertex() {
+	UV=UV*uv1_scale.xy+uv1_offset.xy;
+	MODELVIEW_MATRIX = VIEW_MATRIX * mat4(INV_VIEW_MATRIX[0], INV_VIEW_MATRIX[1], INV_VIEW_MATRIX[2], MODEL_MATRIX[3]);
+	MODELVIEW_NORMAL_MATRIX = mat3(MODELVIEW_MATRIX);
+}
+
+void fragment() {
+	vec2 base_uv = UV;
+	vec4 albedo_tex = texture(texture_albedo,base_uv);
+	ALBEDO = albedo.rgb * albedo_tex.rgb;
+	
+	mat2 rot = mat2( vec2(cos(start_angle), -sin(start_angle)), 
+					 vec2(sin(start_angle), cos(start_angle)) );
+	
+	vec2 pos = UV - vec2(0.5,0.5); //shift the space so that (0,0) is at the center of the sprite
+	if (flip) {
+		pos.x = -pos.x;
+	}
+	pos = rot * pos;
+	float angle = atan(pos.y, pos.x) + PI; //Need to add PI here? I think i did something wrong in the rotation matrix...
+	
+	ALPHA *= step(current_angle, angle) * albedo.a * albedo_tex.a;
+	
+	//ALPHA *= albedo.a * albedo_tex.a;
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xvoet"]
+render_priority = 0
+shader = SubResource("Shader_3wwrs")
+shader_parameter/start_angle = 3.142
+shader_parameter/flip = true
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/point_size = 1.0
+shader_parameter/uv1_scale = Vector3(1, 1, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+shader_parameter/texture_albedo = ExtResource("9_62kjh")
 
 [node name="Level" type="Node3D" groups=["LEVELROOT"]]
 process_mode = 1
@@ -78,5 +138,9 @@ transform = Transform3D(-0.945941, 0.192996, -0.260669, -0.193372, 0.309641, 0.9
 shadow_enabled = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+material_override = SubResource("ShaderMaterial_xvoet")
+texture = ExtResource("9_62kjh")
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

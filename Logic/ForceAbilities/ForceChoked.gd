@@ -5,7 +5,7 @@ var push_speed = 20.0
 
 var choke_height = 1.5
 
-var damage_delay = 1.0
+var damage_delay = 0.1
 
 var current_delay = 0.0
 

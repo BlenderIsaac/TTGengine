@@ -22,27 +22,48 @@ var move_dir = Vector3()
 var not_air_anims = ["Idleloop", "Runloop"]
 
 var footstep_at_times = [0.1, 0.4]
-var footsteps_done = 0
-var should_footstep = false
+var should_play_footstep = false
+#var footsteps_done = 0
+var initiated_footsteps = false
+#var footstep_index = 0
+#var next_footstep = 0.1
+#var should_footstep = false
 
 # Set the correct navigational layer values
 func _ready():
+	
 	nav_agent.set_navigation_layer_value(1, true)
+
+func create_footsteps():
+	var runloop:Animation = anim.get_animation("Runloop")
+	var track_idx = runloop.add_track(Animation.TYPE_METHOD)
+	
+	for time in footstep_at_times:
+		
+		runloop.track_set_path(track_idx, self.get_path())
+		
+		var method_call_data := {
+			method = "play_footstep",
+			args = []
+		}
+		
+		runloop.track_insert_key(track_idx, time, method_call_data)
+
+func play_footstep():
+	should_play_footstep = true
 
 var on_floor_last_frame = true
 
 func exclusive_physics(_delta):
+	if not initiated_footsteps:
+		
+		create_footsteps()
+		
+		initiated_footsteps = true
 	
-	#if not footstep_at_times.is_empty():
-		#if anim.current_animation == "Runloop":
-			#if !footsteps_done >= footstep_at_times.size():
-				#if anim.current_animation_position >= footstep_at_times[footsteps_done]:
-					#should_footstep = true
-					#footsteps_done += 1
-	#
-	#if should_footstep:
-		#audio_player.play("Run")
-		#should_footstep = false
+	if should_play_footstep:
+		audio_player.play("Run")
+		should_play_footstep = false
 	
 	# Gravity
 	if not C.is_on_floor():

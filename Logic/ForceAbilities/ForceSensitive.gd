@@ -7,20 +7,26 @@ var force_delay_max = 0.5
 
 var force_target = null
 
-var selected_ability = null
+var current_charge = 0.0
+var max_charge = 1.0
+var predicted_pos = Vector3()
+
+#var selected_ability = null
 
 var force_abilities = {
 	"Up" : {
 		"Target" : "ForcePushed",
 		"TargetPath" : "ForceAbilities/ForcePushed.gd",
 		"Self" : "ForcePush",
-		"Icon" : "ForcePush.png"
+		"Icon" : "ForcePush.png",
+		"ChargeUp" : 1.0,
 	},
 	"Right" : {
 		"Target" : "ForceMindTricked", 
 		"TargetPath" : "ForceAbilities/ForceMindTricked.gd",
 		"Self" : "ForceMindTrick",
-		"Icon" : "ForceMindTrick.png"
+		"Icon" : "ForceMindTrick.png",
+		"ChargeUp" : 0.5,
 	}
 }
 
@@ -30,23 +36,41 @@ func _ready():
 	ensureForceOutline_exists()
 
 func inclusive_physics(_delta):
+	#C.get_node("Label3D").text = str(current_charge)
+	
+	if C.movement_state != "ForceSensitive":
+		current_charge = 0.0
+	
+	# make sure the outline exists and get a reference to it and the animation. then hide it
 	ensureForceOutline_exists()
 	var force_outline = get_node("ForceOutline")
 	var force_anim = force_outline.get_node("Anim")
 	force_outline.hide()
 	
+	force_outline.charge = current_charge/max_charge
+	
+	# if we are still alive and not dead
 	if !C.AI and !C.dead:
 		
+		## This block here positions the force outline position and checks if we press special
+		# If we have a force target and they are valid and not dead
 		if force_target and is_instance_valid(force_target) and !force_target.dead:
 			force_outline.show()
-			force_outline.global_position = force_target.global_position + force_target.aim_pos
+			if current_charge > 0.0:
+				force_outline.global_position = predicted_pos
+			else:
+				force_outline.global_position = force_target.global_position + force_target.aim_pos
 			
+			# We set our movement state to ForceSensitive and get ready to pick a power
 			if C.key_press("Special") and C.is_on_floor() and valid_logics.has(C.movement_state):
 				C.set_movement_state("ForceSensitive")
-				selected_ability = null
+				current_charge = 0.0
+				#selected_ability = null
 		else:
 			force_target = null
 		
+		## This block here deals with the visuals of the force outlines
+		# If we are not currently using the force and are in our base state
 		if C.is_in_base_movement_state():
 			if force_delay > force_delay_max:
 				var force = update_force()
@@ -58,9 +82,17 @@ func inclusive_physics(_delta):
 						
 						# get colours
 						var slot_colour = force_colour.lightened(.5)
+						slot_colour[3] = 0.3
+						
+						var force_colour_1 = force_colour
+						force_colour_1[3] = 0.1
 						
 						var force_colour_2 = force_colour
+						force_colour_2[3] = 0.1
 						force_colour_2.h = force_colour.h+(randf()*.05)
+						
+						var charge_colour = force_colour
+						#charge_colour.h *= 3
 						
 						# hide all abilities
 						for child in force_outline.get_children():
@@ -69,9 +101,11 @@ func inclusive_physics(_delta):
 						
 						var Mesh1 = force_outline.get_node("Mesh1")
 						var Mesh2 = force_outline.get_node("Mesh2")
+						var Charge = force_outline.get_node("Charge")
 						
-						Mesh1.modulate = force_colour
+						Mesh1.modulate = force_colour_1
 						Mesh2.modulate = force_colour_2
+						Charge.set_instance_shader_parameter("albedo", Color(charge_colour))
 						
 						# load icons into sprite3ds
 						for slot in force_abilities.keys():
@@ -104,58 +138,98 @@ func inclusive_physics(_delta):
 			
 			force_delay += _delta
 
-
 func initiate():
 	force_delay = 0.0
 
-
+var prev_key
 func exclusive_physics(_delta):
 	if force_target:
+		## This activates when we are focused on a target, ready to select a force power to use on them
+		
 		ensureForceOutline_exists()
-		# TODO: fix here
+		
+		# TODO: fix here - What is this? Not sure
+		# look at our target
 		var rot_to_force = Basis.looking_at(C.global_position-force_target.global_position).get_euler().y+PI
 		C.mesh_angle_to = rot_to_force
-		
 		C.mesh_angle_lerp(_delta, 0.3)
 		
 		base_state.freeze()
 		
-		if selected_ability == null:
-			anim.play("ForceStatic", .2)
+		
+		#if selected_ability == null:
+		
+		anim.play("ForceStatic", .2)
+		
+		# If we select a force power
+		var any_key_pressed = false
+		for key in force_abilities.keys():
+			var key_pressed = false
 			
-			# If we select a force power
-			for key in force_abilities.keys():
-				var key_pressed = false
-				
-				if C.control_type == "keyboard":
-					if C.key_press(key):
-						key_pressed = true
-				elif C.control_type == "controller":
-					key_pressed = C.controller_direction_pressed(key)
-				
-				if key_pressed:
-						var ability_data = force_abilities.get(key)
+			if C.control_type == "keyboard":
+				if C.key_press(key):
+					key_pressed = true
+			elif C.control_type == "controller":
+				key_pressed = C.controller_direction_pressed(key)
+			
+			if key_pressed:
+					any_key_pressed = true
+					var ability_data = force_abilities.get(key)
+					
+					var force_ability = ability_data.Self
+					var target_ability = ability_data.Target
+					var target_ability_path = ability_data.TargetPath
+					var chargeup = ability_data.get("ChargeUp", 1.0)
+					var ab_range = ability_data.get("Range", 1.0)
+					var ab_vel_proj = ability_data.get("VelocityPredict", true)
+					
+					if can_use_ability_on_target(force_target, force_ability, target_ability, target_ability_path):
 						
-						var force_ability = ability_data.Self
-						var target_ability = ability_data.Target
-						var target_ability_path = ability_data.TargetPath
+						#var target_consequence = force_abilities.get(key).Target
+						#force_target.get_logic(target_consequence).opponent = C
+						#force_target.set_movement_state(target_consequence)
 						
-						if can_use_ability_on_target(force_target, force_ability, target_ability, target_ability_path):
-							
-							#var target_consequence = force_abilities.get(key).Target
-							#force_target.get_logic(target_consequence).opponent = C
-							#force_target.set_movement_state(target_consequence)
-							
+						if !key==prev_key:
+							current_charge = 0.0
+						
+						max_charge = chargeup
+						if chargeup == 0.0:
 							C.get_logic(force_ability).force_target = force_target
 							C.set_movement_state(force_ability)
 							
 							force_delay = force_delay_max
+						else:
+							if current_charge == 0.0:
+								predicted_pos = force_target.global_position + force_target.aim_pos
+								
+								if ab_vel_proj:
+									predicted_pos += force_target.velocity*chargeup
+							
+							current_charge += _delta
+							
+							var close_enough = predicted_pos.distance_to(force_target.global_position + force_target.aim_pos) < ab_range
+							if current_charge >= chargeup:
+								if close_enough:
+									C.get_logic(force_ability).force_target = force_target
+									C.set_movement_state(force_ability)
+								else:
+									force_target = null
+								
+								force_delay = force_delay_max
+						
+						
+						
+						prev_key = key
+						break
 		
+		if !any_key_pressed:
+			current_charge = 0.0
 		
+		## This block resets us to base movement state we cancel or the target dies or is invalid
 		if !C.key_press("Special") or !is_instance_valid(force_target) or !force_target or force_target.dead:
 			anim.play(C.weapon_prefix+"Idleloop", .2)
 			force_target = null
-			selected_ability = null
+			#selected_ability = null
 			get_node("ForceOutline").hide()
 			C.reset_movement_state()
 	else:
@@ -293,6 +367,7 @@ func patch_up_targets_anims(target, anims):
 
 
 func exclusive_damage(_amount, _who_from=null):
+	# When damaged also remove our force target
 	C.get_logic("ForceSensitive").force_target = null
 	C.get_logic("ForceSensitive").force_delay = 0.0
 	
@@ -301,23 +376,28 @@ func exclusive_damage(_amount, _who_from=null):
 
 
 func generic_force_stuff(f_target, delta):
+	# get a reference to the outline
 	var force_outline = get_node("ForceOutline")
 	
+	# Check if we are not dead
 	if !C.AI and !C.dead:
 		
+		# If our opponent is still valid then show the outline
 		if f_target and is_instance_valid(f_target):
 			force_outline.show()
 			force_outline.global_position = f_target.global_position + f_target.aim_pos
 	
+	# Get the angle toward the target and look at them
 	var rot_to_force = Basis.looking_at(C.global_position-f_target.global_position).get_euler().y+PI
 	C.mesh_angle_to = rot_to_force
-	
-	
 	C.mesh_angle_lerp(delta, 0.3)
 	
+	# Freeze movement from the base state
 	base_state.freeze()
 	
+	# If we stop using the force, the target dies, there is no target, or the target is dead...
 	if !C.key_press("Special") or !is_instance_valid(f_target) or !f_target or f_target.dead:
+		# then reset our target, go back to idle and the base movement state
 		f_target = null
 		anim.play(C.weapon_prefix+"Idleloop", .2)
 		C.reset_movement_state()
@@ -377,6 +457,7 @@ func ensureForceOutline_exists():
 		
 		ForceOutline.get_node("Mesh1").texture = ForceOutlineTexture
 		ForceOutline.get_node("Mesh2").texture = ForceOutlineTexture
+		ForceOutline.get_node("Charge").material_override.set_shader_parameter("texture_albedo", ForceOutlineTexture)
 		
 		add_child(ForceOutline)
 

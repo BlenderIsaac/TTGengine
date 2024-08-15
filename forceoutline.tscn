@@ -1,0 +1,282 @@
+[gd_scene load_steps=7 format=3 uid="uid://lf4jmpi4bkpv"]
+
+[ext_resource type="Texture2D" uid="uid://bgabdyttt6qgq" path="res://icon.png" id="1_nlmd3"]
+
+[sub_resource type="Shader" id="Shader_hi3jk"]
+code = "// NOTE: Shader automatically converted from Godot Engine 4.2.2.stable's StandardMaterial3D.
+shader_type spatial;
+
+
+instance uniform float current_angle : hint_range(0.0,1.0) = 0.0;
+uniform float start_angle = 3.14159;
+uniform bool flip = true;
+
+render_mode blend_add,depth_draw_opaque,cull_back,unshaded,depth_test_disabled,shadows_disabled;
+instance uniform vec4 albedo : source_color = vec4(1.0, 1.0, 1.0, 1.0);
+uniform sampler2D texture_albedo : source_color,filter_linear_mipmap,repeat_enable;
+uniform float point_size : hint_range(0,128);
+uniform vec3 uv1_scale;
+uniform vec3 uv1_offset;
+uniform vec3 uv2_scale;
+uniform vec3 uv2_offset;
+
+
+void vertex() {
+	UV=UV*uv1_scale.xy+uv1_offset.xy;
+	//MODELVIEW_MATRIX = VIEW_MATRIX * mat4(INV_VIEW_MATRIX[0], INV_VIEW_MATRIX[1], INV_VIEW_MATRIX[2], MODEL_MATRIX[3]);
+	//MODELVIEW_NORMAL_MATRIX = mat3(MODELVIEW_MATRIX);
+}
+
+void fragment() {
+	vec2 base_uv = UV;
+	vec4 albedo_tex = texture(texture_albedo,base_uv);
+	ALBEDO = albedo.rgb * albedo_tex.rgb;
+	
+	mat2 rot = mat2( vec2(cos(start_angle), -sin(start_angle)), 
+					 vec2(sin(start_angle), cos(start_angle)) );
+	
+	vec2 pos = UV - vec2(0.5,0.5); //shift the space so that (0,0) is at the center of the sprite
+	if (flip) {
+		pos.x = -pos.x;
+	}
+	pos = rot * pos;
+	float angle = atan(pos.y, pos.x) + PI; //Need to add PI here? I think i did something wrong in the rotation matrix...
+	
+	float angle_convert = (((current_angle*2.0*PI)-(2.0*PI))*-1.0);
+	
+	ALPHA *= step(angle_convert, angle) * albedo.a * albedo_tex.a;
+	
+	//ALPHA *= albedo.a * albedo_tex.a;
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dwjor"]
+render_priority = 0
+shader = SubResource("Shader_hi3jk")
+shader_parameter/start_angle = 3.14159
+shader_parameter/flip = true
+shader_parameter/point_size = 1.0
+shader_parameter/uv1_scale = Vector3(1, 1, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+shader_parameter/texture_albedo = ExtResource("1_nlmd3")
+
+[sub_resource type="Animation" id="Animation_i0cuy"]
+resource_name = "ForceTurnOn"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Mesh1:transparency")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [1.0, 0.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Mesh2:transparency")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [1.0, 0.0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Up:transparency")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [1.0, 0.0]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Down:transparency")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [1.0, 0.0]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Left:transparency")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [1.0, 0.0]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Right:transparency")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [1.0, 0.0]
+}
+
+[sub_resource type="Animation" id="Animation_idaci"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Mesh1:transparency")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [1.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Mesh2:transparency")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [1.0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Up:transparency")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [1.0]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Down:transparency")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [1.0]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Left:transparency")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [1.0]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Right:transparency")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [1.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_utstc"]
+_data = {
+"ForceTurnOn": SubResource("Animation_i0cuy"),
+"RESET": SubResource("Animation_idaci")
+}
+
+[node name="ForceOutline" type="Node3D"]
+top_level = true
+
+[node name="Mesh1" type="Sprite3D" parent="."]
+transparency = 1.0
+cast_shadow = 0
+modulate = Color(0.607843, 0.890196, 0.203922, 1)
+pixel_size = 0.02
+no_depth_test = true
+
+[node name="Mesh2" type="Sprite3D" parent="."]
+transparency = 1.0
+cast_shadow = 0
+modulate = Color(0.4, 0.905882, 0.294118, 1)
+pixel_size = 0.02
+no_depth_test = true
+
+[node name="Charge" type="Sprite3D" parent="."]
+material_override = SubResource("ShaderMaterial_dwjor")
+cast_shadow = 0
+instance_shader_parameters/albedo = Color(1, 1, 1, 1)
+instance_shader_parameters/current_angle = 0.0
+pixel_size = 0.03
+no_depth_test = true
+texture = ExtResource("1_nlmd3")
+
+[node name="Anim" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_utstc")
+}
+
+[node name="Up" type="Sprite3D" parent="." groups=["ForceSlot"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
+transparency = 1.0
+cast_shadow = 0
+modulate = Color(0.713726, 0.972549, 0.6, 1)
+pixel_size = 0.0016
+no_depth_test = true
+
+[node name="Down" type="Sprite3D" parent="." groups=["ForceSlot"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.65, 0)
+transparency = 1.0
+cast_shadow = 0
+modulate = Color(0.713726, 0.972549, 0.6, 1)
+pixel_size = 0.0016
+no_depth_test = true
+
+[node name="Left" type="Sprite3D" parent="." groups=["ForceSlot"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.65, 0, 0)
+transparency = 1.0
+cast_shadow = 0
+modulate = Color(0.713726, 0.972549, 0.6, 1)
+pixel_size = 0.0016
+no_depth_test = true
+
+[node name="Right" type="Sprite3D" parent="." groups=["ForceSlot"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.65, 0, 0)
+transparency = 1.0
+cast_shadow = 0
+modulate = Color(0.713726, 0.972549, 0.6, 1)
+pixel_size = 0.0016
+no_depth_test = true
