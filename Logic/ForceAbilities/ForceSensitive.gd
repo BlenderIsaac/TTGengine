@@ -40,6 +40,9 @@ func inclusive_physics(_delta):
 	
 	if C.movement_state != "ForceSensitive":
 		current_charge = 0.0
+		
+		if C.key_just_pressed("Special") and !force_target:
+			force_delay = force_delay_max
 	
 	# make sure the outline exists and get a reference to it and the animation. then hide it
 	ensureForceOutline_exists()
@@ -226,9 +229,16 @@ func exclusive_physics(_delta):
 			current_charge = 0.0
 		
 		## This block resets us to base movement state we cancel or the target dies or is invalid
-		if !C.key_press("Special") or !is_instance_valid(force_target) or !force_target or force_target.dead:
+		if !is_instance_valid(force_target) or !force_target or force_target.dead:
 			anim.play(C.weapon_prefix+"Idleloop", .2)
 			force_target = null
+			#selected_ability = null
+			get_node("ForceOutline").hide()
+			C.reset_movement_state()
+		
+		# I changed this but I'm not exactly sure what it will effect
+		if !C.key_press("Special"):
+			anim.play(C.weapon_prefix+"Idleloop", .2)
 			#selected_ability = null
 			get_node("ForceOutline").hide()
 			C.reset_movement_state()
