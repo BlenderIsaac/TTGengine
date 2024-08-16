@@ -589,4 +589,3 @@ func create_navlink(pos, from, to, groups, bidi):
 	navlink_idx += 1
 	
 	return new_NavLink
-

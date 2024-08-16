@@ -1027,5 +1027,3 @@ func _on_timer_timeout():
 	else:
 		$Pause.theme.set("Button/colors/font_focus_color", col_1)
 		$Pause.theme.set("Button/colors/font_hover_color", col_1)
-
-

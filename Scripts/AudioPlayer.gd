@@ -129,6 +129,3 @@ func add_library(library, origin_mod):
 			for sound in sound_list:
 				add_sound(f.get_data_path({path_type : sound}, origin_mod), key, origin_mod)
 	
-
-
-

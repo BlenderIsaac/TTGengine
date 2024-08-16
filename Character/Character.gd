@@ -1966,5 +1966,3 @@ func _on_pushaway_body_entered(body):
 func _on_pushaway_body_exited(body):
 	if bodys_pushing.has(body):
 		bodys_pushing.erase(body)
-
-

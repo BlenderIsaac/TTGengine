@@ -205,4 +205,3 @@ func get_target_avg_pos():
 		return target_average
 	else:
 		return Vector3()
-

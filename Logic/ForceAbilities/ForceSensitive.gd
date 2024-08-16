@@ -470,6 +470,3 @@ func ensureForceOutline_exists():
 		ForceOutline.get_node("Charge").material_override.set_shader_parameter("texture_albedo", ForceOutlineTexture)
 		
 		add_child(ForceOutline)
-
-
-
