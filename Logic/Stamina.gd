@@ -13,15 +13,41 @@ var max_damage_during_stagger = 2
 
 
 var BlockStamina = null
+var BackBar = null
+var FrontBar = null
 func _ready():
-	BlockStamina = Label3D.new()#l.get_load("res://Logic/block_stamina_backup.tscn").instantiate()
-	BlockStamina.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	BlockStamina.text = ""
-	BlockStamina.visible = false
-	BlockStamina.position.y = 1.948
+	#BlockStamina = Label3D.new()#l.get_load("res://Logic/block_stamina_backup.tscn").instantiate()
+	#BlockStamina.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	#BlockStamina.text = ""
+	#BlockStamina.visible = false
+	#BlockStamina.position.y = 1.948
+	
+	generate_block_stamina()
 	
 	add_child(BlockStamina)
 
+func generate_block_stamina():
+	BlockStamina = Node3D.new()
+	BackBar = Sprite3D.new()
+	FrontBar = Sprite3D.new()
+	BlockStamina.add_child(BackBar)
+	BlockStamina.add_child(FrontBar)
+	
+	BackBar.pixel_size = 0.0029
+	FrontBar.pixel_size = 0.0029
+	
+	BackBar.texture = l.get_load("res://Textures/Bars/EmptyBar.png")
+	FrontBar.texture = l.get_load("res://Textures/Bars/StaminaBar.png")
+	
+	BackBar.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	FrontBar.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	
+	FrontBar.render_priority = 1
+	FrontBar.region_enabled = true
+	FrontBar.region_rect.size = Vector2(512.0, 56.0)
+	
+	BlockStamina.hide()
+	BlockStamina.position = C.aim_pos*2 + Vector3(0, 0.1, 0)
 
 func die(_var):
 	stamina = max_stamina
@@ -43,10 +69,9 @@ func change_stamina(value):
 	update_vis()
 
 func update_vis():
-	if stamina > 0:
-		BlockStamina.text = "-".repeat(floori(max_stamina-stamina))+"I".repeat(floor(stamina))
-	else:
-		BlockStamina.text = ""
+	
+	FrontBar.region_rect.size = Vector2(clamp(lerpf(-0.00001, 512.0, float(stamina)/float(max_stamina)), -0.00001, 512.0), 56.0)
+	FrontBar.offset.x = lerpf(-512.0/2.0, 0.0, float(stamina)/float(max_stamina))
 	
 	if !stamina == max_stamina:
 		BlockStamina.show()

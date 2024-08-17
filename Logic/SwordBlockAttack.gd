@@ -1,85 +1,22 @@
 extends "res://Logic/LOGIC.gd"
 
 # Logic Type: MOVEMENT STATE
-# Contains: Slash movement state
+# Contains: Slash attack to go after blocking
 
-var next_combo = false
-var combo_num = 0
-var max_combo = 2
+#var next_combo = false
+#var combo_num = 0
+#var max_combo = 2
 var lightsaber_hurt_per_frame = 20
 var hit = 0
 var our_prefix = "Sword"
-var saber_sounds = ["SaberMove", "SaberMove", "SaberMove"]
-
-#var track_speed = 7.0
+var saber_sound = "SaberMove"
 
 var prev_activated = false
+var our_logic = "Sword"
+var knockback = 10.0
 
-var knockbacks = [10.0, 10.0, 10.0]
-
-func exclusive_physics(_delta):
-	C.get_base_movement_state().freeze()
-	
-	var root_vel = C.get_root_vel(.1, .9)/_delta
-	
-	if anim.current_animation == "SwordIdleloop":
-		
-		if next_combo == true and combo_num < max_combo+1:
-			swipe()
-		else:
-			slash_frozen = true
-			reset_delay = reset_delay_max
-	else:
-		if not anim.current_animation.begins_with("Slash"):
-			anim.play("SwordIdleloop")
-	
-	if slash_frozen:
-		
-		
-		anim.play("Slash"+str(combo_num), 0)
-		anim.seek(anim.current_animation_length, true)
-		root_vel = Vector3()
-		
-		if reset_delay <= 0:
-			slash_frozen = false
-			C.reset_movement_state()
-		
-		reset_delay -= _delta
-	
-	if not C.is_on_floor():
-		C.char_vel.y += C.get_base_movement_state().air_gravity*_delta*C.var_scale
-	else:
-		C.char_vel.y = C.get_base_movement_state().air_gravity*_delta*C.var_scale
-	
-	var track_vel = root_vel
-	#TODO: When we fix root_vel, track_vel should only change when root_vel is non-zero
-	if f.is_character_valid(snapped_attack_target): #and root_vel.length() > 0:
-		track_vel = (snapped_attack_target.global_position-C.global_position).normalized()*base_state.run_speed*C.var_scale*1.5
-		track_vel.y = 0
-		
-		if snapped_attack_target.global_position.distance_to(C.global_position) < 1.2:
-			track_vel = Vector3()
-	
-	C.set_velocity((C.char_vel+track_vel)+C.push_vel)
-	C.move_and_slide()
-	
-	if not C.is_on_floor():
-		C.reset_movement_state()
-	
-	C.mesh_angle_lerp(_delta, 0.2)
-
-
-func block(_who_from):
-	if C.has_logic("Stamina"):
-		C.get_logic("Stamina").change_stamina(-3)
-
-func super_block(_who_from):
-	if C.has_logic("Stamina"):
-		C.get_logic("Stamina").change_stamina(-10)
-
-
-func swipe():
-	
+func initiate():
+	C.get_logic(our_logic).draw_weapon()
 	hit = 0
 	find_opponent()
 	
@@ -98,11 +35,63 @@ func swipe():
 		if snapped_attack_target.has_method("warn"):
 			snapped_attack_target.warn("sword", [self])
 	
-	anim.play("Slash"+str(combo_num+1))
+	anim.play(get_anim_to_play())
 	anim.queue("SwordIdleloop")
-	audio_player.play(saber_sounds[combo_num])
-	next_combo = false
-	combo_num += 1
+	audio_player.play(saber_sound)
+
+
+func exclusive_physics(_delta):
+	C.get_base_movement_state().freeze()
+	
+	var root_vel = C.get_root_vel(.1, .9)/_delta
+	
+	
+	if anim.current_animation == "SwordIdleloop":
+		slash_frozen = true
+		reset_delay = reset_delay_max
+	else:
+		if not anim.current_animation.begins_with("Slash"):
+			anim.play("SwordIdleloop")
+	
+	if slash_frozen:
+		
+		anim.play(get_anim_to_play(), 0)
+		anim.seek(anim.current_animation_length, true)
+		root_vel = Vector3()
+		
+		if reset_delay <= 0:
+			slash_frozen = false
+			C.reset_movement_state()
+		
+		reset_delay -= _delta
+	
+	if not C.is_on_floor():
+		C.char_vel.y += C.get_base_movement_state().air_gravity*_delta*C.var_scale
+	else:
+		C.char_vel.y = C.get_base_movement_state().air_gravity*_delta*C.var_scale
+	
+	C.set_velocity((C.char_vel+root_vel)+C.push_vel)
+	C.move_and_slide()
+	
+	if not C.is_on_floor():
+		C.reset_movement_state()
+	
+	C.mesh_angle_lerp(_delta, 0.2)
+
+
+func get_anim_to_play():
+	if anim.has_animation("BlockSpecialAttack"):
+		return "BlockSpecialAttack"
+	
+	return "Slash1"
+
+func block(_who_from):
+	if C.has_logic("Stamina"):
+		C.get_logic("Stamina").change_stamina(-3)
+
+func super_block(_who_from):
+	if C.has_logic("Stamina"):
+		C.get_logic("Stamina").change_stamina(-10)
 
 
 var snapped_attack_target = null
@@ -173,32 +162,32 @@ var reset_delay = 0.0
 var reset_delay_max = 0.2
 var slash_frozen = false
 
-func inclusive_physics(_delta):
-	
-	if C.weapon_prefix == our_prefix and prev_activated:
-		
-		if C.key_just_pressed("Fight") and not C.AI:
-			
-			if anim.current_animation.begins_with("Slash"):
-				var anim_progress = anim.current_animation_position/anim.current_animation_length
-				# anim_progress is between 0 and 1
-				
-				if anim_progress > .1:
-					next_combo = true
-			
-			if slash_frozen:
-				if combo_num < max_combo+1:
-					swipe()
-					slash_frozen = false
-			
-			if C.is_in_base_movement_state():
-				if C.is_on_floor():
-					anim.play(our_prefix+"Idleloop", .1)
-					combo_num = 0
-					next_combo = true
-					C.set_movement_state("SwordSlash")
-	
-	prev_activated = C.weapon_prefix == our_prefix
+#func inclusive_physics(_delta):
+	#
+	#if C.weapon_prefix == our_prefix and prev_activated:
+		#
+		#if C.key_just_pressed("Fight") and not C.AI:
+			#
+			#if anim.current_animation.begins_with("Slash"):
+				#var anim_progress = anim.current_animation_position/anim.current_animation_length
+				## anim_progress is between 0 and 1
+				#
+				#if anim_progress > .1:
+					#next_combo = true
+			#
+			#if slash_frozen:
+				#if combo_num < max_combo+1:
+					#swipe()
+					#slash_frozen = false
+			#
+			#if C.is_in_base_movement_state():
+				#if C.is_on_floor():
+					#anim.play(our_prefix+"Idleloop", .1)
+					#combo_num = 0
+					#next_combo = true
+					#C.set_movement_state("SwordSlash")
+	#
+	#prev_activated = C.weapon_prefix == our_prefix
 
 
 func exclusive_process(_delta):
@@ -213,7 +202,7 @@ func exclusive_process(_delta):
 						if opponent.has_method("take_knockback"):
 							# change to variable on how much knockback they take
 							
-							opponent.take_knockback(Vector3(0, 0, -knockbacks[combo_num-1]).rotated(Vector3.UP, C.get_node("Mesh").rotation.y), self)
+							opponent.take_knockback(Vector3(0, 0, -knockback).rotated(Vector3.UP, C.get_node("Mesh").rotation.y), self)
 						
 						if opponent.has_method("take_damage"):
 							opponent.take_damage(1, C)

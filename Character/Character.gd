@@ -464,7 +464,7 @@ func _physics_process(_delta):
 				PHYSbuttons_pressed_last_frame.erase(key_checked)
 	
 	# setup this for the next frame
-	prev_pose = $"Mesh/Armature/Skeleton3D".get_bone_pose_position(0)
+	prev_pose = get_root_pos()
 
 # Navigation function for NavLinks
 var ai_to = Vector3()
@@ -577,14 +577,20 @@ func warn(type, from_list):
 	if AI:
 		trigger_logics(str("warning_"+type), from_list)
 
+func get_root_pos():
+	var root = $Mesh/Armature/Skeleton3D/ROOT
+	var pos = $"Mesh/Armature/Skeleton3D".get_bone_global_pose_no_override(0).origin
+	return pos
 
 func get_root_vel(start, end):
+	
 	var root_vel = Vector3()
 	
-	var bone_pos = $"Mesh/Armature/Skeleton3D".get_bone_pose_position(0)-prev_pose
+	var bone_pos = get_root_pos()-prev_pose
 	var anim_progress = anim.current_animation_position/anim.current_animation_length
 	
 	if anim_progress >= start and anim_progress <= end:
+		
 		root_vel = bone_pos.rotated(Vector3.UP, $"Mesh".rotation.y)
 	
 	return root_vel

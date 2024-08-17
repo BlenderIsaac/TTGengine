@@ -10,13 +10,13 @@ func _ready():
 	#if special_folder != "":
 		#export_path += special_folder + "/"
 	
-	var glb_path = "res://Animations/several_runs.glb"
+	var glb_path = "res://Animations/special_attack.glb"
 	
 	f.make(glb_path, Vector3(), self)
 	
 	for anim_name in get_child(0).get_node("AnimationPlayer").get_animation_list():
 		var anim_path = export_path + anim_name + ".res"
-		print(anim_name)
+		print("exported ", anim_name, " to ", glb_path)
 		export_anim(anim_name, anim_path)
 
 

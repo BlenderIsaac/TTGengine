@@ -300,6 +300,3 @@ func get_stud_values_for_count(value):
 			stud_values.append(type_drop)
 	
 	return stud_values
-
-
-

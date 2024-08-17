@@ -27,8 +27,9 @@ var volatile = false
 var our_logic = "Sword"
 var fight_logic = "SwordSlash"
 
-var states_to_block = ["SwordLunge", "SwordSlash", "SwordSlam", "Stamina"]
+var states_to_block = ["SwordLunge", "SwordSlash", "SwordSlam", "Stamina", "SwordBlockAttack"]
 
+var block_special_attack = "SwordBlockAttack"
 
 func initiate():
 	C.get_logic(our_logic).draw_weapon()
@@ -36,6 +37,10 @@ func initiate():
 func exclusive_physics(_delta):
 	# reset move_dir on our base movement state
 	C.get_base_movement_state().freeze()
+	
+	if C.key_press("Special"):
+		if block_special_attack != "":
+			C.set_movement_state(block_special_attack)
 	
 	if volatile:
 		if volatile_timer <= 0.0:
