@@ -14,6 +14,7 @@ var saber_sound = "SaberMove"
 var prev_activated = false
 var our_logic = "Sword"
 var knockback = 10.0
+var reached = false
 
 func initiate():
 	C.get_logic(our_logic).draw_weapon()
@@ -35,9 +36,10 @@ func initiate():
 		if snapped_attack_target.has_method("warn"):
 			snapped_attack_target.warn("sword", [self])
 	
-	anim.play(get_anim_to_play())
+	anim.play(get_anim_to_play(), 0.1)
 	anim.queue("SwordIdleloop")
 	audio_player.play(saber_sound)
+	reached = false
 
 
 func exclusive_physics(_delta):
@@ -50,11 +52,10 @@ func exclusive_physics(_delta):
 		slash_frozen = true
 		reset_delay = reset_delay_max
 	else:
-		if not anim.current_animation.begins_with("Slash"):
+		if not anim.current_animation == get_anim_to_play():
 			anim.play("SwordIdleloop")
 	
 	if slash_frozen:
-		
 		anim.play(get_anim_to_play(), 0)
 		anim.seek(anim.current_animation_length, true)
 		root_vel = Vector3()
@@ -70,7 +71,17 @@ func exclusive_physics(_delta):
 	else:
 		C.char_vel.y = C.get_base_movement_state().air_gravity*_delta*C.var_scale
 	
-	C.set_velocity((C.char_vel+root_vel)+C.push_vel)
+	var track_vel = root_vel
+	#TODO: When we fix root_vel, track_vel should only change when root_vel is non-zero
+	if f.is_character_valid(snapped_attack_target) and not reached: #and root_vel.length() > 0:
+		track_vel = (snapped_attack_target.global_position-C.global_position).normalized()*base_state.run_speed*C.var_scale*2.0
+		track_vel.y = 0
+		
+		if snapped_attack_target.global_position.distance_to(C.global_position) < 2:
+			reached = true
+			track_vel = Vector3()
+	
+	C.set_velocity((C.char_vel+root_vel+track_vel)+C.push_vel)
 	C.move_and_slide()
 	
 	if not C.is_on_floor():
@@ -95,7 +106,7 @@ func super_block(_who_from):
 
 
 var snapped_attack_target = null
-var snapped_attack_range = 3
+var snapped_attack_range = 5
 var snapped_attack_cone = 1.3
 func find_opponent():
 	
@@ -191,7 +202,7 @@ var slash_frozen = false
 
 
 func exclusive_process(_delta):
-	if anim.current_animation.begins_with("Slash"):
+	if anim.current_animation == get_anim_to_play():
 		var anim_progress = anim.current_animation_position/anim.current_animation_length
 		
 		if hit < lightsaber_hurt_per_frame:

@@ -38,10 +38,6 @@ func exclusive_physics(_delta):
 	# reset move_dir on our base movement state
 	C.get_base_movement_state().freeze()
 	
-	if C.key_press("Special"):
-		if block_special_attack != "":
-			C.set_movement_state(block_special_attack)
-	
 	if volatile:
 		if volatile_timer <= 0.0:
 			volatile = false
@@ -93,6 +89,10 @@ func exclusive_physics(_delta):
 	
 	if deflected_bullet_rot:
 		C.mesh_angle_to = deflected_bullet_rot.y
+	
+	if C.key_press("Special"):
+		if block_special_attack != "":
+			C.set_movement_state(block_special_attack)
 	
 	C.mesh_angle_lerp(_delta, 0.4)
 	

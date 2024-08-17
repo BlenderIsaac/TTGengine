@@ -16,11 +16,6 @@ var BlockStamina = null
 var BackBar = null
 var FrontBar = null
 func _ready():
-	#BlockStamina = Label3D.new()#l.get_load("res://Logic/block_stamina_backup.tscn").instantiate()
-	#BlockStamina.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	#BlockStamina.text = ""
-	#BlockStamina.visible = false
-	#BlockStamina.position.y = 1.948
 	
 	generate_block_stamina()
 	
