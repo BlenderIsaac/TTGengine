@@ -154,5 +154,5 @@ var player_colours = {
 }
 
 var spawn_troops = "true"
-var use_internal_logics = "false"
+var use_internal_logics = "true"
 var mod_path = ""

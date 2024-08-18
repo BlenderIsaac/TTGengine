@@ -106,7 +106,7 @@ func swipe():
 
 
 var snapped_attack_target = null
-var snapped_attack_range = 3
+var snapped_attack_range = 5.0
 var snapped_attack_cone = 1.3
 func find_opponent():
 	

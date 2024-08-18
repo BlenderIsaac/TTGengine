@@ -206,6 +206,7 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 									# set the script and stud value
 									static_bod.set_script(l.get_load("res://Objects/BreakableObject.gd"))
 									static_bod.stud_value = int(props.STUDS_DROPPED)
+									static_bod.aim_pos = Vector3(0, obj.get_aabb().size.y/2, 0)
 									
 									blwup_idx += 1
 							elif obj_type == "CMR_CRV":
