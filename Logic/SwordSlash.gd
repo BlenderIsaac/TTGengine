@@ -14,7 +14,7 @@ var saber_sounds = ["SaberMove", "SaberMove", "SaberMove"]
 #var track_speed = 7.0
 
 var prev_activated = false
-
+var attack_speed = 1.5
 var knockbacks = [10.0, 10.0, 10.0]
 
 func exclusive_physics(_delta):
@@ -54,7 +54,7 @@ func exclusive_physics(_delta):
 	var track_vel = root_vel
 	#TODO: When we fix root_vel, track_vel should only change when root_vel is non-zero
 	if f.is_character_valid(snapped_attack_target): #and root_vel.length() > 0:
-		track_vel = (snapped_attack_target.global_position-C.global_position).normalized()*base_state.run_speed*C.var_scale*1.5
+		track_vel = (snapped_attack_target.global_position-C.global_position).normalized()*base_state.run_speed*C.var_scale*attack_speed
 		track_vel.y = 0
 		
 		if snapped_attack_target.global_position.distance_to(C.global_position) < 1.2:
