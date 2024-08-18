@@ -81,6 +81,7 @@ autoplay = "RESET"
 [node name="Mesh" parent="." instance=ExtResource("3_rb4k0")]
 
 [node name="Skeleton3D" parent="Mesh/Armature" index="0"]
+bones/0/rotation = Quaternion(-0.707107, 1.15202e-07, 1.15202e-07, 0.707107)
 bones/3/rotation = Quaternion(3.36011e-08, -0.707107, 0.707107, 5.3385e-08)
 bones/6/rotation = Quaternion(-7.7581e-08, 0.707107, -0.707107, 5.33851e-08)
 bones/8/rotation = Quaternion(-7.4309e-08, 1.07284e-07, 3.24816e-15, 1)

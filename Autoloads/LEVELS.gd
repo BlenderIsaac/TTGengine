@@ -261,5 +261,3 @@ func cycle_hubs(_current_mod, player_data, _direction):
 	next_level_load_data.ToRun = "load_hub"
 	next_level_load_data.Args = ["Ahsoka Show", player_data]
 	next_level_load_data.Active = true
-
-

@@ -5,7 +5,7 @@ var needs_rig = true
 
 var push_range = 8.0
 
-var valid_rigs = ["GenRig.tscn", "ShortRig.tscn"]
+var valid_rigs = ["GenRig.glb", "ShortRig.tscn"]
 
 var target_anims = {
 	"Required" : 
@@ -53,4 +53,3 @@ func exclusive_damage(_amount, _who_from=null):
 
 func initiate():
 	anim.play("ForceUse", .1)
-

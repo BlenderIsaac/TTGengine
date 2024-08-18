@@ -1668,9 +1668,21 @@ func change_character(data, c_path, mod): # TODO: We don't need c_path here once
 	if subrig_name != null:
 		rig_name = subrig_name
 	
+	
+	
 	var rig_path = SETTINGS.mod_path+"/"+origin_mod+"/characters/rigs/"+rig_name
-	var rig = l.get_load(rig_path)
-	var rig_instance = rig.instantiate()
+	#var rig# = 
+	var rig_instance# = l.get_load(rig_path).instantiate()
+	
+	if subrig_name.ends_with(".glb"):
+		rig_instance = f.generate_gltf(rig_path)
+		var rooot = BoneAttachment3D.new()
+		rooot.bone_idx = 0
+		rooot.name = "ROOT"
+		rooot.override_pose = true
+		rig_instance.get_node("Armature/Skeleton3D").add_child(rooot)
+	else:
+		rig_instance = l.get_load(rig_path).instantiate()
 	
 	add_child(rig_instance)
 	rig_instance.name = "Mesh"

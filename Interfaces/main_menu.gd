@@ -57,7 +57,3 @@ func load_hub(mod):
 	Interface.get_node("Icons").show()
 	
 	hide()
-
-
-
-

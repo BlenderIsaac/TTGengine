@@ -255,6 +255,7 @@ func update_force():
 	for local_force in get_tree().get_nodes_in_group("Character")+get_tree().get_nodes_in_group("ForceObject"):
 		
 		if !local_force == C and !local_force.dead:
+			
 			if local_force.position.distance_to(C.position) <= force_dist:
 				
 				# the distance to the current force in the loop
@@ -312,6 +313,7 @@ func target_viable_for_ability(target, ability):
 
 func can_use_ability_on_target(target, ability_name, target_ability_name, target_ability_path):
 	var logics = target.get_logics_list()
+	
 	
 	var t_viable = target_viable_for_ability(target, C.get_logic(ability_name))
 	

@@ -47,7 +47,15 @@ var player_spawns = []
 var team_spawns = []
 func Story_load_characters():
 	
+	var replace = {
+		1 : "MorganPrisoner.json"
+	}
+	
 	for player in player_spawns:
+		
+		if player.Num in replace.keys():
+			player.Char = replace[player.Num]
+		
 		preload_char_from_file(player.Char, player.Mod)
 		create_level_character(player)
 	

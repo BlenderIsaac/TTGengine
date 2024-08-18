@@ -31,4 +31,3 @@ func exclusive_damage(_amount, _who_from=null):
 
 func initiate():
 	anim.play("ForceUse", .1)
-
