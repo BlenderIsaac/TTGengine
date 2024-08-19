@@ -1677,16 +1677,19 @@ func change_character(data, c_path, mod): # TODO: We don't need c_path here once
 	if subrig_name.ends_with(".glb"):
 		rig_instance = f.generate_gltf(rig_path)
 		var rooot = BoneAttachment3D.new()
+		m_rot.x = -PI/2
 		rooot.bone_idx = 0
 		rooot.name = "ROOT"
 		rooot.override_pose = true
 		rig_instance.get_node("Armature/Skeleton3D").add_child(rooot)
 	else:
+		m_rot.x = 0
 		rig_instance = l.get_load(rig_path).instantiate()
 	
 	add_child(rig_instance)
 	rig_instance.name = "Mesh"
 	rig_instance.rotation = m_rot
+	
 	
 	# replace parts
 	if data.has("ReplaceParts"):

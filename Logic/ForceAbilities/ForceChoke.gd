@@ -3,7 +3,7 @@ extends "res://Logic/LOGIC.gd"
 var force_target = null
 var needs_rig = true
 
-var valid_rigs = ["GenRig.glb", "ShortRig.tscn"]
+var valid_rigs = ["GenRig.glb", "ShortRig.hlb"]
 
 var target_anims = {
 	"Required" : 

@@ -5,7 +5,7 @@ var needs_rig = true
 
 var push_range = 8.0
 
-var valid_rigs = ["GenRig.glb", "ShortRig.tscn"]
+var valid_rigs = ["GenRig.glb", "ShortRig.glb"]
 
 var target_anims = {
 	"Required" : 

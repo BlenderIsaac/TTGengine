@@ -19,14 +19,12 @@ var initial_snap = false
 
 var start_timer = 0
 
-#func _ready():
-	#snap()
-
 @onready var target_agent = $NavigationAgent3D
 
 func _process(_delta):
 	
 	if start_timer == 1:
+		target_agent.target_position = Vector3(get_special_avg_pos())
 		snap()
 	
 	if move_type == "Curves" and targets.size() > 0:
@@ -124,19 +122,28 @@ func _process(_delta):
 		var avg = get_target_avg_pos()
 		var pos = get_special_avg_pos()
 		
-		var next_pos = target_agent.get_next_path_position() + Vector3(0, -0.3, 0)
-		
 		#var vec2_dist = f.to_vec2(global_position).distance_to(f.to_vec2(pos))
 		var final_vec2_dist = f.to_vec2(global_position).distance_to(f.to_vec2(target_agent.get_final_position()))
 		
 		target_agent.target_position = Vector3(pos)
+		
 		var min_dist = 5.0
+		#var pushaway_dist = 2.0
+		
+		#if final_vec2_dist < pushaway_dist:
+			#target_agent.target_position = Vector3(pos) + Vector3(0.0, 0, 0).rotated(Vector3.UP, rotation.z)
+			#min_dist = pushaway_dist
+		
 		if final_vec2_dist > min_dist:
+			
+			var next_pos = target_agent.get_next_path_position() + Vector3(0, -0.3, 0)
 			
 			if final_vec2_dist > 0.2:
 				
 				var speed = (final_vec2_dist-min_dist)
 				global_position += (next_pos-global_position).normalized()*minf(speed/30, 3.0)
+		
+		
 		
 		rotation.z = 0
 		if f.to_vec2(global_position-avg) == Vector2():

@@ -6,7 +6,7 @@ var needs_rig = true
 var pull_range = 16.0
 var close_range = 1.5
 
-var valid_rigs = ["GenRig.glb", "ShortRig.tscn"]
+var valid_rigs = ["GenRig.glb", "ShortRig.glb"]
 
 var target_anims = {
 	"Required" : 

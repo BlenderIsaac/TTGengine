@@ -48,7 +48,7 @@ var team_spawns = []
 func Story_load_characters():
 	
 	var replace = {
-		1 : "MorganPrisoner.json"
+		1 : "RD3.json"
 	}
 	
 	for player in player_spawns:
@@ -189,7 +189,8 @@ func preload_char_from_file(filename, char_mod):
 	# preload rigs
 	if data.has("Rig"):
 		var rig_path = SETTINGS.mod_path+"/"+char_mod+"/characters/rigs/"+data.Rig
-		l.get_load(rig_path)
+		if !data.Rig.ends_with(".glb"):
+			l.get_load(rig_path)
 	
 	# preload attached objects
 	if data.has("Models"):

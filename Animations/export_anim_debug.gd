@@ -3,14 +3,14 @@ extends Node3D
 
 func _ready():
 	var mod = "Ahsoka Show"
-	var export_path = SETTINGS.mod_path+"/"+mod+"/characters/anims/"
+	var export_path = SETTINGS.mod_path+"/"+mod+"/characters/anims/astromech/"
 	
 	#var special_folder = ""#"hello"
 	#
 	#if special_folder != "":
 		#export_path += special_folder + "/"
 	
-	var glb_path = "res://Animations/special_attack.glb"
+	var glb_path = "res://Animations/AstromechRig.glb"
 	
 	f.make(glb_path, Vector3(), self)
 	
