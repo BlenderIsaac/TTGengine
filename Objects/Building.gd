@@ -304,5 +304,3 @@ func get_pos():
 			var m_name = m.name
 			var m_pos = {"pos" : m.position, "rot" : m.rotation, "sca" : m.scale}
 			final_dict[m_name] = m_pos
-
-

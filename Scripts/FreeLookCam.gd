@@ -59,5 +59,3 @@ func child_tick(_delta):
 
 func deg2radvec3(vec3):
 	return Vector3(deg_to_rad(vec3.x), deg_to_rad(vec3.y), deg_to_rad(vec3.z))
-
-

@@ -40,4 +40,3 @@ func _on_temp_spawner_timeout():
 			new_ai.position = next_spawn.global_position + Vector3(randf()/4, randf()/4, randf()/4)
 			
 			add_child(new_ai)
-
