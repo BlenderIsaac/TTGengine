@@ -1,29 +1,48 @@
-[gd_scene load_steps=6 format=3 uid="uid://blswmjtjl7n7v"]
+[gd_scene load_steps=7 format=3 uid="uid://blswmjtjl7n7v"]
 
 [ext_resource type="Texture2D" uid="uid://necge2n5omrh" path="res://Debug/tex000.png" id="1_2h3ek"]
+[ext_resource type="Script" path="res://Debug/export_textures.gd" id="1_ax1ll"]
 [ext_resource type="Texture2D" uid="uid://b43jvhg1kg36p" path="res://Debug/tex000_mdl2.png" id="2_3ddwe"]
 [ext_resource type="Texture2D" uid="uid://pfnfrpp3csng" path="res://Debug/tex000_mdl6.png" id="3_217vj"]
 [ext_resource type="Texture2D" uid="uid://c4b401i6b7loy" path="res://Debug/tex002.png" id="4_4hb73"]
 [ext_resource type="Texture2D" uid="uid://j511y4dkdin0" path="res://Debug/tex004_mdl3.png" id="5_pv368"]
 
-[node name="ExportTextures" type="Node2D"]
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
 
-[node name="Tex000" type="Sprite2D" parent="."]
+[node name="ExportTextures" type="Node2D" parent="."]
+script = ExtResource("1_ax1ll")
+
+[node name="Tex000" type="Sprite2D" parent="ExportTextures"]
 texture = ExtResource("1_2h3ek")
 centered = false
 
-[node name="Tex000Mdl2" type="Sprite2D" parent="."]
+[node name="Tex000Mdl2" type="Sprite2D" parent="ExportTextures"]
 position = Vector2(3572, -1180)
 texture = ExtResource("2_3ddwe")
 
-[node name="Tex000Mdl6" type="Sprite2D" parent="."]
+[node name="Tex000Mdl6" type="Sprite2D" parent="ExportTextures"]
 position = Vector2(5669, -1191)
 texture = ExtResource("3_217vj")
 
-[node name="Tex002" type="Sprite2D" parent="."]
+[node name="Tex002" type="Sprite2D" parent="ExportTextures"]
 position = Vector2(6973, -1256)
 texture = ExtResource("4_4hb73")
 
-[node name="Tex004Mdl3" type="Sprite2D" parent="."]
+[node name="Tex004Mdl3" type="Sprite2D" parent="ExportTextures"]
 position = Vector2(3062, 65)
 texture = ExtResource("5_pv368")
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
+handle_input_locally = false
+render_target_update_mode = 4
+
+[node name="Camera2D" type="Camera2D" parent="SubViewportContainer/SubViewport"]
