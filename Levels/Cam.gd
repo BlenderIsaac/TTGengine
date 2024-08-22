@@ -142,7 +142,13 @@ func _process(_delta):
 				
 				var speed = (final_vec2_dist-min_dist)
 				global_position += (next_pos-global_position).normalized()*minf(speed/30, 3.0)
-		
+		elif final_vec2_dist < 3.0:
+			var next_pos = target_agent.get_next_path_position() + Vector3(0, -0.3, 0)
+			
+			if final_vec2_dist > 0.2:
+				
+				var speed = (final_vec2_dist-3.0)
+				global_position += (next_pos-global_position).normalized()*minf(speed/30, 3.0)
 		
 		
 		rotation.z = 0

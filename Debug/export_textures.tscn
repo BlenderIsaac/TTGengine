@@ -2,47 +2,80 @@
 
 [ext_resource type="Texture2D" uid="uid://necge2n5omrh" path="res://Debug/tex000.png" id="1_2h3ek"]
 [ext_resource type="Script" path="res://Debug/export_textures.gd" id="1_ax1ll"]
-[ext_resource type="Texture2D" uid="uid://b43jvhg1kg36p" path="res://Debug/tex000_mdl2.png" id="2_3ddwe"]
-[ext_resource type="Texture2D" uid="uid://pfnfrpp3csng" path="res://Debug/tex000_mdl6.png" id="3_217vj"]
-[ext_resource type="Texture2D" uid="uid://c4b401i6b7loy" path="res://Debug/tex002.png" id="4_4hb73"]
-[ext_resource type="Texture2D" uid="uid://j511y4dkdin0" path="res://Debug/tex004_mdl3.png" id="5_pv368"]
+[ext_resource type="Texture2D" uid="uid://ddwbqnfgp0u07" path="res://Debug/otherdebug.png" id="4_do1j2"]
+[ext_resource type="Texture2D" uid="uid://ohlfhep84q1q" path="res://Debug/SKIRT.png" id="5_sueoh"]
+[ext_resource type="Texture2D" uid="uid://b0wl8y1fj3a7t" path="res://Textures/Square.png" id="6_jsixw"]
+[ext_resource type="Texture2D" uid="uid://dndqf02un3dkw" path="res://Debug/bodylayout.png" id="7_nfcll"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
-
-[node name="ExportTextures" type="Node2D" parent="."]
 script = ExtResource("1_ax1ll")
 
-[node name="Tex000" type="Sprite2D" parent="ExportTextures"]
-texture = ExtResource("1_2h3ek")
-centered = false
-
-[node name="Tex000Mdl2" type="Sprite2D" parent="ExportTextures"]
-position = Vector2(3572, -1180)
-texture = ExtResource("2_3ddwe")
-
-[node name="Tex000Mdl6" type="Sprite2D" parent="ExportTextures"]
-position = Vector2(5669, -1191)
-texture = ExtResource("3_217vj")
-
-[node name="Tex002" type="Sprite2D" parent="ExportTextures"]
-position = Vector2(6973, -1256)
-texture = ExtResource("4_4hb73")
-
-[node name="Tex004Mdl3" type="Sprite2D" parent="ExportTextures"]
-position = Vector2(3062, 65)
-texture = ExtResource("5_pv368")
-
 [node name="SubViewportContainer" type="SubViewportContainer" parent="."]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_right = 512.0
+offset_bottom = 512.0
 
 [node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
-handle_input_locally = false
+snap_2d_vertices_to_pixel = true
+size_2d_override = Vector2i(100, 0)
 render_target_update_mode = 4
 
 [node name="Camera2D" type="Camera2D" parent="SubViewportContainer/SubViewport"]
+
+[node name="Node2D" type="Node2D" parent="SubViewportContainer/SubViewport"]
+position = Vector2(-50, 0)
+
+[node name="Bodylayout" type="Sprite2D" parent="SubViewportContainer/SubViewport/Node2D"]
+texture = ExtResource("7_nfcll")
+centered = false
+
+[node name="Otherdebug" type="Sprite2D" parent="SubViewportContainer/SubViewport/Node2D"]
+position = Vector2(1024, 512)
+texture = ExtResource("4_do1j2")
+
+[node name="Skirt" type="Sprite2D" parent="SubViewportContainer/SubViewport/Node2D"]
+position = Vector2(512, 0)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("5_sueoh")
+centered = false
+
+[node name="Square" type="Sprite2D" parent="SubViewportContainer/SubViewport/Node2D"]
+modulate = Color(0.12549, 0.129412, 0.12549, 1)
+position = Vector2(816, 510)
+scale = Vector2(104.453, 71.2969)
+texture = ExtResource("6_jsixw")
+
+[node name="Tex000" type="Sprite2D" parent="SubViewportContainer/SubViewport/Node2D"]
+position = Vector2(-2555, 639)
+texture = ExtResource("1_2h3ek")
+
+[node name="Tex001" type="Sprite2D" parent="SubViewportContainer/SubViewport/Node2D"]
+position = Vector2(256, 132.938)
+scale = Vector2(0.491093, 0.491093)
+texture = ExtResource("1_2h3ek")
+region_enabled = true
+region_rect = Rect2(18, 40, 467, 407)
+
+[node name="Tex003" type="Sprite2D" parent="SubViewportContainer/SubViewport/Node2D"]
+position = Vector2(1280, 140)
+scale = Vector2(0.362416, 0.362416)
+texture = ExtResource("1_2h3ek")
+region_enabled = true
+region_rect = Rect2(53, 1177, 924, 745)
+
+[node name="Tex002" type="Sprite2D" parent="SubViewportContainer/SubViewport/Node2D"]
+position = Vector2(256, 374)
+scale = Vector2(0.491093, 0.491093)
+texture = ExtResource("1_2h3ek")
+region_enabled = true
+region_rect = Rect2(533, 40, 467, 407)
+
+[node name="Tex004" type="Sprite2D" parent="SubViewportContainer/SubViewport/Node2D"]
+position = Vector2(768, 127.731)
+scale = Vector2(0.411135, 0.521781)
+texture = ExtResource("1_2h3ek")
+region_enabled = true
+region_rect = Rect2(19, 447, 467, 392)

@@ -1,7 +1,6 @@
-[gd_scene load_steps=14 format=3 uid="uid://bxapwt6p41rba"]
+[gd_scene load_steps=13 format=3 uid="uid://bxapwt6p41rba"]
 
 [ext_resource type="Script" path="res://Character/Character.gd" id="1"]
-[ext_resource type="PackedScene" uid="uid://cqw4hb5r7ayyx" path="res://Animations/GenRig.tscn" id="3_rb4k0"]
 [ext_resource type="Texture2D" uid="uid://5boy2nmhka18" path="res://Textures/Point.png" id="4_mwcyx"]
 [ext_resource type="AnimationLibrary" uid="uid://b5aamplbxewy4" path="res://Animations/FlashAnims/FlashAnims.res" id="5_17ga1"]
 [ext_resource type="PackedScene" uid="uid://b1h60hmsedkrs" path="res://Scripts/AudioPlayer.tscn" id="5_gg81l"]
@@ -78,27 +77,6 @@ libraries = {
 }
 autoplay = "RESET"
 
-[node name="Mesh" parent="." instance=ExtResource("3_rb4k0")]
-
-[node name="Skeleton3D" parent="Mesh/Armature" index="0"]
-bones/0/rotation = Quaternion(-0.707107, 1.15202e-07, 1.15202e-07, 0.707107)
-bones/3/rotation = Quaternion(3.36011e-08, -0.707107, 0.707107, 5.3385e-08)
-bones/6/rotation = Quaternion(-7.7581e-08, 0.707107, -0.707107, 5.33851e-08)
-bones/8/rotation = Quaternion(-7.4309e-08, 1.07284e-07, 3.24816e-15, 1)
-bones/9/rotation = Quaternion(-1.77636e-15, -7.10545e-15, -8.47035e-22, 1)
-bones/10/rotation = Quaternion(-1.77636e-15, 7.10545e-15, 1.01939e-34, 1)
-bones/11/rotation = Quaternion(-1.77636e-15, 1.1921e-07, 4.23517e-22, 1)
-bones/12/rotation = Quaternion(0.971424, 0.237187, -0.00810583, 0.0034553)
-bones/13/scale = Vector3(1, 0.999999, 1)
-bones/14/rotation = Quaternion(-0.0491596, 0.997555, -0.0443154, -0.0224456)
-bones/16/rotation = Quaternion(0.97143, -0.237212, -0.0073394, -0.000316104)
-bones/17/scale = Vector3(1, 0.999999, 1)
-bones/18/rotation = Quaternion(0.0560234, 0.952082, -0.0352407, 0.298596)
-bones/19/rotation = Quaternion(0.600586, 0.10894, -0.0747862, 0.788566)
-
-[node name="ROOT" parent="Mesh/Armature/Skeleton3D" index="9"]
-transform = Transform3D(1, -3.25841e-07, 0, 0, 0, 1, -3.25841e-07, -1, 0, 0, 0, 0)
-
 [node name="SwitchParticles" type="CPUParticles3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.861041, 0)
 emitting = false
@@ -159,5 +137,3 @@ region_enabled = true
 [connection signal="timeout" from="AgentTimer" to="." method="_on_target_update"]
 [connection signal="body_entered" from="Pushaway" to="." method="_on_pushaway_body_entered"]
 [connection signal="body_exited" from="Pushaway" to="." method="_on_pushaway_body_exited"]
-
-[editable path="Mesh"]

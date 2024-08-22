@@ -43,6 +43,14 @@ func add_money(player_number, value):
 func get_money(player_number):
 	return Players.dropped_in[player_number].money
 
+func get_player_data():
+	var player_data = [null, null]
+	for c in get_tree().get_nodes_in_group("Character"):
+		if c.player_number >= 0:
+			player_data[c.player_number] = {"Mod" : c.origin_mod, "Char" : c.current_filename}
+	
+	return player_data
+
 var player_spawns = []
 var team_spawns = []
 func Story_load_characters():
@@ -238,10 +246,3 @@ func CREATE_LEVEL(N_mod, N_level_name, N_level_section):
 #@warning_ignore("unused_parameter")
 #func generate(leveldata, gen_level_name, gen_mod, gen_section):
 	#pass
-
-
-
-
-func _on_timer_timeout():
-	pass
-	#f.make("res://Objects/Stud.tscn", Vector3(randf_range(5, 6), 2, randf_range(5, 6)), self)

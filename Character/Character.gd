@@ -578,7 +578,7 @@ func warn(type, from_list):
 		trigger_logics(str("warning_"+type), from_list)
 
 func get_root_pos():
-	var root = $Mesh/Armature/Skeleton3D/ROOT
+	#var root = $Mesh/Armature/Skeleton3D/ROOT
 	var pos = $"Mesh/Armature/Skeleton3D".get_bone_global_pose_no_override(0).origin
 	return pos
 

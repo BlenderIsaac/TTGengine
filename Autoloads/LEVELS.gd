@@ -200,11 +200,13 @@ func change_section(new_section, doorid=0):
 func finish_level():
 	#var player_data = Interface.get_player_data()
 	var prev_level = get_child(0)
+	var player_data = prev_level.get_player_data()
 	
 	get_tree().paused = false
 	remove_child(prev_level)
 	prev_level.queue_free()
 	
+	Interface.level_finish_player_data = player_data
 	Interface.finish_level()
 
 

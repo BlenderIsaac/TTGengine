@@ -31,7 +31,6 @@ var initiated_footsteps = false
 
 # Set the correct navigational layer values
 func _ready():
-	
 	nav_agent.set_navigation_layer_value(1, true)
 
 func create_footsteps():
@@ -57,7 +56,7 @@ var on_floor_last_frame = true
 func exclusive_physics(_delta):
 	if not initiated_footsteps:
 		
-		create_footsteps()
+		#create_footsteps()
 		
 		initiated_footsteps = true
 	

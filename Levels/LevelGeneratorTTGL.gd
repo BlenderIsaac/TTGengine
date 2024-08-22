@@ -194,6 +194,7 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 									obj.get_parent().add_child(static_bod)
 									obj.get_parent().remove_child(obj)
 									obj.transform = Transform3D()
+									obj.owner = null
 									static_bod.add_child(obj)
 									
 									# generate collision
@@ -590,3 +591,7 @@ func create_navlink(pos, from, to, groups, bidi):
 	navlink_idx += 1
 	
 	return new_NavLink
+
+
+func _on_timer_2_timeout():
+	Levels.finish_level()

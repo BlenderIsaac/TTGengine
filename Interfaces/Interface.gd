@@ -30,6 +30,9 @@ func _ready():
 	#$LevelEnd/StudTotal/HBoxContainer/VBoxContainer/HBoxContainer/LeftStud/Stud.play("Gold")
 	#$LevelEnd/StudTotal/HBoxContainer/VBoxContainer/HBoxContainer/RightStud/Stud.play("Gold")
 	
+	$LevelEnd/Continue.hide()
+	$LevelEnd.hide()
+	
 	$FreePlaySelect.hide()
 	$ModeSelect.hide()
 	$Pause.hide()
@@ -79,7 +82,7 @@ func _process(_delta):
 	if $ControlSettings.visible:
 		ControlSettings_tick()
 	
-	if $Pause.visible or $ModeSelect.visible:
+	if $Pause.visible or $ModeSelect.visible or $LevelEnd.visible:
 		Button_tick()
 	elif $ControlSettings.visible and input_editing_idx == -1:
 		Button_tick()
@@ -278,14 +281,33 @@ var finish_stage = "trueJedi"
 var finish_stages = [
 	"characterUpdate",
 	"trueJedi",
-	"studTotal",
-	"minikit",
-	"goldBrickUpdate",
-	"continue"
+	#"studTotal",
+	#"minikit",
+	#"goldBrickUpdate",
+	"continue",
 ]
 
+func characterUpdate_init():
+	clear_icons()
+	load_icons(Levels.level_state.Mod)
+	show_element("CharacterList")
+	$LevelEnd/AnimationPlayer.play("CharacterUpdate")
+	$LevelEnd/AnimationPlayer.queue("CharacterUpdateLoop")
+func characterUpdate_uninit():
+	hide_element("CharacterList")
+
+func continue_init():
+	$LevelEnd/AnimationPlayer.play("ContinueIn")
+	$LevelEnd/Continue.show()
+	$LevelEnd/Continue/VBoxPause/Hub.grab_focus()
 
 func init_level_finish():
+	pass
+
+var level_finish_player_data = []
+
+func trueJedi_init():
+	$LevelEnd/AnimationPlayer.play("TrueJediStart")
 	truejedi_tickup = 0.0
 
 var truejedi_tickup = 0.0
@@ -294,9 +316,15 @@ func LevelFinish_tick(_delta):
 	
 	var truejedi_perc = 100
 	
-	var LEanim = $LevelEnd/AnimationPlayer
-	
-	if finish_stage == "trueJedi":
+	var LEanim:AnimationPlayer = $LevelEnd/AnimationPlayer
+	if finish_stage == "characterUpdate":
+		if LEanim.current_animation == "CharacterUpdateLoop":
+			# do stuff
+			# if stuff has been done:
+			LEanim.play("CharacterUpdateFade")
+		elif not LEanim.is_playing():
+			advance_finish_stage()
+	elif finish_stage == "trueJedi":
 		var yellow = $LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Yellow
 		if LEanim.current_animation == "TrueJediStart":
 			
@@ -344,12 +372,39 @@ func LevelFinish_tick(_delta):
 				var truejedi_win_anim_speed = 12
 				truejedi_anim_point += _delta*truejedi_win_anim_speed
 		else:
-			pass
+			advance_finish_stage()
+	elif finish_stage == "continue":
+		pass
+
+func advance_finish_stage():
+	if has_method(finish_stage+"_uninit"):
+		call(finish_stage+"_uninit")
+	finish_stage = finish_stages[finish_stages.find(finish_stage)+1]
+	if has_method(finish_stage+"_init"):
+		call(finish_stage+"_init")
 
 func finish_level():
+	hide_all_elements()
+	
+	if has_method(finish_stage+"_uninit"):
+		call(finish_stage+"_uninit")
+	
 	finish_stage = finish_stages[0]
-	hide_element("Icons")
+	if has_method(finish_stage+"_init"):
+		call(finish_stage+"_init")
+	
 	show_element("LevelEnd")
+
+
+func Button_ContinueStory():
+	pass # Replace with function body.
+
+
+func Button_Hub():
+	hide_element("LevelEnd")
+	show_element("Icons")
+	Levels.load_hub(Levels.level_state.Mod, level_finish_player_data)
+
 
 #endregion
 
@@ -363,6 +418,8 @@ var sin_time2 = 0
 
 var mode_selected = ""
 
+@onready var character_container = $CharacterList/Container
+
 func FreePlaySelect_tick():
 	
 	$FreePlaySelect/PlayerSelects/Player0/Back.position.x = 2*sin(sin_time1*5)
@@ -371,7 +428,7 @@ func FreePlaySelect_tick():
 	$FreePlaySelect/PlayerSelects/Player1/Back.position.x = 2*cos(sin_time2*-5)
 	$FreePlaySelect/PlayerSelects/Player1/Back.position.y = 2*sin(sin_time2*5)
 	
-	var grid = $FreePlaySelect/Container.get_node(current_mod_selecting)
+	var grid = character_container.get_node(current_mod_selecting)
 	
 	var columns = grid.columns
 	var full_rows = grid.get_child_count()/columns
@@ -406,9 +463,9 @@ func FreePlaySelect_tick():
 				current_mod_selecting = team_indexes.keys()[new_num]
 				
 				for team_name in team_indexes.keys():
-					$FreePlaySelect/Container.get_node(team_name).hide()
+					character_container.get_node(team_name).hide()
 				
-				$FreePlaySelect/Container.get_node(current_mod_selecting).show()
+				character_container.get_node(current_mod_selecting).show()
 				
 				selected_indexes = {
 				"0" : 0,
@@ -434,8 +491,9 @@ func FreePlaySelect_tick():
 				play_character_select_anim()
 			
 			if key_just_unpressed("Special", player_number):
-				$FreePlaySelect.hide()
-				$ModeSelect.show()
+				show_element("ModeSelect")
+				hide_element("FreePlaySelect")
+				hide_element("CharacterList")
 				
 				$ModeSelect/CenterPause/VBoxPause.get_node(mode_selected).grab_focus()
 			
@@ -515,21 +573,21 @@ func update_freeplay_select_interface():
 func clear_icons():
 	char_data = {}
 	
-	var container = $FreePlaySelect/Container
-	var normgrid = $FreePlaySelect/Container/NormGrid
+	var container = character_container
+	var normgrid = character_container.get_node("NormGrid")
 	
 	for grid in container.get_children():
 		if !grid == normgrid:
-			if !grid == $FreePlaySelect/Container/Norm:
+			if !grid == character_container.get_node('Norm'):
 				grid.name = "DelMe"
 				grid.queue_free()
 
 
 func load_icons(mod):
 	
-	var mod_grid = $FreePlaySelect/Container/NormGrid.duplicate()
+	var mod_grid = character_container.get_node("NormGrid").duplicate()
 	
-	$FreePlaySelect/Container.add_child(mod_grid)
+	character_container.add_child(mod_grid)
 	
 	var mods_path = SETTINGS.mod_path+"/"+mod+"/characters/chars"
 	
@@ -577,7 +635,7 @@ func load_icons(mod):
 	return mod_grid
 
 func create_icon(icon, char_name):
-	var norm = $FreePlaySelect/Container/Norm
+	var norm = character_container.get_node('Norm')
 	
 	var new_icon = norm.duplicate()
 	
@@ -590,7 +648,7 @@ func create_icon(icon, char_name):
 
 
 func update_selects():
-	var grid = $FreePlaySelect/Container.get_node(current_mod_selecting)
+	var grid = character_container.get_node(current_mod_selecting)
 	
 	var cell_index = 0
 	for cell in grid.get_children():
@@ -691,13 +749,14 @@ func start_level():
 			"Char" : char_data.get(current_mod_selecting)[char_index].Path
 		}
 	
-	$Icons.show()
+	show_element("Icons")
 	
 	for icon in Interface.get_node("Icons").get_children():
 		icon.get_node("Control/InGame").show()
 		icon.get_node("Control/InSelect").hide()
 	
-	$FreePlaySelect.hide()
+	hide_element("FreePlaySelect")
+	hide_element("CharacterList")
 	
 	var player_team = get_player_team()
 	
@@ -705,6 +764,7 @@ func start_level():
 
 func hide_element(ele):get_node(ele).hide()
 func show_element(ele):get_node(ele).show()
+func hide_all_elements():for node_name in ["FreePlaySelect", "CharacterList", "ModeSelect", "Pause", "ControlSettings", "Icons", "LevelEnd"]:get_node(node_name).hide()
 
 var freeplay_select_anim = false
 var freeplay_select_anim_data = []
@@ -716,10 +776,10 @@ func play_character_select_anim():
 	freeplay_select_anim_timer = 0.0
 	freeplay_select_anim_stage = 0
 	
-	$Icons.hide()
+	hide_element("Icons")
 	$FreePlaySelect.get_node("PlayerSelects").hide()
 	$FreePlaySelect.get_node("Center").hide()
-	$FreePlaySelect.get_node("Container").hide()
+	hide_element("CharacterList")
 	
 	var final_team = team_indexes.duplicate(true)
 	
@@ -749,7 +809,7 @@ func play_character_select_anim():
 		
 		for team_index in team:
 			
-			var og_cell_node = $FreePlaySelect/Container.get_node(mod).get_child(team_index)
+			var og_cell_node = character_container.get_node(mod).get_child(team_index)
 			
 			var icon = og_cell_node.duplicate()
 			$FreePlaySelect/SelectAnim.add_child(icon)
@@ -858,14 +918,16 @@ func setup_freeplay():
 				
 				index += 1
 	
-	$Icons.show()
+	show_element("Icons")
 	$FreePlaySelect.get_node("PlayerSelects").show()
 	# TODO make this procedural with multiple characters
 	$FreePlaySelect.get_node("Center").show()
-	$FreePlaySelect.get_node("Container").show()
 	
-	$ModeSelect.hide()
-	$FreePlaySelect.show()
+	hide_element("ModeSelect")
+	show_element("FreePlaySelect")
+	show_element("CharacterList")
+	
+	$LevelEnd/AnimationPlayer.play("CharacterUpdateReset")
 	
 	# clear SelectAnim
 	for node in $FreePlaySelect/SelectAnim.get_children():

@@ -50,8 +50,3 @@ func enter_door(body):
 				pass
 			elif destination.Type == "FinishLevel":
 				Levels.finish_level()
-
-
-
-
-

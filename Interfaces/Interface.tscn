@@ -1,4 +1,4 @@
-[gd_scene load_steps=52 format=3 uid="uid://dvgy5vxoqaq41"]
+[gd_scene load_steps=57 format=3 uid="uid://dvgy5vxoqaq41"]
 
 [ext_resource type="Script" path="res://Interfaces/Interface.gd" id="1_0holg"]
 [ext_resource type="Texture2D" uid="uid://ditscyjxgo1jd" path="res://Textures/select.png" id="3_di25h"]
@@ -562,6 +562,42 @@ tracks/10/keys = {
 "update": 0,
 "values": [Vector2(0, -77)]
 }
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("../CharacterList:position")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/12/type = "value"
+tracks/12/imported = false
+tracks/12/enabled = true
+tracks/12/path = NodePath("../CharacterList:modulate")
+tracks/12/interp = 1
+tracks/12/loop_wrap = true
+tracks/12/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/13/type = "value"
+tracks/13/imported = false
+tracks/13/enabled = true
+tracks/13/path = NodePath("Continue:modulate")
+tracks/13/interp = 1
+tracks/13/loop_wrap = true
+tracks/13/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
 
 [sub_resource type="Animation" id="Animation_l8xbf"]
 resource_name = "StudTotalStart"
@@ -743,8 +779,139 @@ tracks/3/keys = {
 "values": [Color(1, 1, 1, 0), Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
 }
 
+[sub_resource type="Animation" id="Animation_0uxjd"]
+resource_name = "CharacterUpdate"
+length = 1.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../CharacterList:position")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0, 300), Vector2(0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../CharacterList:modulate")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_xuheu"]
+resource_name = "CharacterUpdateFade"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../CharacterList:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../CharacterList:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_45t7m"]
+resource_name = "CharacterUpdateReset"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../CharacterList:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../CharacterList:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_hl3l0"]
+resource_name = "CharacterUpdateLoop"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../CharacterList:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../CharacterList:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_dunhk"]
+resource_name = "ContinueIn"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Continue:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_n14lr"]
 _data = {
+"CharacterUpdate": SubResource("Animation_0uxjd"),
+"CharacterUpdateFade": SubResource("Animation_xuheu"),
+"CharacterUpdateLoop": SubResource("Animation_hl3l0"),
+"CharacterUpdateReset": SubResource("Animation_45t7m"),
+"ContinueIn": SubResource("Animation_dunhk"),
 "ModeUnlocks": ExtResource("77_nwkkc"),
 "RESET": SubResource("Animation_caosc"),
 "StudTotalStart": SubResource("Animation_l8xbf"),
@@ -1022,37 +1189,6 @@ text = "Dexter Jettster"
 label_settings = SubResource("LabelSettings_saxkn")
 horizontal_alignment = 1
 autowrap_mode = 3
-
-[node name="Container" type="VBoxContainer" parent="FreePlaySelect"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = 333.0
-offset_bottom = -7.0
-grow_horizontal = 2
-grow_vertical = 2
-alignment = 1
-
-[node name="Norm" type="Control" parent="FreePlaySelect/Container"]
-visible = false
-layout_mode = 2
-
-[node name="Back" type="Sprite2D" parent="FreePlaySelect/Container/Norm"]
-scale = Vector2(0.134, 0.134)
-texture = ExtResource("12_d0w3d")
-
-[node name="NAME" type="Sprite2D" parent="FreePlaySelect/Container/Norm/Back"]
-scale = Vector2(1.017, 1.017)
-region_rect = Rect2(0, 2048, 256, 256)
-
-[node name="NormGrid" type="GridContainer" parent="FreePlaySelect/Container"]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-theme_override_constants/h_separation = 34
-theme_override_constants/v_separation = 34
-columns = 22
 
 [node name="SelectAnim" type="Control" parent="FreePlaySelect"]
 anchors_preset = 0
@@ -1503,6 +1639,7 @@ text = "Reset"
 flat = true
 
 [node name="Icons" type="Control" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -2326,6 +2463,7 @@ libraries = {
 autoplay = "flash_loop"
 
 [node name="LevelEnd" type="Control" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -2335,7 +2473,6 @@ grow_vertical = 2
 metadata/_edit_lock_ = true
 
 [node name="Back" type="Control" parent="LevelEnd"]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -2669,10 +2806,92 @@ sprite_frames = ExtResource("9_enyc4")
 animation = &"Gold"
 metadata/_edit_lock_ = true
 
+[node name="Continue" type="CenterContainer" parent="LevelEnd"]
+visible = false
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("10_u2xjo")
+
+[node name="VBoxPause" type="VBoxContainer" parent="LevelEnd/Continue"]
+layout_mode = 2
+theme_override_constants/separation = -2
+alignment = 1
+
+[node name="ContinueStory" type="Button" parent="LevelEnd/Continue/VBoxPause"]
+visible = false
+layout_mode = 2
+focus_neighbor_top = NodePath("../Hub")
+focus_neighbor_bottom = NodePath("../Hub")
+theme_override_constants/outline_size = 14
+theme_override_font_sizes/font_size = 52
+text = "Continue Story"
+flat = true
+
+[node name="Hub" type="Button" parent="LevelEnd/Continue/VBoxPause"]
+layout_mode = 2
+theme_override_constants/outline_size = 14
+theme_override_font_sizes/font_size = 52
+text = "Hub"
+flat = true
+
 [node name="AnimationPlayer" type="AnimationPlayer" parent="LevelEnd"]
 libraries = {
 "": SubResource("AnimationLibrary_n14lr")
 }
+autoplay = "RESET"
+
+[node name="CharacterList" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 300.0
+offset_bottom = 300.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_lock_ = true
+
+[node name="Container" type="VBoxContainer" parent="CharacterList"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 333.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Norm" type="Control" parent="CharacterList/Container"]
+visible = false
+layout_mode = 2
+
+[node name="Back" type="Sprite2D" parent="CharacterList/Container/Norm"]
+scale = Vector2(0.134, 0.134)
+texture = ExtResource("12_d0w3d")
+
+[node name="NAME" type="Sprite2D" parent="CharacterList/Container/Norm/Back"]
+scale = Vector2(1.017, 1.017)
+region_rect = Rect2(0, 2048, 256, 256)
+
+[node name="NormGrid" type="GridContainer" parent="CharacterList/Container"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/h_separation = 34
+theme_override_constants/v_separation = 34
+columns = 22
+
+[node name="SelectAnim" type="Control" parent="CharacterList"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
 
 [node name="Timer" type="Timer" parent="."]
 wait_time = 0.5
@@ -2706,4 +2925,6 @@ scale = Vector2(0.999586, 0.99911)
 [connection signal="pressed" from="ControlSettings/Center/VBoxContainer/SettingsSave" to="." method="Button_SettingsSave"]
 [connection signal="pressed" from="ControlSettings/Center/VBoxContainer/SettingsCancel" to="." method="Button_SettingsCancel"]
 [connection signal="pressed" from="ControlSettings/Center/VBoxContainer/SettingsReset" to="." method="Button_SettingsReset"]
+[connection signal="pressed" from="LevelEnd/Continue/VBoxPause/ContinueStory" to="." method="Button_ContinueStory"]
+[connection signal="pressed" from="LevelEnd/Continue/VBoxPause/Hub" to="." method="Button_Hub"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

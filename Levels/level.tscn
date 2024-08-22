@@ -1,10 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://3ix1fp3sllsx"]
+[gd_scene load_steps=8 format=3 uid="uid://3ix1fp3sllsx"]
 
 [ext_resource type="Script" path="res://Levels/LevelGeneratorTTGL.gd" id="1_qvxlj"]
 [ext_resource type="Script" path="res://Levels/Cam.gd" id="2_mq7dq"]
 [ext_resource type="Script" path="res://Interfaces/OnUI.gd" id="3_np2bf"]
 [ext_resource type="PackedScene" uid="uid://d2bsp27ml58jg" path="res://Debug/debugsymbol.tscn" id="4_twfmp"]
-[ext_resource type="Script" path="res://Scripts/AdvanceFrame.gd" id="8_ksvp1"]
 [ext_resource type="Environment" uid="uid://bxkijjqiqadqk" path="res://Levels/SkyEnv.tres" id="9_3smm1"]
 [ext_resource type="Script" path="res://Levels/FreeLookCam.gd" id="13_2gvu3"]
 
@@ -62,14 +61,6 @@ process_mode = 3
 transform = Transform3D(1, 0, 0, 0, 0.258819, 0.965926, 0, -0.965926, 0.258819, 2.37689, 9.04958, 3.60411)
 script = ExtResource("13_2gvu3")
 
-[node name="Node" type="Node" parent="."]
-process_mode = 4
-script = ExtResource("8_ksvp1")
-
-[node name="Timer" type="Timer" parent="."]
-wait_time = 0.5
-autostart = true
-
 [node name="Environment" type="WorldEnvironment" parent="."]
 environment = ExtResource("9_3smm1")
 
@@ -77,6 +68,7 @@ environment = ExtResource("9_3smm1")
 transform = Transform3D(-0.945941, 0.192996, -0.260669, -0.193372, 0.309641, 0.930983, 0.26039, 0.931061, -0.255582, -10.0085, 6.63122, -16.3197)
 shadow_enabled = true
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.2
 
-[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_2_timeout"]
