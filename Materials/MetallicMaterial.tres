@@ -1,15 +1,10 @@
-[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://dup3dwc57s0ah"]
-
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_gyr1j"]
-load_path = "res://.godot/imported/SmudgesLarge001_Flat.jpg-35488d8465666b5309273ff2c0f48d1c.s3tc.ctex"
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://dup3dwc57s0ah"]
 
 [resource]
 resource_name = "LeiaBody"
 cull_mode = 2
 metallic = 1.0
 roughness = 0.47
-clearcoat_texture = SubResource("CompressedTexture2D_gyr1j")
-heightmap_scale = -16.0
 subsurf_scatter_enabled = true
 subsurf_scatter_strength = 0.18
 uv2_world_triplanar = true

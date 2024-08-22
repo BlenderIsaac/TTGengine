@@ -72,16 +72,18 @@ func i_am_dead(dead_object):
 	list.append(get_tree().get_first_node_in_group("LEVELROOT").get_path_to(dead_object))
 	Levels.objects_dead[section] = list
 
-
-func load_story_level(mod_name, level_name):
-	get_tree().paused = false
-	
+func delete_prev_level():
 	if get_children().size() > 0:
 		var prev_level = get_child(0)
 		
 		if prev_level:
 			remove_child(prev_level)
 			prev_level.queue_free()
+
+func load_story_level(mod_name, level_name):
+	get_tree().paused = false
+	
+	delete_prev_level()
 	
 	object_changes = {}
 	char_spawn_dead = {}
@@ -105,11 +107,9 @@ func load_story_level(mod_name, level_name):
 
 
 func load_freeplay_level(mod_name, level_name, player_data, new_player_team):
-	var prev_level = get_child(0)
 	get_tree().paused = false
 	
-	remove_child(prev_level)
-	prev_level.queue_free()
+	delete_prev_level()
 	
 	object_changes = {}
 	char_spawn_dead = {}
@@ -154,8 +154,7 @@ func change_section(new_section, doorid=0):
 			object_changes[level_state.Section][prev_level.get_path_to(obj)] = dictionary
 	
 	get_tree().paused = false
-	remove_child(prev_level)
-	prev_level.queue_free()
+	delete_prev_level()
 	
 	
 	var level = create_level(level_state.Mod, level_state.LevelName, new_section)
@@ -203,8 +202,7 @@ func finish_level():
 	var player_data = prev_level.get_player_data()
 	
 	get_tree().paused = false
-	remove_child(prev_level)
-	prev_level.queue_free()
+	delete_prev_level()
 	
 	Interface.level_finish_player_data = player_data
 	Interface.finish_level()

@@ -202,5 +202,14 @@ offset_top = 98.0
 offset_right = 208.0
 offset_bottom = 140.0
 
+[node name="FreePlayCheck" type="CheckBox" parent="."]
+layout_mode = 0
+offset_left = 225.0
+offset_top = 10.0
+offset_right = 320.0
+offset_bottom = 41.0
+button_pressed = true
+text = "FreePlay"
+
 [connection signal="pressed" from="CenterContainer/VBoxContainer/LoadHub" to="." method="_on_load_hub_pressed"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/LoadLevel" to="." method="_on_load_level_pressed"]

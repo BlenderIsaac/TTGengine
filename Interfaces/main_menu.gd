@@ -20,7 +20,21 @@ func _on_load_level_pressed():
 	var section = $Section.text
 	
 	if !section:
-		Levels.load_story_level(mod, level)
+		if $FreePlayCheck.pressed:
+			var p_data = [{"Char":"BaylanSkoll.json", "Mod":mod}, {"Char":"RD3.json", "Mod":mod}]
+			var p_team = []
+			
+			var mods_path = SETTINGS.mod_path+"/"+mod+"/characters/chars"
+			
+			var chars = DirAccess.get_files_at(mods_path)
+			
+			for c in chars:
+				if c.ends_with(".json"):
+					p_team.append({"Mod":mod, "Path":c})
+			
+			Levels.load_freeplay_level(mod, level, p_data, p_team)
+		else:
+			Levels.load_story_level(mod, level)
 	else:
 		
 		var create_level = Levels.create_level(mod, level, section)
