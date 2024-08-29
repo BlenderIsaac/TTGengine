@@ -329,6 +329,8 @@ func find_opponent():
 	
 	return final_descision
 
+func WEAPON_AI():
+	pass
 
 func char_not_obstructed(c):
 	update_ray(c)
@@ -350,4 +352,3 @@ func get_ray_cast():
 
 func get_gun_tip():
 	return GunTipNode.global_position
-

@@ -256,4 +256,3 @@ func ai(_delta):
 	base_state.move_dir = Vector3(movement.x, 0, movement.y)
 	
 	jumping_physics(_delta)
-

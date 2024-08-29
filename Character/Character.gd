@@ -151,6 +151,10 @@ var just_tagged = false
 # if we have just been dropped in
 var just_dropped = false
 
+# alignment and faction
+var faction = []
+var alignment = 0
+
 # This function is called when this character is first added to the scene
 func _ready():
 	
@@ -1575,6 +1579,14 @@ func change_character(data, c_path, mod): # TODO: We don't need c_path here once
 	# Clear all current audio loops
 	$AudioPlayer.clear_loops()
 	
+	if data.has("Faction"):
+		if typeof(data.Faction) == TYPE_ARRAY:
+			faction = data.Faction
+		else:
+			faction = [data.Faction]
+	alignment = data.get("Alignment", 0)
+	
+	
 	# change name
 	if data.has("Name"):
 		char_name = data.Name
@@ -1697,7 +1709,11 @@ func change_character(data, c_path, mod): # TODO: We don't need c_path here once
 			var new_part_filename = data.ReplaceParts.get(part_name)
 			
 			var parts_path = SETTINGS.mod_path+"/"+origin_mod+"/characters/rigs/replacers/"+new_part_filename
-			var new_part = l.get_load(parts_path).instantiate()
+			var new_part = f.generate_gltf(parts_path)
+			var part_mesh = new_part.get_child(0).get_child(0).get_child(0)
+			new_part.get_child(0).get_child(0).remove_child(part_mesh)
+			new_part.free()
+			new_part = part_mesh
 			
 			var skeleton = rig_instance.get_node("Armature/Skeleton3D")
 			var current_part = skeleton.get_node(part_name)
@@ -1707,7 +1723,7 @@ func change_character(data, c_path, mod): # TODO: We don't need c_path here once
 			
 			new_part.name = part_name
 			skeleton.add_child(new_part)
-			new_part.skeleton = NodePath("..")
+			#new_part.skeleton = NodePath("..")
 	
 	anim = $Mesh/AnimationPlayer
 	anim.playback_process_mode = 0

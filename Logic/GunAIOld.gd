@@ -3,7 +3,6 @@ extends "res://Logic/BaseAI.gd"
 # Logic Type: AI logic
 # Contains: Logic for gun characters
 
-var weapon_logic = "ProjectileWeapon"
 
 func _init():
 	AI_desired_distance = 5
@@ -18,12 +17,10 @@ func _init():
 	valid_logics = ["Base", "Jump"]
 
 
-func AI_ready():
+func _ready():
 	find_logic()
 	reset_target_delay()
 
-func AI_process(_delta):
-	pass
 #func warning_aoe(from):
 	#var f_pos = f.to_vec2(from[0].global_position)
 	#var s_pos = f.to_vec2(global_position)
@@ -40,9 +37,6 @@ func AI_process(_delta):
 				#C.set_movement_state("Jump")
 				#jump_state.click_jump()
 
-func find_logic():
-	logic = get_parent().get_node(weapon_logic)
-
 
 func can_attack(character):
 	if logic.can_shoot():
@@ -53,3 +47,4 @@ func can_attack(character):
 
 func attack(character):
 	logic.shoot(logic.get_gun_rot_to_char(character), character)
+

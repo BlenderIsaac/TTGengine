@@ -26,15 +26,13 @@ func _init():
 	
 	attack_type = "Sword"
 
-func _ready():
+func AI_ready():
 	find_logics()
 	reset_target_delay()
 
-func _process(delta):
+func AI_process(_delta):
 	
-	find_logics()
-	
-	block_cooldown -= delta
+	block_cooldown -= _delta
 	
 	if C.AI and !C.dead and valid_logics.has(C.movement_state):
 		
@@ -48,94 +46,94 @@ func _process(delta):
 				anim.play(C.weapon_prefix+"Idleloop", .2)
 				C.reset_movement_state()
 		
-		if not C.player: #TODO: replace with faction code
-			
-			C.AI_desired_distance = AI_desired_distance
-			C.AI_max_distance = AI_max_distance
-			
-			# temporary bad guy code
-			if current_target and current_target.dead:
-				current_target = null
-			
-			if current_target:
-				
-				C.target = current_target.global_position
-				
-				if C.is_on_floor() and valid_logics.has(C.movement_state):
-					
-					logic.draw_weapon()
-					
-					if can_attack(current_target):
-						attack(current_target)
-					
-					var rot = get_rot_to_char(current_target)
-					C.mesh_angle_to = rot.y + PI
-			else:
-				
-				if block_cooldown <= 0.0:logic.store_weapon()
-				
-				
-				current_delay -= delta
-				if current_delay <= 0:
-					reset_target_delay()
-					var new_t = find_target(true, false)
-					
-					if new_t == null:
-						new_t = find_target(true, true)
-					
-					if new_t:
-						current_target = new_t
-		else:
-			
-			C.AI_desired_distance = peep_desired_distance
-			C.AI_max_distance = peep_max_distance
-			
-			# temporary good guy ai code
-			
-			current_delay -= delta
-			
-			if !character_exists(current_target):
-				current_target = null
-			
-			
-			if character_exists(current_target):
-				C.target = current_target.global_position
-				
-				if current_following:
-					if C.global_position.distance_to(current_target.global_position) > player_max_distance:
-						C.target = current_following.global_position
-				
-				if C.is_on_floor() and valid_logics.has(C.movement_state):
-					
-					logic.draw_weapon()
-					
-					if can_attack(current_target):
-						attack(current_target)
-					
-					var rot = get_rot_to_char(current_target)
-					C.mesh_angle_to = rot.y + PI
-				
-			elif current_following:
-				C.target = current_following.global_position
-				
-			if not current_target:
-				
-				if block_cooldown <= 0.0 and force_weapon_out.is_empty():
-					logic.store_weapon()
-				
-				if current_delay <= 0:
-					reset_target_delay()
-					
-					var new_t = find_target(false, true)
-					
-					if new_t != null:
-						current_target = new_t
-			
-			
-			var play_t = find_target(true, false, current_following != null)
-			
-			if play_t != null:
-				current_following = play_t
+		#if not C.player: #TODO: replace with faction code
+			#
+			#C.AI_desired_distance = AI_desired_distance
+			#C.AI_max_distance = AI_max_distance
+			#
+			## temporary bad guy code
+			#if current_target and current_target.dead:
+				#current_target = null
+			#
+			#if current_target:
+				#
+				#C.target = current_target.global_position
+				#
+				#if C.is_on_floor() and valid_logics.has(C.movement_state):
+					#
+					#logic.draw_weapon()
+					#
+					#if can_attack(current_target):
+						#attack(current_target)
+					#
+					#var rot = get_rot_to_char(current_target)
+					#C.mesh_angle_to = rot.y + PI
+			#else:
+				#
+				#if block_cooldown <= 0.0:logic.store_weapon()
+				#
+				#
+				#current_delay -= delta
+				#if current_delay <= 0:
+					#reset_target_delay()
+					#var new_t = find_target(true, false)
+					#
+					#if new_t == null:
+						#new_t = find_target(true, true)
+					#
+					#if new_t:
+						#current_target = new_t
+		#else:
+			#
+			#C.AI_desired_distance = peep_desired_distance
+			#C.AI_max_distance = peep_max_distance
+			#
+			## temporary good guy ai code
+			#
+			#current_delay -= delta
+			#
+			#if !character_exists(current_target):
+				#current_target = null
+			#
+			#
+			#if character_exists(current_target):
+				#C.target = current_target.global_position
+				#
+				#if current_following:
+					#if C.global_position.distance_to(current_target.global_position) > player_max_distance:
+						#C.target = current_following.global_position
+				#
+				#if C.is_on_floor() and valid_logics.has(C.movement_state):
+					#
+					#logic.draw_weapon()
+					#
+					#if can_attack(current_target):
+						#attack(current_target)
+					#
+					#var rot = get_rot_to_char(current_target)
+					#C.mesh_angle_to = rot.y + PI
+				#
+			#elif current_following:
+				#C.target = current_following.global_position
+				#
+			#if not current_target:
+				#
+				#if block_cooldown <= 0.0 and force_weapon_out.is_empty():
+					#logic.store_weapon()
+				#
+				#if current_delay <= 0:
+					#reset_target_delay()
+					#
+					#var new_t = find_target(false, true)
+					#
+					#if new_t != null:
+						#current_target = new_t
+			#
+			#
+			#var play_t = find_target(true, false, current_following != null)
+			#
+			#if play_t != null:
+				#current_following = play_t
 
 
 func can_attack(character):
@@ -165,7 +163,9 @@ func attack(_character):
 
 
 func find_logics():
-	if not slash_logic:
+	
+	if slash_logic == null:
+		
 		slash_logic = C.get_node_or_null("Logic/"+logic_slash_path)
 		logic = C.get_node_or_null("Logic/"+logic_path)
 		block_logic = C.get_node_or_null("Logic/"+logic_block_path)
@@ -218,6 +218,7 @@ func warning_sword_lunge(from):
 
 
 func warning_aoe(from):
+	
 	var f_pos = f.to_vec2(from[0].global_position)
 	var s_pos = f.to_vec2(global_position)
 	
@@ -249,4 +250,3 @@ func character_exists(chr):
 		return false
 	
 	return true
-

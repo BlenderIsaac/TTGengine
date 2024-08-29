@@ -34,19 +34,35 @@ func find_logic():pass
 var valid_logics = ["Base", "Jump"]
 
 func _ready():
+	
 	for lgc in get_parent().get_children():
+		
 		if lgc.has_method("WEAPON_AI"):
+			#print(C.current_filename)
 			weapons.append(lgc)
 	
 	reset_target_delay()
+	
+	AI_ready()
 
 func _process(delta):
 	
 	if C.AI:# and valid_logics.has(C.movement_state):
+		
 		if not C.player: #TEMP, replace with faction code
 			enemy_ai(delta)
+			
 		else:
 			party_ai(delta)
+	
+	AI_process(delta)
+
+func AI_ready():
+	find_logic()
+	reset_target_delay()
+
+func AI_process(_delta):
+	pass
 
 
 func party_ai(delta):
@@ -242,4 +258,3 @@ func get_rot_to_char(c):
 	var rot = rotationBasis.get_euler()
 	
 	return rot
-

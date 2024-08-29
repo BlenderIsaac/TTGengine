@@ -208,6 +208,8 @@ func exclusive_process(_delta):
 						
 						
 
+#func WEAPON_AI():
+	#pass
+
 func exclusive_damage(_amount, _who_from=null):
 	pass
-
