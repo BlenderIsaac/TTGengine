@@ -181,7 +181,7 @@ func _ready():
 
 func _process(_delta):
 	
-	#Engine.time_scale = 1.0
+	#Engine.time_scale = 1.0#0.1
 	#$Label3D.text = movement_state#anim.current_animation
 	
 	# delete the oldest point in respawn_histroy if there are more than ten of them

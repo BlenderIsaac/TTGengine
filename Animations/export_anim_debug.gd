@@ -2,15 +2,15 @@ extends Node3D
 
 
 func _ready():
-	var mod = "Ahsoka Show"
-	var export_path = SETTINGS.mod_path+"/"+mod+"/characters/anims/astromech/"
+	var mod = "B1ER_Rogue_One"
+	var export_path = SETTINGS.mod_path+"/"+mod+"/characters/anims/essie/"
 	
 	#var special_folder = ""#"hello"
 	#
 	#if special_folder != "":
 		#export_path += special_folder + "/"
 	
-	var glb_path = "res://Animations/AstromechRig.glb"
+	var glb_path = "res://Animations/DroidRig.glb"
 	
 	f.make(glb_path, Vector3(), self)
 	

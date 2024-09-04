@@ -21,12 +21,15 @@ func _on_load_level_pressed():
 	
 	if !section:
 		if $FreePlayCheck.pressed:
-			var p_data = [{"Char":"BaylanSkoll.json", "Mod":mod}, {"Char":"RD3.json", "Mod":mod}]
+			var p_data = []#{"Char":"BaylanSkoll.json", "Mod":mod}, {"Char":"RD3.json", "Mod":mod}]
 			var p_team = []
 			
 			var mods_path = SETTINGS.mod_path+"/"+mod+"/characters/chars"
 			
 			var chars = DirAccess.get_files_at(mods_path)
+			
+			p_data.append({"Char":chars[0],"Mod":mod})
+			p_data.append({"Char":chars[1],"Mod":mod})
 			
 			for c in chars:
 				if c.ends_with(".json"):

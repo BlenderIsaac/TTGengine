@@ -55,6 +55,7 @@ skeleton = NodePath("../..")
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="GameCam"]
 navigation_layers = 128
 height = 0.01
+debug_enabled = true
 
 [node name="Camera3D" type="Camera3D" parent="."]
 process_mode = 3

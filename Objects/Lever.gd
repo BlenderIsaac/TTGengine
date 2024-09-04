@@ -4,7 +4,7 @@ extends "res://Scripts/TriggerAnim.gd"
 var paths = ["SWLEVER.WAV"]
 
 var active = true
-var lever_reset_time = 1.0
+#var resetting_time = 1.0
 var reseting = false
 
 var audio
@@ -53,5 +53,3 @@ func pull():
 	active = false
 	
 	get_anim(props.PULL_ANIM).play(props.PULL_ANIM)
-
-

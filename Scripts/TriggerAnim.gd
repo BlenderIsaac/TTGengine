@@ -23,8 +23,12 @@ var anim_data = {
 
 var triggered = false
 
-
+var lbl = null
 func _ready():
+	lbl = Label3D.new()
+	add_child(lbl)
+	lbl.position.y += 3
+	
 	anim_data.Default = props.DEFAULT
 	anim_data.Trigger = props.START
 	anim_data.UnTrigger = props.END
@@ -48,6 +52,7 @@ func _process(_delta):
 		playing = false
 	
 	var triggering = is_triggering()
+	lbl.text = str(triggering)
 	
 	if triggering:
 		delay = untrigger_wait

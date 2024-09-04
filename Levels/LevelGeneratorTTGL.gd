@@ -1,7 +1,11 @@
 extends "Level.gd"
 
+var level_created_mod
+
 @warning_ignore("unused_parameter")
 func CREATE_LEVEL(N_mod, N_level_name, N_section):
+	
+	level_created_mod = N_mod
 	
 	var gltf_path = SETTINGS.mod_path+"/"+N_mod+"/levels/leveldata/"+N_level_name+"/"+N_section+"/"+N_section+".glb"#+N_level_section+"/"+N_level_section+".json"
 	var ttgl_path = SETTINGS.mod_path+"/"+N_mod+"/levels/leveldata/"+N_level_name+"/"+N_section+"/"+N_section+".ttgl"
@@ -428,11 +432,12 @@ func decode_material(matte_array):
 		base_material = MATERIALS.MetallicMatte
 	elif matte_type == "LOAD":
 		var path_data = (matte_array[3].trim_prefix("LOADPATH")).split("&")
-		var matte_path = f.get_data_path({path_data[0] : path_data[1], "Mod" : "Ahsoka Show"})
+		var matte_path = f.get_data_path({path_data[0] : path_data[1], "Mod" : level_created_mod})
 		return MATERIALS.get_loaded_material(matte_path)
 	
 	var colour="ffffff"
 	var texture
+	var normal_texture
 	for item in matte_array.slice(3):
 		if item.begins_with("ALBEDO"):
 			colour = item.trim_prefix("ALBEDO")
@@ -444,14 +449,20 @@ func decode_material(matte_array):
 		if item.begins_with("TEXTURE"):
 			var texture_string = item.trim_prefix("TEXTURE")
 			texture = decode_texture_string(texture_string.split("&"))
+		if item.begins_with("NORMAL_TEXTURE"):
+			var texture_string = item.trim_prefix("NORMAL_TEXTURE")
+			normal_texture = decode_texture_string(texture_string.split("&"))
 	
 	if texture:
-		return MATERIALS.get_texture_material(texture, base_material, colour)
+		if normal_texture:
+			return MATERIALS.get_texture_normal_material(texture, normal_texture, base_material, colour)
+		else:
+			return MATERIALS.get_texture_material(texture, base_material, colour)
 	else:
 		return MATERIALS.get_basic_material(colour, base_material)
 
 func decode_texture_string(array):
-	return f.get_data_path({array[0] : array[1], "Mod" : "Ahsoka Show"})
+	return f.get_data_path({array[0] : array[1], "Mod" : level_created_mod})
 
 func generate_gltf(path):
 	var gltf = GLTFDocument.new()
@@ -508,6 +519,8 @@ func generate_cam_nav(mesh):
 	var nav_mesh = NavigationMesh.new()
 	nav_mesh.cell_size = 0.1
 	nav_mesh.agent_radius = 0.1
+	nav_mesh.agent_max_climb = 1.0
+	nav_mesh.agent_max_slope = 90
 	var n = NavigationRegion3D.new()
 	
 	var source_data = NavigationMeshSourceGeometryData3D.new()

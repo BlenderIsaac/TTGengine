@@ -41,7 +41,7 @@ func _ready():
 
 func _process(_delta):
 	
-	$Label.text = str(team_indexes)
+	$Label.text = str(1/get_process_delta_time())#str(team_indexes)
 	
 	if $ModeSelect.visible:
 		var player_num = 0

@@ -345,6 +345,23 @@ func get_texture_material(texture, matte, albedo="ffffff"):
 		
 		return new_matte
 
+func get_texture_normal_material(texture, normal, matte, albedo="ffffff"):
+	var reference = texture+albedo+normal+str(matte)
+	
+	if texture_loaded_materials.has(reference):
+		return texture_loaded_materials.get(reference)
+	else:
+		var new_matte = matte.duplicate()
+		
+		new_matte.albedo_texture = load_texture(texture)
+		new_matte.normal_enabled = true
+		new_matte.normal_texture = load_texture(normal)
+		new_matte.albedo_color = albedo
+		
+		texture_loaded_materials[reference] = new_matte
+		
+		return new_matte
+
 
 func get_tag_part_material(colour):
 	if tag_particle_colours.has(colour):

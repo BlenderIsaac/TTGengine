@@ -10,6 +10,7 @@ var play_anim = false
 # that goes to
 #[true, true, [true, [true, true], true]]
 
+
 func extends_ready():
 	play_anim = props.ANIM
 	logic = props.LINE.split("|")
@@ -28,6 +29,7 @@ func _process(_delta):
 			playing = false
 		
 		var triggering = is_triggering()
+		lbl.text = str(triggering)
 		
 		if triggering:
 			delay = untrigger_wait
@@ -66,9 +68,12 @@ func are_we_triggered():
 			var mesh_parent = gltf.get_node(piece)
 			var trig_object
 			
-			for child in mesh_parent.get_children():
-				if "triggered" in child:
-					trig_object = child
+			if "triggered" in mesh_parent:
+				trig_object = mesh_parent
+			else:
+				for child in mesh_parent.get_children():
+					if "triggered" in child:
+						trig_object = child
 			
 			if trig_object:
 				
@@ -79,4 +84,3 @@ func are_we_triggered():
 		is_command = !is_command
 	
 	return currently_true
-
