@@ -185,7 +185,7 @@ offset_left = 14.0
 offset_top = 14.0
 offset_right = 208.0
 offset_bottom = 56.0
-text = "B1ER_Rogue_One"
+text = "Ahsoka Show"
 
 [node name="Level" type="LineEdit" parent="."]
 layout_mode = 0
@@ -193,7 +193,7 @@ offset_left = 14.0
 offset_top = 56.0
 offset_right = 208.0
 offset_bottom = 98.0
-text = "1 ErsoHomestead"
+text = "Debe"
 
 [node name="Section" type="LineEdit" parent="."]
 layout_mode = 0

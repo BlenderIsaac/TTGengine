@@ -167,7 +167,7 @@ func _process(_delta):
 func snap():
 	var target_average = get_special_avg_pos()
 	
-	global_position = target_agent.get_final_position() + Vector3(0, -0.3, 0)
+	global_position = (target_agent.get_final_position() + Vector3(0, -0.3, 0))+Vector3(0.01, 0, 0)
 	
 	if f.to_vec2(global_position-target_average) == Vector2():
 		rotation.x = -PI/2

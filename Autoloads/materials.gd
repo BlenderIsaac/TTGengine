@@ -326,6 +326,36 @@ func get_matte(matte_data, origin_mod):
 			return get_loaded_material(matte_path, config)
 
 
+func get_modless_matte(matte_data):
+	
+	var config = {}
+	
+	if matte_data.has("Config"):
+		config = matte_data.Config
+	
+	match matte_data.Type:
+		"Basic":
+			return get_basic_material(matte_data.Albedo, BasicMatte)
+		
+		"Preset":
+			return get_preset_basic_material(matte_data.Preset, BasicMatte)
+		
+		"AddBasic":
+			return get_basic_material(matte_data.Albedo, AddMatte)
+		"AddPreset":
+			return get_preset_basic_material(matte_data.Preset, AddMatte)
+		
+		"Rough":
+			return get_basic_material(matte_data.Albedo, RoughMatte)
+		"RoughPreset":
+			return get_preset_basic_material(matte_data.Preset, RoughMatte)
+		
+		"MetallicBasic":
+			return get_basic_material(matte_data.Albedo, MetallicMatte)
+		"MetallicPreset":
+			return get_preset_basic_material(matte_data.Preset, MetallicMatte)
+
+
 func get_preset(preset):
 	return material_data.get(preset)
 
