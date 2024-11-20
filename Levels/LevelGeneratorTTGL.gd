@@ -307,7 +307,7 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 								obj.add_child(area)
 								obj.hide()
 							elif obj_type == "COLLECT":
-								pass
+								f.make("res://Objects/collectable.tscn", Vector3(), obj)
 							elif obj_type == "LOGIC":
 								obj.set_script(l.get_load("res://Scripts/LogicLine.gd"))
 								obj.gltf = gltf
