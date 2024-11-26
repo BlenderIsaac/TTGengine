@@ -192,7 +192,7 @@ var OP_PREC = {"(":1, "or":2, "and":3, "not":4}
 # button1 button2 and button3 button4 or not and
 func infix2postfix(infixstr):
 	var tokens = split_infix_str(infixstr)
-	
+	print(tokens)
 	var stack = []
 	var output = ""
 	
@@ -229,7 +229,8 @@ func split_infix_str(infixstr):
 	var built = ""
 	for c in infixstr:
 		if c == " ":
-			infix_array.append(built)
+			if built != "":
+				infix_array.append(built)
 			built = ""
 		elif c == "(" or c == ")":
 			infix_array.append(c)
