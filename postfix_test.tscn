@@ -1,0 +1,73 @@
+[gd_scene load_steps=2 format=3 uid="uid://kewcu85i2tgj"]
+
+[ext_resource type="Script" path="res://postfix_test.gd" id="1_uackf"]
+
+[node name="PostfixTest" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_uackf")
+
+[node name="LineEdit" type="LineEdit" parent="."]
+layout_mode = 0
+offset_left = 83.0
+offset_top = 71.0
+offset_right = 315.0
+offset_bottom = 102.0
+
+[node name="Active" type="CheckBox" parent="."]
+layout_mode = 0
+offset_left = 82.0
+offset_top = 36.0
+offset_right = 158.0
+offset_bottom = 67.0
+text = "Active"
+
+[node name="1" type="CheckBox" parent="."]
+layout_mode = 0
+offset_left = 112.0
+offset_top = 110.0
+offset_right = 150.0
+offset_bottom = 141.0
+text = "1"
+
+[node name="2" type="CheckBox" parent="."]
+layout_mode = 0
+offset_left = 154.0
+offset_top = 108.0
+offset_right = 178.0
+offset_bottom = 132.0
+text = "2"
+
+[node name="3" type="CheckBox" parent="."]
+layout_mode = 0
+offset_left = 210.0
+offset_top = 109.0
+offset_right = 234.0
+offset_bottom = 133.0
+text = "3"
+
+[node name="4" type="CheckBox" parent="."]
+layout_mode = 0
+offset_left = 253.0
+offset_top = 110.0
+offset_right = 277.0
+offset_bottom = 134.0
+text = "4"
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 78.0
+offset_top = 162.0
+offset_right = 326.0
+offset_bottom = 185.0
+
+[node name="Label2" type="Label" parent="."]
+layout_mode = 0
+offset_left = 76.0
+offset_top = 205.0
+offset_right = 324.0
+offset_bottom = 228.0

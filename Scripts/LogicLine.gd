@@ -1,6 +1,7 @@
 extends "res://Scripts/TriggerAnim.gd"
 
-var logic
+var logic_str = ""
+var postfix_logic = []
 var object_to_trigger
 
 var play_anim = false
@@ -13,13 +14,16 @@ var play_anim = false
 
 func extends_ready():
 	play_anim = props.ANIM
-	logic = props.LINE.split("|")
+	logic_str = props.LINE
+	postfix_logic = f.infix2postfix(props.LINE)
 
 #func _process(delta):
 	#triggered = are_we_triggered()
 	#print(triggered)
 
 func _process(_delta):
+	
+	
 	
 	if play_anim:
 		
@@ -56,31 +60,47 @@ func is_triggering():
 
 
 func are_we_triggered():
-	var is_command = false
+	return evaluate_postfix(postfix_logic)
+
+
+var operators = ["and", "or"]
+func evaluate_postfix(postfix_array):
+	var stack = []
 	
-	var currently_true = true
 	
-	for piece in logic:
-		if is_command:
-			pass
+	for item in postfix_array:
+		if item in operators:
+			var obj1 = stack.pop_back()
+			var obj2 = stack.pop_back()
+			
+			stack.append(calculate(item, obj1, obj2))
+		elif item == "not":
+			var reversing = stack.pop_back()
+			stack.append(!reversing)
 		else:
-			
-			var mesh_parent = gltf.get_node(piece)
-			var trig_object
-			
-			if "triggered" in mesh_parent:
-				trig_object = mesh_parent
-			else:
-				for child in mesh_parent.get_children():
-					if "triggered" in child:
-						trig_object = child
-			
-			if trig_object:
-				
-				if !trig_object.triggered:
-					currently_true = false
-					break
-		
-		is_command = !is_command
+			stack.append(is_obj_triggered(item))
 	
-	return currently_true
+	return stack.pop_back()
+
+
+
+func calculate(operator, bool1, bool2):
+	match operator:
+		"and":
+			return bool1 and bool2
+		"or":
+			return bool1 or bool2
+
+
+func is_obj_triggered(obj_str):
+	var mesh_parent = gltf.get_node(obj_str)
+	var trig_object
+	
+	if "triggered" in mesh_parent:
+		trig_object = mesh_parent
+	else:
+		for child in mesh_parent.get_children():
+			if "triggered" in child:
+				trig_object = child
+	
+	return trig_object.triggered

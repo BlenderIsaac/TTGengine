@@ -176,5 +176,3 @@ func find_dropped_out_char_by_num(char_num, levelroot):
 			final_char = backup
 	
 	return final_char
-
-

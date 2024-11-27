@@ -182,8 +182,8 @@ func get_data_path(data, mod=null):
 #
 #	return false
 
-func _ready():
-	print(infix2postfix("button1 and button2 and not ( button3 or button4 )"))
+#func _ready():
+#	print(infix2postfix("button1 and button2 and not (button3 or button4)"))
 
 var OP_PREC = {"(":1, "or":2, "and":3, "not":4}
 
@@ -192,9 +192,9 @@ var OP_PREC = {"(":1, "or":2, "and":3, "not":4}
 # button1 button2 and button3 button4 or not and
 func infix2postfix(infixstr):
 	var tokens = split_infix_str(infixstr)
-	print(tokens)
+	
 	var stack = []
-	var output = ""
+	var output = []
 	
 	for token in tokens:
 		#print(stack)
@@ -204,21 +204,20 @@ func infix2postfix(infixstr):
 		elif token == ")":
 			# right parethesis
 			while stack[-1] != "(":
-				output += stack.pop_back() + " "
+				output.append(stack.pop_back())
 			stack.pop_back()
 		elif token in OP_PREC:
 			# operator
 			while not stack.is_empty() and OP_PREC[stack[-1]] >= OP_PREC[token]:
-				output += stack.pop_back() + " "
+				output.append(stack.pop_back())
 			
 			stack.push_back(token)
 		else:
 			# operand
-			output += token + " "
+			output.append(token)
 	
 	while not stack.is_empty():
-		output += stack.pop_back() + " "
-	output = output.trim_suffix(" ")
+		output.append(stack.pop_back())
 	
 	return output
 
@@ -229,20 +228,22 @@ func split_infix_str(infixstr):
 	var built = ""
 	for c in infixstr:
 		if c == " ":
-			if built != "":
-				infix_array.append(built)
+			if built != "":infix_array.append(built.to_lower())
 			built = ""
 		elif c == "(" or c == ")":
+			if built != "":
+				infix_array.append(built.to_lower())
+			
 			infix_array.append(c)
 			built = ""
 		else:
 			built += c
 	
+	
+	if built != "":infix_array.append(built.to_lower())
+	
 	return infix_array
 
-
-func evaluate_postfix(postfix_array):
-	pass
 
 # Basic function
 func key_press(key, control_type, controller_number=0):
