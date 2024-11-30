@@ -15,6 +15,7 @@ var play_anim = false
 func extends_ready():
 	play_anim = props.ANIM
 	logic_str = props.LINE
+	#print(props)
 	postfix_logic = f.infix2postfix(props.LINE)
 
 #func _process(delta):

@@ -116,8 +116,47 @@ var respawn_point = Vector3()
 var aim_pos = Vector3(0, 0.9, 0)
 
 # health variables
-var max_hit_points = 4.0
-var hit_points = 4.0
+var max_hit_points = 4.0:
+	set(value):
+		max_hit_points = value
+		update_hearts()
+		##print("was set to ", value, " player number ", player_number)
+		#if player:
+			#max_player_hit_points = value
+			#player_hit_points = clamp(player_hit_points, 0, max_player_hit_points)
+		#else:
+			#max_ai_hit_points = value
+			#ai_hit_points = clamp(ai_hit_points, 0, ai_hit_points)
+		#update_hearts()
+	#get():
+		#if player:
+			##print("we return max player hit points ", max_player_hit_points)
+			#return max_player_hit_points
+		#else:
+			##print("we return max ai hit points ", max_ai_hit_points)
+			#return max_ai_hit_points
+var hit_points = 4.0:
+	set(value):
+		hit_points = value
+		health_ratio_accurate = false
+		update_hearts()
+var ai_hit_points = 4.0
+	#set(value):
+		#if player:
+			#player_hit_points = clamp(value, 0, max_player_hit_points)
+		#else:
+			#ai_hit_points = clamp(value, 0, ai_hit_points)
+		#update_hearts()
+	#get():
+		#if player:
+			#return player_hit_points
+		#else:
+			#return ai_hit_points
+var health_ratio = 0.0
+var health_ratio_accurate = false
+
+# health variables for non-party characters
+
 
 # the lerp angles for mesh turning
 var mesh_angle_to = 0.0
@@ -170,8 +209,8 @@ func _ready():
 	# Update the health Hud
 	if player:
 		update_HUD()
-		if AI:
-			hit_points = max_hit_points
+		#if AI: # I commented this but I don't know why it was there
+		#hit_points = max_hit_points
 		
 		update_camera_target()
 	
@@ -180,6 +219,9 @@ func _ready():
 
 
 func _process(_delta):
+	
+	#if player_number == 0:
+	#	print(hit_points, "/", max_hit_points)
 	
 	#Engine.time_scale = 1.0#0.1
 	#$Label3D.text = movement_state#anim.current_animation
@@ -1224,8 +1266,17 @@ func change_health(amount):
 	if not AI:
 		update_HUD()
 
+
 # This is an unused variable for auto icons
 var current_auto_icon = null
+
+func update_hearts():
+	var Parent = get_hud()
+	if Parent != null and player_number != -1:
+		var HeartParent = Parent.get_node("InGame/HeartParent")
+		#printt(hit_points, max_hit_points)
+		HeartParent.hearts = hit_points
+		HeartParent.max_hearts = max_hit_points
 
 # This is a function that finds and updates our current HUD
 func update_HUD():
@@ -1249,28 +1300,14 @@ func update_HUD():
 		else:
 			Parent.get_node("Icon/Head").texture = null
 		
-		# Get references to the Heart and DropIn nodes of the HUD
+		# Reference to the DropIn and HeartParent
 		var HeartParent = Parent.get_node("InGame/HeartParent")
 		var DropInPrompt = Parent.get_node("InGame/DropInPrompt")
 		
-		# First set all the modulation of the hearts to transparent
-		HeartParent.get_node("Heart1").modulate = "ffffff50"
-		HeartParent.get_node("Heart2").modulate = "ffffff50"
-		HeartParent.get_node("Heart3").modulate = "ffffff50"
-		HeartParent.get_node("Heart4").modulate = "ffffff50"
-		
-		# Then set all the hearts we want to be opaque based on hit_points
-		if hit_points > 0:
-			HeartParent.get_node("Heart1").modulate = "ffffffff"
-		if hit_points > 1:
-			HeartParent.get_node("Heart2").modulate = "ffffffff"
-		if hit_points > 2:
-			HeartParent.get_node("Heart3").modulate = "ffffffff"
-		if hit_points > 3:
-			HeartParent.get_node("Heart4").modulate = "ffffffff"
-		
 		# Set the drop in prompt text to the correct key
 		DropInPrompt.text = str("Press (",pause_key,") or\n(Start) to start")
+		
+		update_hearts()
 		
 		# If we are AI now then we want to make the HUD transparent, hide the hearts, and show the drop in prompt
 		if AI:
@@ -1464,6 +1501,8 @@ func tag_character(tag):
 	tag.control_type = tag_new_control
 	control_type = our_new_control
 	
+	# set the tags max health
+	
 	# Stop the anim on the tag's Modulation and play DropIn to show the player that they have switched
 	tag.get_node("Modulation").stop()
 	tag.get_node("Modulation").play("DropIn")
@@ -1567,6 +1606,7 @@ func change_character_to_file(c_file, mod):
 	
 	current_filename = c_file
 
+
 # This function sets us to a particular character based off data
 func change_character(data, c_path, mod): # TODO: We don't need c_path here once we remove current_character_filename
 	
@@ -1625,10 +1665,39 @@ func change_character(data, c_path, mod): # TODO: We don't need c_path here once
 	else:
 		icon = null
 	
-	# If the data specifies a health for an AI then set our AI_Health to it
+	var old_max = max_hit_points
+	var old_h = hit_points
+	var old_ratio = old_h/old_max
+	# If the data specifies health then set our new health to it
+	if data.has("Health"):
+		max_hit_points = data.Health
+	else:
+		max_hit_points = 4.0
+	#if hit_points > max_hit_points:hit_points = max_hit_points
+	
+	
 	if data.has("AI_Health"):
-		if AI:
-			hit_points = data.AI_Health
+		ai_hit_points = data.AI_Health
+	else:
+		ai_hit_points = max_hit_points
+	
+	# TODO: Set an updated health
+	if !health_ratio_accurate:
+		health_ratio = old_ratio
+	
+	hit_points = ceil(health_ratio*max_hit_points)
+	health_ratio_accurate = true
+	#if old_max == old_h:
+	# find how many health we were off max
+	#if hit_points != 1:
+	#	
+	#	var diff = old_max - old_h
+	#	var new_health = max_hit_points - clamp(diff, 0, max_hit_points-1)
+	#	
+	#	hit_points = new_health
+	
+	update_hearts()
+	
 	
 	if data.has("Collision"):
 		collision_scene = data.Collision

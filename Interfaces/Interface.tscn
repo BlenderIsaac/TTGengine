@@ -1,4 +1,4 @@
-[gd_scene load_steps=57 format=3 uid="uid://dvgy5vxoqaq41"]
+[gd_scene load_steps=58 format=3 uid="uid://dvgy5vxoqaq41"]
 
 [ext_resource type="Script" path="res://Interfaces/Interface.gd" id="1_0holg"]
 [ext_resource type="Texture2D" uid="uid://ditscyjxgo1jd" path="res://Textures/select.png" id="3_di25h"]
@@ -14,6 +14,7 @@
 [ext_resource type="Theme" uid="uid://bkv0oj6en23yc" path="res://Interfaces/ButtonsTheme.tres" id="10_u2xjo"]
 [ext_resource type="Texture2D" uid="uid://badk5hii0xgof" path="res://Textures/GreenBack.png" id="11_c2hfv"]
 [ext_resource type="Texture2D" uid="uid://6ediol0mp3qp" path="res://Textures/BrownBack.png" id="12_d0w3d"]
+[ext_resource type="Script" path="res://Interfaces/HeartGroup.gd" id="12_mrkh6"]
 [ext_resource type="Texture2D" uid="uid://dkwxubwe6jiik" path="res://Textures/TrueJediStuds/Black.png" id="75_wjcnw"]
 [ext_resource type="Texture2D" uid="uid://cs82sjgy57cit" path="res://Textures/TrueJediStuds/Yellow.png" id="76_eueun"]
 [ext_resource type="Animation" uid="uid://cvrn7xh4ersap" path="res://Animations/FadeInOut.res" id="77_nwkkc"]
@@ -1638,7 +1639,6 @@ text = "Reset"
 flat = true
 
 [node name="Icons" type="Control" parent="."]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1708,22 +1708,7 @@ grow_vertical = 2
 
 [node name="HeartParent" type="Node2D" parent="Icons/Player0HUD/Control/InGame"]
 visible = false
-
-[node name="Heart1" type="Sprite2D" parent="Icons/Player0HUD/Control/InGame/HeartParent"]
-position = Vector2(208, 102)
-texture = ExtResource("8_4ldes")
-
-[node name="Heart2" type="Sprite2D" parent="Icons/Player0HUD/Control/InGame/HeartParent"]
-position = Vector2(238, 102)
-texture = ExtResource("8_4ldes")
-
-[node name="Heart3" type="Sprite2D" parent="Icons/Player0HUD/Control/InGame/HeartParent"]
-position = Vector2(268, 102)
-texture = ExtResource("8_4ldes")
-
-[node name="Heart4" type="Sprite2D" parent="Icons/Player0HUD/Control/InGame/HeartParent"]
-position = Vector2(296, 102)
-texture = ExtResource("8_4ldes")
+script = ExtResource("12_mrkh6")
 
 [node name="DropInPrompt" type="Label" parent="Icons/Player0HUD/Control/InGame"]
 layout_mode = 1
@@ -1906,22 +1891,9 @@ offset_bottom = 40.0
 
 [node name="HeartParent" type="Node2D" parent="Icons/Player1HUD/Control/InGame"]
 visible = false
-
-[node name="Heart1" type="Sprite2D" parent="Icons/Player1HUD/Control/InGame/HeartParent"]
-position = Vector2(-295, 102)
-texture = ExtResource("8_4ldes")
-
-[node name="Heart2" type="Sprite2D" parent="Icons/Player1HUD/Control/InGame/HeartParent"]
-position = Vector2(-265, 102)
-texture = ExtResource("8_4ldes")
-
-[node name="Heart3" type="Sprite2D" parent="Icons/Player1HUD/Control/InGame/HeartParent"]
-position = Vector2(-235, 102)
-texture = ExtResource("8_4ldes")
-
-[node name="Heart4" type="Sprite2D" parent="Icons/Player1HUD/Control/InGame/HeartParent"]
-position = Vector2(-207, 102)
-texture = ExtResource("8_4ldes")
+script = ExtResource("12_mrkh6")
+offset_x = -30
+initial_pos = Vector2(-207, 102)
 
 [node name="DropInPrompt" type="Label" parent="Icons/Player1HUD/Control/InGame"]
 layout_mode = 0

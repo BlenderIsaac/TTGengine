@@ -32,7 +32,7 @@ func evaluate_postfix(postfix_array):
 
 
 func calculate(operator, bool1, bool2):
-	match operator:
+	match operator.to_lower():
 		"and":
 			return bool1 and bool2
 		"or":

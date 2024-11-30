@@ -228,11 +228,11 @@ func split_infix_str(infixstr):
 	var built = ""
 	for c in infixstr:
 		if c == " ":
-			if built != "":infix_array.append(built.to_lower())
+			if built != "":infix_array.append(built)
 			built = ""
 		elif c == "(" or c == ")":
 			if built != "":
-				infix_array.append(built.to_lower())
+				infix_array.append(built)
 			
 			infix_array.append(c)
 			built = ""
@@ -240,7 +240,7 @@ func split_infix_str(infixstr):
 			built += c
 	
 	
-	if built != "":infix_array.append(built.to_lower())
+	if built != "":infix_array.append(built)
 	
 	return infix_array
 
