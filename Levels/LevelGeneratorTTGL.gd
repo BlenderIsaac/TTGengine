@@ -287,9 +287,9 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 								
 								match props.TYPE:
 									"gen_PUSH":
-										obj.set_script(l.get_load("res://Box.gd"))
+										obj.set_script(l.get_load("res://TEMP/Box.gd"))
 									"lsw_JEDI_DOOR":
-										obj.set_script(l.get_load("res://SaberWall.gd"))
+										obj.set_script(l.get_load("res://TEMP/SaberWall.gd"))
 									"gen_LEVER":
 										obj.set_script(l.get_load("res://Objects/Lever.gd"))
 									"gen_PANEL":

@@ -13,9 +13,9 @@ func _input(event):
 	if(event is InputEventScreenTouch or event is InputEventScreenDrag) and WHEEL.is_pressed():
 		var center = WHEEL.global_position
 		var diff = (event.position - center)
-		if diff.length() < WHEEL.shape.radius:
+		#if diff.length() < WHEEL.shape.radius:
 		
-			point.position = diff.normalized()*min(diff.length(), WHEEL.shape.radius*.8)
+		point.position = diff.normalized()*min(diff.length(), WHEEL.shape.radius*.8)
 			#print(angle)
 			#var orig_angle = ship.rotation - (PI/2.0)
 			#ship.rotation_dir += sign(angle - orig_angle)

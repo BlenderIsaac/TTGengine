@@ -94,7 +94,7 @@ func exclusive_physics(_delta):
 					
 					
 					if valid == true:
-						var sister_lift = l.get_load("res://NightSisterLift.tscn").instantiate()
+						var sister_lift = l.get_load("res://TEMP/NightSisterLift.tscn").instantiate()
 						sister_lift.position = magic_target.position
 						sister_lift.lifted = magic_target
 						C.get_parent().add_child(sister_lift)
