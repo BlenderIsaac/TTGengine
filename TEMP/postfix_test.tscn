@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://kewcu85i2tgj"]
 
-[ext_resource type="Script" path="res://postfix_test.gd" id="1_uackf"]
+[ext_resource type="Script" path="res://TEMP/postfix_test.gd" id="1_uackf"]
 
 [node name="PostfixTest" type="Control"]
 layout_mode = 3

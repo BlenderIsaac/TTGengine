@@ -51,12 +51,12 @@ func exclusive_physics(_delta):
 	else:
 		C.char_vel.y = C.get_base_movement_state().air_gravity*_delta*C.var_scale
 	
-	var track_vel = root_vel
+	var track_vel = root_vel#*2
 	#TODO: When we fix root_vel, track_vel should only change when root_vel is non-zero
 	if f.is_character_valid(snapped_attack_target): #and root_vel.length() > 0:
-		track_vel = (snapped_attack_target.global_position-C.global_position).normalized()*base_state.run_speed*C.var_scale*attack_speed
-		track_vel.y = 0
-		
+		#track_vel = (snapped_attack_target.global_position-C.global_position).normalized()*base_state.run_speed*C.var_scale*attack_speed
+		#track_vel.y = 0
+		track_vel *= 5
 		if snapped_attack_target.global_position.distance_to(C.global_position) < 1.2:
 			track_vel = Vector3()
 	

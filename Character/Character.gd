@@ -220,6 +220,10 @@ func _ready():
 
 func _process(_delta):
 	
+	get_node("Mesh/Armature/Skeleton3D").position = -get_root_pos()
+	
+	#print("h ", get_node("Mesh/Armature/Skeleton3D").transform)
+	
 	#if player_number == 0:
 	#	print(hit_points, "/", max_hit_points)
 	
@@ -1757,12 +1761,13 @@ func change_character(data, c_path, mod): # TODO: We don't need c_path here once
 	
 	if subrig_name.ends_with(".glb"):
 		rig_instance = f.generate_gltf(rig_path)
-		var rooot = BoneAttachment3D.new()
-		m_rot.x = -PI/2
-		rooot.bone_idx = 0
-		rooot.name = "ROOT"
-		rooot.override_pose = true
-		rig_instance.get_node("Armature/Skeleton3D").add_child(rooot)
+		rig_instance.rotation_degrees.y += 90.0
+		#var rooot = BoneAttachment3D.new()
+		#m_rot.x = -PI/2
+		#rooot.bone_idx = 0
+		#rooot.name = "ROOT"
+		#rooot.override_pose = true
+		#rig_instance.get_node("Armature/Skeleton3D").add_child(rooot)
 	else:
 		m_rot.x = 0
 		rig_instance = l.get_load(rig_path).instantiate()
@@ -1870,6 +1875,8 @@ func change_character(data, c_path, mod): # TODO: We don't need c_path here once
 			var new_anim = l.get_load(f.get_data_path(anim_name, mod))
 			
 			add_animation(anim_name.Name, new_anim)
+	
+	anim_player.connect("animation_started", anim_started)
 	
 	get_base_movement_state().C = self
 	anim_player.play(get_base_movement_state().get_switch_anim(), 0.0)
@@ -2031,6 +2038,10 @@ func key_press(key, override=null):
 				return true
 	
 	return false
+
+
+func anim_started(anim_name):
+	trigger_logics("anim_started", [anim_name])
 
 
 # Basic function that checks whether a key was just pressed in the physics process function

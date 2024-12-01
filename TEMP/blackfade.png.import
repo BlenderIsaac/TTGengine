@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cn5dtmwbkxhd"
-path.s3tc="res://.godot/imported/blackfade.png-c6f29c1f6bf31f29d95c0c02ed1bc224.s3tc.ctex"
-path.etc2="res://.godot/imported/blackfade.png-c6f29c1f6bf31f29d95c0c02ed1bc224.etc2.ctex"
+path.s3tc="res://.godot/imported/blackfade.png-0cde73a584c4788429c320dfb4daab24.s3tc.ctex"
+path.etc2="res://.godot/imported/blackfade.png-0cde73a584c4788429c320dfb4daab24.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://Materials/blackfade.png"
-dest_files=["res://.godot/imported/blackfade.png-c6f29c1f6bf31f29d95c0c02ed1bc224.s3tc.ctex", "res://.godot/imported/blackfade.png-c6f29c1f6bf31f29d95c0c02ed1bc224.etc2.ctex"]
+source_file="res://TEMP/blackfade.png"
+dest_files=["res://.godot/imported/blackfade.png-0cde73a584c4788429c320dfb4daab24.s3tc.ctex", "res://.godot/imported/blackfade.png-0cde73a584c4788429c320dfb4daab24.etc2.ctex"]
 
 [params]
 

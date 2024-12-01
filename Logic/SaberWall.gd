@@ -23,8 +23,6 @@ func inclusive_physics(_delta):
 
 func initiate():
 	
-	#audio_player.start_loop("SaberWallCut")
-	
 	if C.weapon_prefix != our_prefix:
 		C.get_logic(saber_logic).draw_weapon()
 	
@@ -93,4 +91,3 @@ func find_wall():
 	
 	# return the best wall we found
 	return best_wall
-

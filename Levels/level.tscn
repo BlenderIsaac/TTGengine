@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://Levels/LevelGeneratorTTGL.gd" id="1_qvxlj"]
 [ext_resource type="Script" path="res://Levels/Cam.gd" id="2_mq7dq"]
 [ext_resource type="Script" path="res://Interfaces/OnUI.gd" id="3_np2bf"]
-[ext_resource type="PackedScene" uid="uid://d2bsp27ml58jg" path="res://Debug/debugsymbol.tscn" id="4_twfmp"]
+[ext_resource type="PackedScene" uid="uid://d2bsp27ml58jg" path="res://TEMP/debugsymbol.tscn" id="4_twfmp"]
 [ext_resource type="Environment" uid="uid://bxkijjqiqadqk" path="res://Levels/SkyEnv.tres" id="9_3smm1"]
 [ext_resource type="Script" path="res://Levels/FreeLookCam.gd" id="13_2gvu3"]
 

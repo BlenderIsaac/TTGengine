@@ -1,11 +1,11 @@
 extends Node
 
 var dropped_in = [
-	## {"active" : BOOL, "control_type" : STRING, "controller_num" : INT}
-	{"active" : true, "control_type" : "keyboard", "controller_number" : 0, "money" : 0},
-	{"active" : false, "control_type" : "keyboard", "controller_number" : 0, "money" : 0},
-#	{"active" : false, "control_type" : "keyboard", "controller_number" : 0},
-#	{"active" : false, "control_type" : "keyboard", "controller_number" : 0},
+##	{"active" : BOOL, "control_type" : STRING, "controller_num" : INT}
+	{"active" : true, "control_type" : "keyboard", "controller_number" : 0, "money" : 0, "hit_points" : 0},
+	{"active" : false, "control_type" : "keyboard", "controller_number" : 0, "money" : 0, "hit_points": 0},
+#	{"active" : false, "control_type" : "keyboard", "controller_number" : 0, "money" : 0, "hit_points": 0},
+#	{"active" : false, "control_type" : "keyboard", "controller_number" : 0, "money" : 0, "hit_points": 0},
 ]
 
 var keys_pressed = []

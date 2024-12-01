@@ -1,6 +1,6 @@
 [gd_scene load_steps=11 format=3 uid="uid://c3yeberagi4xp"]
 
-[ext_resource type="Script" path="res://NightSisterLift.gd" id="1_4jyg6"]
+[ext_resource type="Script" path="res://TEMP/NightSisterLift.gd" id="1_4jyg6"]
 [ext_resource type="Texture2D" uid="uid://cj4ebgv7jgolj" path="res://Textures/circle_05.png" id="1_qfx4y"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pkgjs"]

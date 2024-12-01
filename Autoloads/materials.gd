@@ -328,10 +328,10 @@ func get_matte(matte_data, origin_mod):
 
 func get_modless_matte(matte_data):
 	
-	var config = {}
+	var _config = {}
 	
 	if matte_data.has("Config"):
-		config = matte_data.Config
+		_config = matte_data.Config
 	
 	match matte_data.Type:
 		"Basic":
