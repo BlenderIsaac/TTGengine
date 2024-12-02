@@ -11,7 +11,7 @@ var jump_2_speed = 1.2
 
 var walk_speed = 0.6
 var run_speed = 1.2
-var move_delay = 0.2
+var move_delay = 0.0#0.2
 
 # move delay time left
 var move_delay_timer = 0.0
@@ -35,6 +35,9 @@ func _ready():
 
 func anim_started(vars):
 	var anim_name = vars[0]
+	
+	#print(anim_name)
+	
 	if anim_name.ends_with("Runloop"):
 		footsteps_played = 0
 
@@ -56,8 +59,8 @@ func exclusive_physics(_delta):
 		
 		# If we are in the air and we are playing one of the animations in not_air_anims
 		# Then make us be falling instead
-		for a in not_air_anims:
-			if anim.current_animation.ends_with(a):
+		for an in not_air_anims:
+			if anim.current_animation.ends_with(an):
 				# Play fallloop with a blend of .5
 				anim.play(C.weapon_prefix+"Fallloop", .5)
 				break
@@ -131,6 +134,11 @@ func exclusive_physics(_delta):
 		elif anim.current_animation.ends_with("Jump"):
 			anim.play(prefix+"Land", .1)
 	
+	if C.is_on_floor() == true and on_floor_last_frame == false:
+		audio_player.play("Land")
+	
+	on_floor_last_frame = C.is_on_floor()
+	
 	# smoothly transition our current movement direction to our desired movement direction
 	var weight = .15
 	move_dir_to.x = lerp(move_dir_to.x, move_dir.x, weight*_delta*60)
@@ -153,20 +161,6 @@ func initiate():
 	#last_move_dir = facing_move_dir
 	#move_dir = facing_move_dir
 	#move_delay_timer = 0.0#move_delay+0.0
-
-#var land_states = ["Base", "Jump"]
-#func inclusive_physics(_delta):
-	#if C.movement_state in land_states:
-		#if C.is_on_floor():
-			#if on_floor_last_frame == false:
-				#audio_player.play("Land")
-	#
-	#on_floor_last_frame = C.is_on_floor()
-	#if C.dead:
-		#on_floor_last_frame = true
-	
-	
-	#move_delay_time_left += _delta
 
 # This is so we can copy some variables across switches
 var vars_copied_on_switch = ["move_dir_to", "move_dir"]

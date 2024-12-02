@@ -11,6 +11,7 @@ var backjumpped = false
 @export var jump_anims = ["Jump", "DoubleJump"]
 @export var jump_sounds = ["Jump", "DoubleJump"]
 
+var backjump = false
 var backjump_speed = 3.0
 var backjump_type = "Jump"
 var backjump_attack = "SwordSlam"
@@ -124,8 +125,10 @@ func jumping_physics(_delta):
 	if not backjumpped:
 		C.mesh_angle_lerp(_delta, 0.2)
 	
-	if C.is_on_floor() and moved:
-		anim.play(C.weapon_prefix+"Runloop", .4)
+	if C.is_on_floor():
+		audio_player.play("Land")
+		if moved:
+			anim.play(C.weapon_prefix+"Runloop", .4)
 	
 	if not C.AI:
 		if C.is_on_floor():
@@ -151,12 +154,12 @@ func has_nav(details):
 
 func can_backjump():
 	#if C.movement_state == "Base":
-	
-	var change = base_state.facing_move_dir.normalized().dot(base_state.move_dir.normalized())
-	
-	if change < -0.6:
-		if C.get_logic("Base").move_delay_timer < C.get_logic("Base").move_delay:
-			return true
+	if backjump:
+		var change = base_state.facing_move_dir.normalized().dot(base_state.move_dir.normalized())
+		
+		if change < -0.6:
+			if C.get_logic("Base").move_delay_timer < C.get_logic("Base").move_delay:
+				return true
 	return false
 
 func can_continue_jumping():

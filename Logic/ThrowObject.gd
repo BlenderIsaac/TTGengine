@@ -124,8 +124,3 @@ func throw_object():
 	object.thrower = C
 	
 	return object
-
-
-
-
-
