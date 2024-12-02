@@ -14,10 +14,14 @@ var run_speed = 1.2
 var move_delay = 0.2
 
 # move delay time left
-var move_delay_time_left = 0.0
+var move_delay_timer = 0.0
+var move_delay_reset = false
+var moved_since_online = false
 
 var move_dir_to = Vector3()
 var move_dir = Vector3()
+var last_move_dir = Vector3()
+var facing_move_dir = Vector3()
 
 var not_air_anims = ["Idleloop", "Runloop"]
 
@@ -26,6 +30,7 @@ var footsteps_played = 0
 
 # Set the correct navigational layer values
 func _ready():
+	move_delay_timer = move_delay
 	nav_agent.set_navigation_layer_value(1, true)
 
 func anim_started(vars):
@@ -37,6 +42,7 @@ var on_floor_last_frame = true
 
 func exclusive_physics(_delta):
 	
+	# footsteps
 	if anim.current_animation.ends_with("Runloop"):
 		if footstep_at_times.size() > footsteps_played:
 			var next_footstep_time = footstep_at_times[footsteps_played]
@@ -78,15 +84,22 @@ func exclusive_physics(_delta):
 	
 	# If we did move, then set the mesh angle we want to go to
 	if moved:
-		C.mesh_angle_to = Vector2(-move_dir.x, move_dir.z).angle()+deg_to_rad(90)
+		moved_since_online = true
+		
+		var change = last_move_dir.normalized().dot(move_dir.normalized())
+		
+		if change < -0.6:
+			if move_delay_reset == true:
+				move_delay_timer = 0.0
+				move_delay_reset = false
+		
+		last_move_dir = move_dir
 		
 		# If we are on the floor and we have moved play the running animation
 		if C.is_on_floor():
-			anim.play(prefix+"Runloop", .4)
-		#if prev_move_dir == move_dir:
-		#	
-		#	move_delay_time_left = 0.0
+			anim.play(prefix+"Runloop", .2)
 	else:
+		move_delay_reset = true
 		# If we have not moved
 		# and we are running then go to idle.
 		if anim.current_animation.ends_with("Runloop"):
@@ -96,6 +109,13 @@ func exclusive_physics(_delta):
 		if C.is_on_floor():
 			if not anim.is_playing():
 				anim.play(prefix+"Idleloop", .04)
+	
+	
+	if move_delay_timer > move_delay and moved_since_online:
+		C.mesh_angle_to = Vector2(-last_move_dir.x, last_move_dir.z).angle()+deg_to_rad(90)
+		facing_move_dir = last_move_dir
+	else:
+		move_delay_timer += _delta
 	
 	# If we are not on the floor, and nothing is playing, then play fallloop and queue land
 	# for when we hit the ground.
@@ -125,9 +145,17 @@ func exclusive_physics(_delta):
 	# Smoothly change our rotation to our desired rotation
 	C.mesh_angle_lerp(_delta, 0.2)
 
+func initiate():
+	moved_since_online = false
+	move_delay_reset = true
+	last_move_dir = facing_move_dir
+	#move_delay_timer = move_delay + 0.1
+	#last_move_dir = facing_move_dir
+	#move_dir = facing_move_dir
+	#move_delay_timer = 0.0#move_delay+0.0
 
 #var land_states = ["Base", "Jump"]
-func inclusive_physics(_delta):
+#func inclusive_physics(_delta):
 	#if C.movement_state in land_states:
 		#if C.is_on_floor():
 			#if on_floor_last_frame == false:
@@ -138,7 +166,7 @@ func inclusive_physics(_delta):
 		#on_floor_last_frame = true
 	
 	
-	move_delay_time_left += _delta
+	#move_delay_time_left += _delta
 
 # This is so we can copy some variables across switches
 var vars_copied_on_switch = ["move_dir_to", "move_dir"]

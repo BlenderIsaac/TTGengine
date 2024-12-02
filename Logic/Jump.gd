@@ -3,12 +3,19 @@ extends "res://Logic/LOGIC.gd"
 # number of jumps
 @export var number_of_jumps = 2
 
+var backjumpped = false
 @export var jumped = 0
 @export var jump_speeds = [2.3, 2.3]
 @export var jump_types = ["Jump", "Jump"]
 @export var jump_attacks = ["SwordLunge", "SwordSlam"]
 @export var jump_anims = ["Jump", "DoubleJump"]
 @export var jump_sounds = ["Jump", "DoubleJump"]
+
+var backjump_speed = 3.0
+var backjump_type = "Jump"
+var backjump_attack = "SwordSlam"
+var backjump_anim = "BackJump"
+var backjump_sound = "DoubleJump"
 
 @export var copy_run_speed = true
 @export var copy_air_gravity = true
@@ -44,9 +51,12 @@ func inclusive_physics(_delta):
 	if C.is_on_floor():
 		jumped = 0
 		air_time = 0
+		backjumpped = false
 	
 	if (C.is_in_base_movement_state() or C.movement_state == "Jump") and not C.AI:
 		if can_start_jump() and C.key_press("Jump"):
+			if can_backjump():
+				backjumpped = true
 			C.set_movement_state("Jump")
 		elif can_continue_jumping() and C.PHYSkey_just_pressed("Jump"):
 			jumped = 1
@@ -61,6 +71,8 @@ func exclusive_physics(_delta):
 	just_jumped += 1
 	if not C.AI:
 		if can_start_jump() and C.key_press("Jump"):
+			if can_backjump():
+				backjumpped = true
 			click_jump()
 		elif can_continue_jumping() and C.PHYSkey_just_pressed("Jump"):
 			click_jump()
@@ -75,7 +87,6 @@ func exclusive_physics(_delta):
 			C.get_logic(current_jumping_logic).jumping_physics(_delta)
 	
 	
-	# If we have hit the ground and we aren't pressing jump then switch back to the base movement state
 	if not C.AI:
 		if !C.is_on_floor():
 			if C.PHYSkey_just_pressed("Fight"):
@@ -101,7 +112,7 @@ func jumping_physics(_delta):
 	
 	var moved = (base_state.move_dir != Vector3())
 	
-	if moved:
+	if moved and not backjumpped:
 		C.mesh_angle_to = Vector2(-base_state.move_dir.x, base_state.move_dir.z).angle()+deg_to_rad(90)
 	
 	base_state.move_dir_to.x = lerp(base_state.move_dir_to.x, base_state.move_dir.x, .15)
@@ -110,7 +121,8 @@ func jumping_physics(_delta):
 	C.set_velocity(C.char_vel+base_state.move_dir_to+C.push_vel+C.knock_vel)
 	C.move_and_slide()
 	
-	C.mesh_angle_lerp(_delta, 0.2)
+	if not backjumpped:
+		C.mesh_angle_lerp(_delta, 0.2)
 	
 	if C.is_on_floor() and moved:
 		anim.play(C.weapon_prefix+"Runloop", .4)
@@ -137,6 +149,15 @@ func has_nav(details):
 	
 	return false
 
+func can_backjump():
+	#if C.movement_state == "Base":
+	
+	var change = base_state.facing_move_dir.normalized().dot(base_state.move_dir.normalized())
+	
+	if change < -0.6:
+		if C.get_logic("Base").move_delay_timer < C.get_logic("Base").move_delay:
+			return true
+	return false
 
 func can_continue_jumping():
 	if jumped < number_of_jumps:
@@ -151,12 +172,33 @@ func can_start_jump():
 
 
 func click_jump():
-	get_parent().get_node(jump_types[jumped]).initiate_jump()
-	current_jumping_logic = jump_types[jumped]
-	
-	jumped += 1
+	if not backjumpped:
+		get_parent().get_node(jump_types[jumped]).initiate_jump()
+		current_jumping_logic = jump_types[jumped]
+		
+		jumped += 1
+		
+	else:
+		initiate_backjump()
+		
+		jumped = jump_speeds.size()
 	
 	just_jumped = 0
+
+
+func initiate_backjump():
+	
+	var prefix = C.weapon_prefix
+	
+	C.char_vel.y = backjump_speed*C.var_scale
+	
+	anim.clear_queue()
+	
+	anim.play("NULL", .04)
+	audio_player.play(backjump_sound)
+	anim.play(prefix+backjump_anim)
+	anim.queue(prefix+"Fallloop")
+	anim.queue(prefix+"Land")
 
 
 func initiate_jump():
