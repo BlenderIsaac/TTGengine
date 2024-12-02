@@ -120,38 +120,12 @@ var max_hit_points = 4.0:
 	set(value):
 		max_hit_points = value
 		update_hearts()
-		##print("was set to ", value, " player number ", player_number)
-		#if player:
-			#max_player_hit_points = value
-			#player_hit_points = clamp(player_hit_points, 0, max_player_hit_points)
-		#else:
-			#max_ai_hit_points = value
-			#ai_hit_points = clamp(ai_hit_points, 0, ai_hit_points)
-		#update_hearts()
-	#get():
-		#if player:
-			##print("we return max player hit points ", max_player_hit_points)
-			#return max_player_hit_points
-		#else:
-			##print("we return max ai hit points ", max_ai_hit_points)
-			#return max_ai_hit_points
 var hit_points = 4.0:
 	set(value):
 		hit_points = value
 		health_ratio_accurate = false
 		update_hearts()
 var ai_hit_points = 4.0
-	#set(value):
-		#if player:
-			#player_hit_points = clamp(value, 0, max_player_hit_points)
-		#else:
-			#ai_hit_points = clamp(value, 0, ai_hit_points)
-		#update_hearts()
-	#get():
-		#if player:
-			#return player_hit_points
-		#else:
-			#return ai_hit_points
 var health_ratio = 0.0
 var health_ratio_accurate = false
 
@@ -209,8 +183,6 @@ func _ready():
 	# Update the health Hud
 	if player:
 		update_HUD()
-		#if AI: # I commented this but I don't know why it was there
-		#hit_points = max_hit_points
 		
 		update_camera_target()
 	
@@ -1677,15 +1649,13 @@ func change_character(data, c_path, mod): # TODO: We don't need c_path here once
 		max_hit_points = data.Health
 	else:
 		max_hit_points = 4.0
-	#if hit_points > max_hit_points:hit_points = max_hit_points
-	
 	
 	if data.has("AI_Health"):
 		ai_hit_points = data.AI_Health
 	else:
 		ai_hit_points = max_hit_points
 	
-	# TODO: Set an updated health
+	
 	if !health_ratio_accurate:
 		health_ratio = old_ratio
 	

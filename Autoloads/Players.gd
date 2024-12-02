@@ -2,10 +2,10 @@ extends Node
 
 var dropped_in = [
 ##	{"active" : BOOL, "control_type" : STRING, "controller_num" : INT}
-	{"active" : true, "control_type" : "keyboard", "controller_number" : 0, "money" : 0, "hit_points" : 0},
-	{"active" : false, "control_type" : "keyboard", "controller_number" : 0, "money" : 0, "hit_points": 0},
-#	{"active" : false, "control_type" : "keyboard", "controller_number" : 0, "money" : 0, "hit_points": 0},
-#	{"active" : false, "control_type" : "keyboard", "controller_number" : 0, "money" : 0, "hit_points": 0},
+	{"active" : true, "control_type" : "keyboard", "controller_number" : 0, "money" : 0},
+	{"active" : false, "control_type" : "keyboard", "controller_number" : 0, "money" : 0},
+#	{"active" : false, "control_type" : "keyboard", "controller_number" : 0, "money" : 0},
+#	{"active" : false, "control_type" : "keyboard", "controller_number" : 0, "money" : 0},
 ]
 
 var keys_pressed = []
@@ -27,12 +27,21 @@ func _process(_delta):
 					dropped_in[char_num].control_type = "keyboard"
 					dropped_in[char_num].active = true
 				else:
-					if Interface.is_paused == false:
+					
+					if !Interface.isPaused():#.is_paused == false:
 						if dropped_in[char_num].control_type == "keyboard":
 							Interface.Pause(char_num)
-						#drop_out_char(char_num, get_tree().get_first_node_in_group("LEVELROOT"))
-						#dropped_in[char_num].control_type = "keyboard"
-						#dropped_in[char_num].active = false
+					else:
+						
+						var players_left = 0
+						for player in dropped_in:
+							if player.active:
+								players_left += 1
+						
+						if Interface.isPaused() and players_left > 1 and !Interface.get_node("Pause").visible:
+							drop_out_char(char_num, get_tree().get_first_node_in_group("LEVELROOT"))
+							dropped_in[char_num].active = false
+							dropped_in[char_num].control_type = "keyboard"
 				
 				keys_pressed.append(pause_key)
 				
@@ -42,6 +51,8 @@ func _process(_delta):
 		
 		
 		char_num += 1
+
+
 
 
 func _input(event):

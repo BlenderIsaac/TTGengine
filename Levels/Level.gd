@@ -237,6 +237,8 @@ func generate_char(char_path, char_mod, char_pos):
 	character.char_spawn_index = char_index
 	
 	add_child(character)
+	
+	return character
 
 
 @warning_ignore("unused_parameter")

@@ -77,7 +77,8 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 									dead = true
 							
 							if !dead:
-								generate_char(props.CHARACTER, props.MOD, props.POSITION)
+								var enemy = generate_char(props.CHARACTER, props.MOD, props.POSITION)
+								enemy.hit_points = enemy.ai_hit_points
 							
 							char_index += 1
 					#elif obj_type == "CMR_CRV":

@@ -122,6 +122,22 @@ func _process(_delta):
 	
 	update_currently_pressed_keys()
 
+func isPaused():
+	if $FreePlaySelect.visible:
+		return true
+	if $ModeSelect.visible:
+		return true
+	if $Pause.visible:
+		return true
+	if $ControlSettings.visible:
+		return true
+	if $LevelEnd.visible:
+		return true
+	if $CharacterList.visible:
+		return true
+	
+	return false
+
 #region >< Pause Menu ><
 
 var pause_owner = null
