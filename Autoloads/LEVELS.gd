@@ -99,6 +99,8 @@ func load_story_level(mod_name, level_name):
 	level_state.LevelName = level_name
 	level_state.Section = section
 	
+	Interface.minikits_collected = 0
+	
 	add_child(level)
 	
 	level.Story_load_characters()
@@ -123,6 +125,8 @@ func load_freeplay_level(mod_name, level_name, player_data, new_player_team):
 	level_state.Mod = mod_name
 	level_state.LevelName = level_name
 	level_state.Section = section
+	
+	Interface.minikits_collected = 0
 	
 	add_child(level)
 	
@@ -232,6 +236,8 @@ func load_hub(mod, player_data):
 	level_state.Mode = "Hub"
 	level_state.LevelName = "HUB"
 	level_state.Section = section
+	
+	Interface.minikits_collected = 0
 	
 	add_child(hub)
 	

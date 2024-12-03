@@ -296,6 +296,8 @@ func get_matte(matte_data, origin_mod):
 			return get_preset_basic_material(matte_data.Preset, BasicMatte)
 		"TexturePreset":
 			return get_texture_material(matte_path, BasicMatte, MATERIALS.get_preset(matte_data.Preset))
+		"TextureBasic":
+			return get_texture_material(matte_path, BasicMatte, matte_data.Albedo)
 		
 		"AddBasic":
 			return get_basic_material(matte_data.Albedo, AddMatte)

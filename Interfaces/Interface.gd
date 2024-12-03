@@ -22,7 +22,14 @@ var currently_pressed_keys = [
 	#[],
 	]
 var char_data = {}
+@onready var audio_player = $AudioPlayer
 
+var sound_mod = "Ahsoka Show"
+var sounds = {
+	"MinikitCollect" : {
+		"cSoundsPath" : ["MK-PICKUP.WAV"]
+	}
+}
 
 func _ready():
 	$LevelEnd/StudTotal/HBoxContainer/VBoxContainer/HBoxContainer/Group/LeftStud/Stud.play("Gold")
@@ -37,6 +44,8 @@ func _ready():
 	$ModeSelect.hide()
 	$Pause.hide()
 	$Icons.hide()
+	
+	audio_player.add_library(sounds, sound_mod)
 
 
 func _process(_delta):
@@ -119,6 +128,8 @@ func _process(_delta):
 			start_level()
 		
 		freeplay_select_anim_timer += _delta
+	
+	minikit_tick(_delta)
 	
 	update_currently_pressed_keys()
 
@@ -288,6 +299,60 @@ func unPause():
 	is_paused = false
 	get_tree().paused = false
 	$Pause.hide()
+
+#endregion
+
+#region >< Minikits ><
+
+var minikit_displaying = false:
+	set(value):
+		
+		if value != minikit_displaying:
+			if value == true:
+				$Minikits/MiddlePos/BottomPos/Alignment/Scaler/MinikitAnim.play("ComeIn")
+			else:
+				$Minikits/MiddlePos/BottomPos/Alignment/Scaler/MinikitAnim.play_backwards("ComeIn")
+		
+		minikit_displaying = value
+var traveling_minikits = []
+var minikits_collected = 0:
+	set(value):
+		minikits_collected = value
+		$Minikits/MiddlePos/BottomPos/Alignment/Scaler/Name.text = str(value) + "/10"
+func minikit_found(projected_pos):
+	var minikit_spawn = $Minikits/MiddlePos/BottomPos/Alignment/Scaler/MinkitVis.duplicate()
+	add_child(minikit_spawn)
+	minikit_spawn.position = projected_pos
+	traveling_minikits.append([0.0, minikit_spawn])
+	
+	audio_player.play("MinikitCollect")
+	
+	minikit_spawn.scale = Vector2(0.246, 0.246)
+	
+	minikit_displaying = true
+
+
+func minikit_tick(_delta):
+	
+	var minikit_anim = $Minikits/MiddlePos/BottomPos/Alignment/Scaler/MinikitAnim
+	
+	if traveling_minikits.is_empty() and minikit_anim.current_animation == "":
+		if $Pause.visible:
+			minikit_displaying = true
+		else:
+			minikit_displaying = false
+	
+	for minikit in traveling_minikits:
+		var diff = $Minikits/MiddlePos/BottomPos/Alignment/Scaler/MinkitVis.global_position - minikit[1].global_position
+		minikit[1].position += diff.normalized()*_delta*500.0*(minikit[0])
+		
+		minikit[0] += _delta
+		
+		if diff.length() < 5*minikit[0]:
+			minikit_anim.play("Gain")
+			minikits_collected += 1
+			traveling_minikits.erase(minikit)
+			minikit[1].queue_free()
 
 #endregion
 

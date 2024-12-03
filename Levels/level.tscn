@@ -1,9 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://3ix1fp3sllsx"]
+[gd_scene load_steps=9 format=3 uid="uid://3ix1fp3sllsx"]
 
 [ext_resource type="Script" path="res://Levels/LevelGeneratorTTGL.gd" id="1_qvxlj"]
 [ext_resource type="Script" path="res://Levels/Cam.gd" id="2_mq7dq"]
 [ext_resource type="Script" path="res://Interfaces/OnUI.gd" id="3_np2bf"]
 [ext_resource type="PackedScene" uid="uid://d2bsp27ml58jg" path="res://TEMP/debugsymbol.tscn" id="4_twfmp"]
+[ext_resource type="Script" path="res://Levels/node_3d.gd" id="7_ij24s"]
 [ext_resource type="Environment" uid="uid://bxkijjqiqadqk" path="res://Levels/SkyEnv.tres" id="9_3smm1"]
 [ext_resource type="Script" path="res://Levels/FreeLookCam.gd" id="13_2gvu3"]
 
@@ -72,4 +73,13 @@ shadow_enabled = true
 [node name="Timer" type="Timer" parent="."]
 wait_time = 0.2
 
+[node name="Node3D" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.46699, -32.6633)
+script = ExtResource("7_ij24s")
+
+[node name="Timer2" type="Timer" parent="Node3D"]
+wait_time = 0.1
+autostart = true
+
 [connection signal="timeout" from="Timer" to="." method="_on_timer_2_timeout"]
+[connection signal="timeout" from="Node3D/Timer2" to="Node3D" method="_on_timer_2_timeout"]

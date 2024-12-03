@@ -13,6 +13,11 @@ var saber_sounds = ["SaberMove", "SaberMove", "SaberMove"]
 
 #var track_speed = 7.0
 
+var slash_times = [[0.49, 0.72], [0.2, 0.44], [0.42, 0.6]]
+# 0.47 -> 0.69
+# 0.20 -> 0.44
+# 0.42 -> 0.6
+
 var prev_activated = false
 var attack_speed = 1.5
 var knockbacks = [10.0, 10.0, 10.0]
@@ -202,11 +207,21 @@ func inclusive_physics(_delta):
 
 
 func exclusive_process(_delta):
+	
 	if anim.current_animation.begins_with("Slash"):
 		var anim_progress = anim.current_animation_position/anim.current_animation_length
 		
-		if hit < lightsaber_hurt_per_frame:
-			if anim_progress > 0.3 and anim_progress < 0.95:
+		if Input.is_action_just_pressed("Click"):print(anim_progress)
+		var damage_start = 0.3
+		var damage_end = 0.95
+		
+		if slash_times.size() > combo_num:
+			damage_start = slash_times[combo_num-1][0]
+			damage_end = slash_times[combo_num-1][1]
+		
+		if anim_progress > damage_start and anim_progress < damage_end:
+			if hit < lightsaber_hurt_per_frame:
+				#$"../Sword".SwordExtras.scale.y = 2.0
 				for opponent in $"../Sword".in_lightsaber:
 					if not opponent == C:
 						
@@ -220,6 +235,9 @@ func exclusive_process(_delta):
 							audio_player.play("SaberSmack")
 							$"../Sword".in_lightsaber.erase(opponent)
 							hit += 1
+		else:
+			pass
+			#$"../Sword".SwordExtras.scale.y = 1.0
 
 
 var valid_damage_logics = ["SwordSlam", "SwordLunge"]

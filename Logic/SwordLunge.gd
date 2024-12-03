@@ -30,6 +30,11 @@ func exclusive_physics(_delta):
 	move_dir = Vector3(0, 0, -1).rotated(Vector3.UP, C.get_node("Mesh").rotation.y)
 	move_dir = move_dir.normalized()*lunge_speed*C.var_scale
 	
+	if f.is_character_valid(lunge_target):
+		if f.to_vec2(C.position).distance_to(f.to_vec2(lunge_target.position)) < 1.2:
+			C.char_vel.y -= 100.0*_delta
+			move_dir *= 0
+	
 	if C.is_on_floor():
 		
 		# Reset movement if we have hit the ground

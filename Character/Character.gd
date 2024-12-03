@@ -128,6 +128,8 @@ var hit_points = 4.0:
 var ai_hit_points = 4.0
 var health_ratio = 0.0
 var health_ratio_accurate = false
+var hearts_per_row = -1
+var heart_x_offset = 30
 
 # health variables for non-party characters
 
@@ -1251,6 +1253,9 @@ func update_hearts():
 	if Parent != null and player_number != -1:
 		var HeartParent = Parent.get_node("InGame/HeartParent")
 		#printt(hit_points, max_hit_points)
+		HeartParent.per_row = hearts_per_row
+		HeartParent.offset_x = heart_x_offset
+		
 		HeartParent.hearts = hit_points
 		HeartParent.max_hearts = max_hit_points
 
@@ -1655,6 +1660,15 @@ func change_character(data, c_path, mod): # TODO: We don't need c_path here once
 	else:
 		ai_hit_points = max_hit_points
 	
+	if data.has("HeartsPerRow"):
+		hearts_per_row = data.HeartsPerRow
+	else:
+		hearts_per_row = -1
+	
+	if data.has("HeartXOffset"):
+		heart_x_offset = data.HeartXOffset
+	else:
+		heart_x_offset = 30
 	
 	if !health_ratio_accurate:
 		health_ratio = old_ratio
@@ -1788,9 +1802,13 @@ func change_character(data, c_path, mod): # TODO: We don't need c_path here once
 		var attach_no = 0
 		for model in data.Models:
 			if model.Type == "Model":
-				
 				var p = f.get_data_path(model, mod)
 				attach_model(p, attach_no, int(model.Bone), model.Materials)
+				
+				attach_no += 1
+			elif model.Type == "SoftBody":
+				var p = f.get_data_path(model, mod)
+				attach_softbody(p, attach_no, int(model.Bone), model.Materials, model.Indices, model.Offsets)
 				
 				attach_no += 1
 	
@@ -1943,6 +1961,75 @@ func attach_model(model_path, attach_no, bone, materials):
 	
 	# Make so it will change colour when flash_value is changed
 	meshes_to_modulate.append(node)
+
+
+func attach_softbody(model_path, attach_no, bone, materials, indices, offsets):
+	
+	# Create a BoneAttachment3D and a mesh
+	var attacher = BoneAttachment3D.new()
+	var node = SoftBody3D.new()
+	# Load the mesh
+	var mesh = l.get_load(model_path)#"res://TEMP/testcloak.obj")
+	
+	# put the nodes together and attach it to the right bone
+	get_node("Mesh/Armature/Skeleton3D").add_child(attacher)
+	attacher.bone_idx = bone
+	#print(attach.r)
+	#get_node("Mesh/Armature/Skeleton3D").add_child(node)
+	
+	# Set the right name
+	attacher.name = "MODELATTACHED_"+str(attach_no)
+	
+	# Set the mesh node's mesh, and it's name to Mesh
+	#node.global_position = attacher.global_position
+	
+	#attacher.force_update_transform()
+	node.set_mesh(mesh)
+	#node.name = "SoftBody"
+	
+	node.set_collision_mask_value(2, true)
+	
+	#$Mesh/Armature.hide()
+	
+	for idx in range(indices.size()):
+		var pos_array = offsets[idx]
+		var pos = Vector3(pos_array[0], pos_array[1], pos_array[2])
+		
+		node.set_point_pinned(indices[idx], true, NodePath("../Armature/Skeleton3D/"+attacher.name))
+		
+		node.set("attachments/"+str(idx)+"/offset", pos)
+	
+	node.linear_stiffness = 0.82
+	node.damping_coefficient = 0.07
+	node.drag_coefficient = 0.14
+	
+	node.top_level = true
+	get_node("Mesh").add_child(node)
+	
+	#Skeleton3D.new()
+	#print(get_node("Mesh/Armature/Skeleton3D").get_bone_pose(bone
+	
+	var bone_transform = get_node("Mesh/Armature/Skeleton3D").get_bone_global_pose(bone)
+	node.position = bone_transform.origin + position
+	node.rotation = bone_transform.basis.get_euler() + $Mesh.rotation + Vector3(0, PI, 0)
+	node.add_collision_exception_with(self)
+	#print("yo")
+	
+	
+	
+	# Append it to bits (so that we drop it when we die)
+	#bits.append("Mesh/Armature/Skeleton3D/"+attacher.name+"/Mesh")
+	
+	# Loop through the materials and set the material on the mesh
+	for matte_no in materials.keys():
+		node.set_surface_override_material(int(matte_no), MATERIALS.get_matte(materials.get(matte_no), origin_mod))
+	
+	# Give it the flash material as an overlay
+	node.material_overlay = MATERIALS.FlashOverlay
+	
+	# Make so it will change colour when flash_value is changed
+	meshes_to_modulate.append(node)
+
 
 func get_armature_bits():
 	var mesh_bits = []

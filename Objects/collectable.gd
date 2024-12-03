@@ -45,3 +45,35 @@ func load_materials():
 		
 		var material = MATERIALS.get_modless_matte(matte_data)
 		$Mesh.set_surface_override_material(idx, material)
+
+
+func _on_body_entered(body):
+	if body.is_in_group("Character"):
+		if !body.dead and body.player and !body.AI:
+			var proj_pos = Vector2()
+			var cam : Camera3D = get_tree().get_first_node_in_group("GAMECAM")
+			
+			proj_pos = cam.unproject_position(global_position)
+			
+			Interface.minikit_found(proj_pos)
+			queue_free()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var h = 0

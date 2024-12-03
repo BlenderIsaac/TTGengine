@@ -1,4 +1,4 @@
-[gd_scene load_steps=58 format=3 uid="uid://dvgy5vxoqaq41"]
+[gd_scene load_steps=67 format=3 uid="uid://dvgy5vxoqaq41"]
 
 [ext_resource type="Script" path="res://Interfaces/Interface.gd" id="1_0holg"]
 [ext_resource type="Texture2D" uid="uid://ditscyjxgo1jd" path="res://Textures/select.png" id="3_di25h"]
@@ -15,6 +15,10 @@
 [ext_resource type="Texture2D" uid="uid://badk5hii0xgof" path="res://Textures/GreenBack.png" id="11_c2hfv"]
 [ext_resource type="Texture2D" uid="uid://6ediol0mp3qp" path="res://Textures/BrownBack.png" id="12_d0w3d"]
 [ext_resource type="Script" path="res://Interfaces/HeartGroup.gd" id="12_mrkh6"]
+[ext_resource type="SpriteFrames" uid="uid://dwmabmgh5v2ni" path="res://Textures/HiResMinikit/minikit.tres" id="19_go61m"]
+[ext_resource type="Texture2D" uid="uid://df53q310suwco" path="res://Textures/HiResMinikit/Screenshot_3.png" id="19_nnllw"]
+[ext_resource type="Texture2D" uid="uid://tubcqx30qvos" path="res://Textures/HiResMinikit/Screenshot_4.png" id="20_j67og"]
+[ext_resource type="PackedScene" uid="uid://b1h60hmsedkrs" path="res://Scripts/AudioPlayer.tscn" id="22_eu0h4"]
 [ext_resource type="Texture2D" uid="uid://dkwxubwe6jiik" path="res://Textures/TrueJediStuds/Black.png" id="75_wjcnw"]
 [ext_resource type="Texture2D" uid="uid://cs82sjgy57cit" path="res://Textures/TrueJediStuds/Yellow.png" id="76_eueun"]
 [ext_resource type="Animation" uid="uid://cvrn7xh4ersap" path="res://Animations/FadeInOut.res" id="77_nwkkc"]
@@ -920,6 +924,152 @@ _data = {
 "TrueJediStart": SubResource("Animation_xccne")
 }
 
+[sub_resource type="LabelSettings" id="LabelSettings_vusaa"]
+line_spacing = -5.056
+font = SubResource("SystemFont_5rq0x")
+font_size = 69
+font_color = Color(0.941176, 0.168627, 0.470588, 1)
+outline_size = 14
+outline_color = Color(0.192157, 0.0392157, 0.0941176, 1)
+shadow_size = 0
+
+[sub_resource type="Animation" id="Animation_pffwb"]
+resource_name = "Gain"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Scaler/MinkitVis:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0.515, 0.515), Vector2(0.246, 0.246)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Scaler/Name:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(2.08, 2.08), Vector2(0.965, 0.965)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Scaler/MinkitVis:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, -164)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Scaler/Name:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-257, -141)]
+}
+
+[sub_resource type="Animation" id="Animation_3qoow"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Scaler/MinkitVis:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0.246094, 0.246094)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Scaler/Name:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0.965, 0.965)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Scaler/MinkitVis:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 86.511)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Scaler/Name:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-257, 109.511)]
+}
+
+[sub_resource type="Animation" id="Animation_7lyip"]
+resource_name = "ComeIn"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Scaler/MinkitVis:position")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0, 86.511), Vector2(0, -164)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Scaler/Name:position")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(-257, 109.511), Vector2(-257, -141)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_0dw70"]
+_data = {
+"ComeIn": SubResource("Animation_7lyip"),
+"Gain": SubResource("Animation_pffwb"),
+"RESET": SubResource("Animation_3qoow")
+}
+
 [node name="Interface" type="Control"]
 process_mode = 3
 layout_mode = 3
@@ -1271,6 +1421,7 @@ text = "Super Free Play"
 flat = true
 
 [node name="Pause" type="Control" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1855,6 +2006,7 @@ anchor_bottom = 0.231
 offset_left = -357.0
 offset_bottom = 0.311996
 mouse_filter = 2
+metadata/_edit_lock_ = true
 
 [node name="Outline" type="Sprite2D" parent="Icons/Player1HUD/Control/Icon"]
 position = Vector2(224.552, 87)
@@ -1892,8 +2044,8 @@ offset_bottom = 40.0
 [node name="HeartParent" type="Node2D" parent="Icons/Player1HUD/Control/InGame"]
 visible = false
 script = ExtResource("12_mrkh6")
-offset_x = -30
 initial_pos = Vector2(-207, 102)
+mltply = -1
 
 [node name="DropInPrompt" type="Label" parent="Icons/Player1HUD/Control/InGame"]
 layout_mode = 0
@@ -2861,6 +3013,79 @@ columns = 22
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
+
+[node name="Minikits" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_lock_ = true
+
+[node name="MiddlePos" type="HBoxContainer" parent="Minikits"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+metadata/_edit_lock_ = true
+
+[node name="BottomPos" type="VBoxContainer" parent="Minikits/MiddlePos"]
+layout_mode = 2
+alignment = 2
+
+[node name="Alignment" type="Control" parent="Minikits/MiddlePos/BottomPos"]
+layout_mode = 2
+
+[node name="Scaler" type="Node2D" parent="Minikits/MiddlePos/BottomPos/Alignment"]
+scale = Vector2(0.638, 0.638)
+
+[node name="Screenshot3" type="Sprite2D" parent="Minikits/MiddlePos/BottomPos/Alignment/Scaler"]
+visible = false
+position = Vector2(-1, -144.941)
+scale = Vector2(0.830066, 0.830065)
+texture = ExtResource("19_nnllw")
+
+[node name="Screenshot4" type="Sprite2D" parent="Minikits/MiddlePos/BottomPos/Alignment/Scaler"]
+visible = false
+modulate = Color(1, 1, 1, 0.454902)
+position = Vector2(135, -25.941)
+scale = Vector2(0.846, 0.846)
+texture = ExtResource("20_j67og")
+offset = Vector2(-163, -142)
+
+[node name="MinkitVis" type="AnimatedSprite2D" parent="Minikits/MiddlePos/BottomPos/Alignment/Scaler"]
+position = Vector2(0, 86.511)
+scale = Vector2(0.246094, 0.246094)
+sprite_frames = ExtResource("19_go61m")
+animation = &"Minikit"
+autoplay = "Minikit"
+frame = 94
+
+[node name="Name" type="Label" parent="Minikits/MiddlePos/BottomPos/Alignment/Scaler"]
+offset_left = -257.0
+offset_top = 109.511
+offset_right = 257.0
+offset_bottom = 188.511
+scale = Vector2(0.965, 0.965)
+pivot_offset = Vector2(257, 39.5)
+text = "0/10"
+label_settings = SubResource("LabelSettings_vusaa")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MinikitAnim" type="AnimationPlayer" parent="Minikits/MiddlePos/BottomPos/Alignment/Scaler"]
+root_node = NodePath("../..")
+libraries = {
+"": SubResource("AnimationLibrary_0dw70")
+}
+autoplay = "RESET"
+
+[node name="AudioPlayer" parent="." instance=ExtResource("22_eu0h4")]
+universal = true
 
 [node name="Timer" type="Timer" parent="."]
 wait_time = 0.5

@@ -1,5 +1,7 @@
 extends Node3D
 
+@export var universal = false
+
 var sound_effects = {}
 var currently_looping_sounds = []
 var currently_playing_sounds = []
@@ -36,9 +38,11 @@ func play(title, config={}):
 		
 		if paths.size() > 0:
 			var sound_num = randi_range(0, paths.size()-1)
-			
-			var new_sfx = AudioStreamPlayer3D.new()
-			
+			var new_sfx
+			if universal:
+				new_sfx = AudioStreamPlayer.new()
+			else:
+				new_sfx = AudioStreamPlayer3D.new()
 			var stream = a.get_stream(paths[sound_num])
 			
 			add_child(new_sfx)
@@ -68,7 +72,11 @@ func start_loop(title, config={}):
 		var paths = sound_effects.get(title)
 		
 		if paths.size() > 0:
-			var new_sfx = AudioStreamPlayer3D.new()
+			var new_sfx
+			if universal:
+				new_sfx = AudioStreamPlayer.new()
+			else:
+				new_sfx = AudioStreamPlayer3D.new()
 			var stream = a.get_stream(paths[0])
 			
 			add_child(new_sfx)

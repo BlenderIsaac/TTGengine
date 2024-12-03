@@ -195,6 +195,7 @@ blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_blftu")
 
 [node name="Collectable" type="Area3D"]
+collision_mask = 3
 script = ExtResource("1_cnd5f")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
@@ -204,3 +205,5 @@ shape = SubResource("BoxShape3D_4ej7s")
 transform = Transform3D(-1, 0, -8.74228e-08, 1.20657e-08, 0.99043, -0.138015, 8.65862e-08, -0.138015, -0.99043, 0, 0.00364739, 0)
 mesh = SubResource("ArrayMesh_hky2f")
 skeleton = NodePath("")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
