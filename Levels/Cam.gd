@@ -19,13 +19,29 @@ var initial_snap = false
 
 var start_timer = 0
 
+var movement_to = 0.0
+var movement_at = 0.0
+
+var begin_transform_delay = 0.0
+var begin_transform_override = false:
+	set(value):
+		begin_transform_override = value
+		begin_transform_delay = 1.0
+
 @onready var target_agent = $NavigationAgent3D
 
 func _process(_delta):
 	
+	movement_at = lerp(movement_at, movement_to, _delta)
+	
 	if start_timer == 1:
-		target_agent.target_position = Vector3(get_special_avg_pos())
-		snap()
+		if begin_transform_override == false:
+			target_agent.target_position = Vector3(get_special_avg_pos())
+			snap()
+	
+	if begin_transform_override:
+		if begin_transform_delay > 0:
+			begin_transform_delay -= _delta
 	
 	if move_type == "Curves" and targets.size() > 0:
 		
@@ -118,7 +134,7 @@ func _process(_delta):
 				var new_transform = global_transform.looking_at(avg, Vector3.UP)
 				global_transform = global_transform.interpolate_with(new_transform, 4 * _delta)
 	
-	elif move_type == "Navigation" and targets.size() > 0:
+	elif move_type == "Navigation" and targets.size() > 0 and begin_transform_delay <= 0:
 		var avg = get_target_avg_pos()
 		var pos = get_special_avg_pos()
 		
@@ -139,16 +155,18 @@ func _process(_delta):
 			var next_pos = target_agent.get_next_path_position() + Vector3(0, -0.3, 0)
 			
 			if final_vec2_dist > 0.2:
-				
+				movement_to = 1.0
 				var speed = (final_vec2_dist-min_dist)
-				global_position += (next_pos-global_position).normalized()*minf(speed/30, 3.0)
-		elif final_vec2_dist < 3.0:
-			var next_pos = target_agent.get_next_path_position() + Vector3(0, -0.3, 0)
-			
-			if final_vec2_dist > 0.2:
-				
-				var speed = (final_vec2_dist-3.0)
-				global_position += (next_pos-global_position).normalized()*minf(speed/30, 3.0)
+				global_position += (next_pos-global_position).normalized()*minf(speed/30, 3.0)*movement_at
+			else:
+				movement_to = 0.0
+		#elif final_vec2_dist < 3.0:
+			#var next_pos = target_agent.get_next_path_position() + Vector3(0, -0.3, 0)
+			#
+			#if final_vec2_dist > 0.2:
+				#
+				#var speed = (final_vec2_dist-3.0)
+				#global_position += (next_pos-global_position).normalized()*minf(speed/30, 3.0)
 		
 		
 		rotation.z = 0
@@ -159,12 +177,13 @@ func _process(_delta):
 			
 			var new_transform = global_transform.looking_at(avg, Vector3.UP)
 			global_transform = global_transform.interpolate_with(new_transform, 2 * _delta)
-		
+	
 	
 	start_timer += 1
 
 
 func snap():
+	
 	var target_average = get_special_avg_pos()
 	
 	global_position = (target_agent.get_final_position() + Vector3(0, -0.3, 0))+Vector3(0.01, 0, 0)

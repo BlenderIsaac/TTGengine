@@ -24,10 +24,18 @@ var currently_pressed_keys = [
 var char_data = {}
 @onready var audio_player = $AudioPlayer
 
+var transition_speed = 1.0
+var frame_delay = 3
+var transition_left = 0.0
+var last_imagetexture = null
+
 var sound_mod = "Ahsoka Show"
 var sounds = {
 	"MinikitCollect" : {
 		"cSoundsPath" : ["MK-PICKUP.WAV"]
+	},
+	"SceneTransition" : {
+		"cSoundsPath" : ["WIPESCREEN.WAV"]
 	}
 }
 
@@ -49,6 +57,20 @@ func _ready():
 
 
 func _process(_delta):
+	
+	if transition_left > 0:
+		if frame_delay <= 0:
+			
+			transition_left -= _delta
+			
+			
+			$Transition.region_rect.size.x = lerp(0.0, last_imagetexture.get_size().x, transition_left)
+		else:
+			frame_delay -= 1
+			$Transition.region_rect.size.x = last_imagetexture.get_size().x
+	else:
+		$Transition.region_rect.size.x = 0.0
+	
 	
 	$Label.text = str(1/get_process_delta_time())#str(team_indexes)
 	
@@ -1157,6 +1179,23 @@ func Button_SettingsReset():
 	pass # Replace with function body.
 
 #endregion
+
+func transition_in():
+	last_imagetexture = get_viewport_texture()
+	$Transition.texture = last_imagetexture
+	$Transition.region_rect.size.y = last_imagetexture.get_size().y
+	transition_left = transition_speed
+	audio_player.play("SceneTransition")
+	frame_delay = 3
+	#$Transition/AnimationPlayer.play("out")
+
+func get_viewport_texture():
+	var img = get_viewport().get_texture().get_image()
+	
+	var imgtex = ImageTexture.new()
+	imgtex.set_image(img)
+	
+	return imgtex
 
 func _on_timer_timeout():
 	var col_1 = Color("00ffff")

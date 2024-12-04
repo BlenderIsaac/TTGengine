@@ -29,7 +29,6 @@ func _process(_delta):
 	
 	tick(_delta)
 
-
 func _physics_process(_delta):
 	phy_tick(_delta)
 func tick(_delta):
@@ -102,6 +101,10 @@ func Specific_load_characters(players_data, override_position=null):
 
 
 func Spawn_at_door(players_data, door_pos):
+	
+	if "CamTransform" in door_pos:
+		$GameCam.begin_transform_override = true
+		$GameCam.transform = door_pos.CamTransform
 	
 	var player_index = 0
 	for player in player_spawns:

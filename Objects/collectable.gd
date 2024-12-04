@@ -50,6 +50,8 @@ func load_materials():
 func _on_body_entered(body):
 	if body.is_in_group("Character"):
 		if !body.dead and body.player and !body.AI:
+			Levels.i_am_dead(self)
+			
 			var proj_pos = Vector2()
 			var cam : Camera3D = get_tree().get_first_node_in_group("GAMECAM")
 			

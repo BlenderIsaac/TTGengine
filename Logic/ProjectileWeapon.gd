@@ -57,6 +57,12 @@ func _ready():
 	if C.AI:
 		cooldown_remaining = randf_range(0, ai_cooldown_max*2)
 
+func _process(_delta):
+	if C.weapon_prefix == our_prefix:
+		Extras.show()
+	else:
+		Extras.hide()
+
 
 func spawn_objects():
 	
@@ -83,6 +89,7 @@ func spawn_objects():
 	mesh_instance.material_overlay = MATERIALS.FlashOverlay
 	C.meshes_to_modulate.append(mesh_instance)
 	
+	Extras.hide()
 	Extras.bone_idx = 19
 
 func reset_cooldown():
@@ -257,6 +264,9 @@ func check_logics_validity(l_name):
 	if l_name == "Jump":
 		if !valid_jump_states.has(logic.current_jumping_logic):
 			return false
+	
+	if !C.generic_can_draw_weapon():
+		return false
 	
 	return true
 

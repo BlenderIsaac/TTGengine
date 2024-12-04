@@ -45,6 +45,8 @@ func play(title, config={}):
 				new_sfx = AudioStreamPlayer3D.new()
 			var stream = a.get_stream(paths[sound_num])
 			
+			new_sfx.pitch_scale = randf_range(0.95, 1.05)
+			
 			add_child(new_sfx)
 			
 			for c in config.keys():

@@ -167,4 +167,3 @@ func get_air_gravity():
 #		movement = Vector2()
 #
 #	return Vector3(movement.x, 0, movement.y)
-

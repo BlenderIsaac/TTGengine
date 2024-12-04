@@ -46,12 +46,17 @@ func create_level(mod, level_name, section):
 
 func hub_into_level(mod_name, level_name):
 	
+	Interface.transition_in()
+	
 	var prev_level = get_child(0)
 	prev_level.hide()
 	
 	Interface.load_mode_select(mod_name, level_name)
 
 func exit_menu_to_hub():
+	
+	Interface.transition_in()
+	
 	var prev_level = get_child(0)
 	prev_level.show()
 
@@ -70,7 +75,8 @@ func i_am_dead(dead_object):
 	var section = level_state.Section
 	var list = objects_dead.get(section, [])
 	list.append(get_tree().get_first_node_in_group("LEVELROOT").get_path_to(dead_object))
-	Levels.objects_dead[section] = list
+	objects_dead[section] = list
+
 
 func delete_prev_level():
 	if get_children().size() > 0:
@@ -82,6 +88,8 @@ func delete_prev_level():
 
 func load_story_level(mod_name, level_name):
 	get_tree().paused = false
+	
+	Interface.transition_in()
 	
 	delete_prev_level()
 	
@@ -110,6 +118,8 @@ func load_story_level(mod_name, level_name):
 
 func load_freeplay_level(mod_name, level_name, player_data, new_player_team):
 	get_tree().paused = false
+	
+	Interface.transition_in()
 	
 	delete_prev_level()
 	
@@ -143,6 +153,8 @@ func load_freeplay_level(mod_name, level_name, player_data, new_player_team):
 func change_section(new_section, doorid=0):
 	var player_data = Interface.get_player_data()
 	var prev_level = get_child(0)
+	
+	Interface.transition_in()
 	
 	# obtain changed data
 	object_changes[level_state.Section] = {}
@@ -195,12 +207,16 @@ func change_section(new_section, doorid=0):
 				door_pos["PosStart"] = door.spawn_positions[0]
 				door_pos["PosEnd"] = door.spawn_positions[1]
 				door_pos["MeshRot"] = door.rotation.y
+				door_pos["CamTransform"] = door.cam.global_transform
 	
 	level.Spawn_at_door(player_data, door_pos)
 	Players.drop_in_currents(level)
 
 
 func finish_level():
+	
+	Interface.transition_in()
+	
 	#var player_data = Interface.get_player_data()
 	var prev_level = get_child(0)
 	var player_data = prev_level.get_player_data()
@@ -222,6 +238,8 @@ var next_level_load_data = {
 
 
 func load_hub(mod, player_data):
+	
+	Interface.transition_in()
 	
 	var section = get_initial_section(mod, "HUB")
 	
@@ -260,6 +278,8 @@ func load_hub(mod, player_data):
 
 func cycle_hubs(_current_mod, player_data, _direction):
 	var levelroot = get_tree().get_first_node_in_group("LEVELROOT")
+	
+	Interface.transition_in()
 	
 	levelroot.queue_free()
 	

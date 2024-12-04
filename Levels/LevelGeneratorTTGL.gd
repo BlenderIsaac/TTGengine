@@ -81,6 +81,11 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 								enemy.hit_points = enemy.ai_hit_points
 							
 							char_index += 1
+						if attr.has("STARTCAMERA"):
+							var cam_node = gltf.get_node_or_null(props.NAME)
+							if cam_node:
+								$GameCam.begin_transform_override = true
+								$GameCam.transform = cam_node.transform
 					#elif obj_type == "CMR_CRV":
 						#var camera_curve_path = gltf_path.trim_suffix(".glb") + "Curve" + array[1] + ".obj"
 						#
@@ -266,6 +271,11 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 											door_dest["Direction"] = "Backward"
 									"VIS":
 										door_dest["Type"] = "Visual"
+								
+								if "CAMERA" in props:
+									var cam_node = gltf.get_node_or_null(props.CAMERA)
+									if cam_node:
+										door.cam = cam_node
 								
 								door.destination = door_dest
 								

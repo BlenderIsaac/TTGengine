@@ -1,4 +1,4 @@
-[gd_scene load_steps=67 format=3 uid="uid://dvgy5vxoqaq41"]
+[gd_scene load_steps=68 format=3 uid="uid://dvgy5vxoqaq41"]
 
 [ext_resource type="Script" path="res://Interfaces/Interface.gd" id="1_0holg"]
 [ext_resource type="Texture2D" uid="uid://ditscyjxgo1jd" path="res://Textures/select.png" id="3_di25h"]
@@ -19,6 +19,7 @@
 [ext_resource type="Texture2D" uid="uid://df53q310suwco" path="res://Textures/HiResMinikit/Screenshot_3.png" id="19_nnllw"]
 [ext_resource type="Texture2D" uid="uid://tubcqx30qvos" path="res://Textures/HiResMinikit/Screenshot_4.png" id="20_j67og"]
 [ext_resource type="PackedScene" uid="uid://b1h60hmsedkrs" path="res://Scripts/AudioPlayer.tscn" id="22_eu0h4"]
+[ext_resource type="Texture2D" uid="uid://bgabdyttt6qgq" path="res://icon.png" id="22_n8sdc"]
 [ext_resource type="Texture2D" uid="uid://dkwxubwe6jiik" path="res://Textures/TrueJediStuds/Black.png" id="75_wjcnw"]
 [ext_resource type="Texture2D" uid="uid://cs82sjgy57cit" path="res://Textures/TrueJediStuds/Yellow.png" id="76_eueun"]
 [ext_resource type="Animation" uid="uid://cvrn7xh4ersap" path="res://Animations/FadeInOut.res" id="77_nwkkc"]
@@ -933,6 +934,33 @@ outline_size = 14
 outline_color = Color(0.192157, 0.0392157, 0.0941176, 1)
 shadow_size = 0
 
+[sub_resource type="Animation" id="Animation_7lyip"]
+resource_name = "ComeIn"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Scaler/MinkitVis:position")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0, 86.511), Vector2(0, -164)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Scaler/Name:position")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(-257, 109.511), Vector2(-257, -141)]
+}
+
 [sub_resource type="Animation" id="Animation_pffwb"]
 resource_name = "Gain"
 length = 0.1
@@ -1034,33 +1062,6 @@ tracks/3/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 0,
 "values": [Vector2(-257, 109.511)]
-}
-
-[sub_resource type="Animation" id="Animation_7lyip"]
-resource_name = "ComeIn"
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Scaler/MinkitVis:position")
-tracks/0/interp = 2
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 1),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [Vector2(0, 86.511), Vector2(0, -164)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Scaler/Name:position")
-tracks/1/interp = 2
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 1),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [Vector2(-257, 109.511), Vector2(-257, -141)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_0dw70"]
@@ -3083,6 +3084,15 @@ libraries = {
 "": SubResource("AnimationLibrary_0dw70")
 }
 autoplay = "RESET"
+
+[node name="Transition" type="Sprite2D" parent="."]
+z_index = 5
+texture = ExtResource("22_n8sdc")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 0, 64)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Transition"]
 
 [node name="AudioPlayer" parent="." instance=ExtResource("22_eu0h4")]
 universal = true

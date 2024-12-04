@@ -5,23 +5,24 @@ var needs_rig = true
 
 var push_range = 8.0
 
-var valid_rigs = ["GenRig.glb", "ShortRig.glb"]
+var push_strength = 200.0
+
+var valid_rigs = ["GenRig.glb"]
 
 var target_anims = {
 	"Required" : 
 		[
 			{
-				"Name" : "Pushed", 
-				"Path" : "Pushed.res"
-			}
+				"Name" : "Pushed",
+				"Path" : "ForcePushed.res"
+			},
+			{
+				"Name" : "PushedFall",
+				"Path" : "PushedFallloop.res"
+			},
 		],
 	"Other" : 
-		[
-			{
-				"Name" : "SwordPushed", 
-				"Path" : "GunPushed.res"
-			}
-		]
+		[]
 }
 
 func exclusive_physics(_delta):
@@ -30,9 +31,10 @@ func exclusive_physics(_delta):
 		ForceSensitive.generic_force_stuff(force_target, _delta)
 		
 		var TargetLogic = "ForcePushed"
-		if !force_target.movement_state == TargetLogic:
-			force_target.get_logic(TargetLogic).opponent = C
-			force_target.set_movement_state(TargetLogic)
+		
+		force_target.get_logic(TargetLogic).push_strength = push_strength
+		force_target.get_logic(TargetLogic).og_opponent_position = C.global_position
+		force_target.set_movement_state(TargetLogic)
 		
 		if force_target.global_position.distance_to(C.global_position) >= push_range:
 			C.reset_movement_state()

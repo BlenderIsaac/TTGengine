@@ -596,6 +596,12 @@ func update_camera_target():
 		if not AI:
 			cam.targets.append(self)
 
+func generic_can_draw_weapon():
+	
+	if movement_state.begins_with("Force"):
+		return false
+	
+	return true
 
 func warn(type, from_list):
 	if AI:

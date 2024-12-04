@@ -1,0 +1,42 @@
+[gd_scene load_steps=4 format=3 uid="uid://s3e7ydia17e"]
+
+[ext_resource type="Script" path="res://Interfaces/minikit_building.gd" id="1_sfy4d"]
+[ext_resource type="PackedScene" uid="uid://b1h60hmsedkrs" path="res://Scripts/AudioPlayer.tscn" id="2_fhf3b"]
+
+[sub_resource type="Environment" id="Environment_05x3u"]
+background_color = Color(0.493545, 0.493546, 0.493546, 1)
+background_energy_multiplier = 3.87
+ambient_light_source = 2
+ambient_light_color = Color(0.54099, 0.54099, 0.54099, 1)
+
+[node name="MinikitBuilding" type="Node3D"]
+script = ExtResource("1_sfy4d")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.851462, 0.283819, 0.440976, -0.524417, 0.460819, 0.715984, 0, -0.840888, 0.541209, 0, 0, 0)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(-2.89172e-08, -0.241905, 0.9703, -7.20933e-09, 0.9703, 0.241905, -1, 0, -2.98023e-08, 5.78122, 1.85062, 0)
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.55144, 10.7177)
+light_color = Color(1, 0, 0.984314, 1)
+light_energy = 5.262
+light_specular = 0.0
+omni_range = 23.9977
+
+[node name="OmniLight3D2" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.59917, -8.56468)
+light_color = Color(0, 1, 0, 1)
+light_energy = 5.262
+light_specular = 0.0
+omni_range = 15.5772
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_05x3u")
+
+[node name="Rotating" type="Node3D" parent="."]
+
+[node name="Pivoting" type="Node3D" parent="Rotating"]
+
+[node name="AudioPlayer" parent="." instance=ExtResource("2_fhf3b")]

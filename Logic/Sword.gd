@@ -33,6 +33,11 @@ var SwordExtras
 func _ready():
 	spawn_objects()
 
+func _process(_delta):
+	if C.weapon_prefix == our_prefix:
+		SwordExtras.show()
+	else:
+		SwordExtras.hide()
 
 func draw_weapon(overide=false):
 	
@@ -107,6 +112,7 @@ func spawn_objects():
 	spawn_test_hurt()
 	
 	SwordExtras = BoneAttachment3D.new()
+	SwordExtras.hide()
 	get_node("../../Mesh/Armature/Skeleton3D").add_child(SwordExtras)
 	SwordExtras.bone_idx = weapon_bone
 	
@@ -151,6 +157,7 @@ func spawn_objects():
 		gltf_anim.play("Off_loop")
 
 
+
 func inclusive_physics(_delta):
 	
 	if !C.weapon_prefix == our_prefix:
@@ -164,7 +171,8 @@ func inclusive_physics(_delta):
 	
 	if !C.AI:
 		if C.key_just_pressed("Fight"):
-			draw_weapon()
+			if C.generic_can_draw_weapon():
+				draw_weapon()
 		
 		if C.key_press("Special"):
 			if C.is_in_base_movement_state():

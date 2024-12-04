@@ -10,6 +10,8 @@ var destination = {}#{"Type" : "SectionChange", "Section" : "HangarA", "DoorId" 
 
 var spawn_positions = []
 
+var cam = null
+
 func _ready():
 	
 	connect("body_entered", enter_door)
