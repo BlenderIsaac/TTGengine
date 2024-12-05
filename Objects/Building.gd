@@ -1,39 +1,13 @@
 extends Node3D
 
-var b_pos = { "Object_027": { "pos": Vector3(0, 1.124, 0), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) }, "Object_026": { "pos": Vector3(0, 0.764832, -0.000002), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) }, "Object_025": { "pos": Vector3(0, 1.65847, -0), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) }, "Object_024": { "pos": Vector3(0, 0.354075, 0), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) }, "Object_023": { "pos": Vector3(-0, 0.883833, 0.505475), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) }, "Object_022": { "pos": Vector3(-0.503004, 0.883833, 0), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) }, "Object_021": { "pos": Vector3(-0.000001, 0.883833, -0.499859), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) }, "Object_020": { "pos": Vector3(0.505652, 0.883833, 0), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) }, "Object_019": { "pos": Vector3(0.000004, 2.27486, 0.553082), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) }, "Object_018": { "pos": Vector3(0, 2.22107, -0), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) }, "Object_017": { "pos": Vector3(-0.000004, 2.27486, -0.547435), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) }, "Object_016": { "pos": Vector3(-0.550589, 2.27486, 0.000003), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) }, "Object_015": { "pos": Vector3(0.553237, 2.27486, -0.000002), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) }, "Object_014": { "pos": Vector3(-0.000004, 2.6205, -0.000001), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) }, "Object_013": { "pos": Vector3(0.000001, 2.93279, 0.553063), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) }, "Object_012": { "pos": Vector3(0.000003, 2.61842, 0.553062), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) }, "Object_011": { "pos": Vector3(-0.55057, 2.93279, 0), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) }, "Object_010": { "pos": Vector3(-0.550569, 2.61842, 0), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) }, "Object_009": { "pos": Vector3(-0.000001, 2.93279, -0.547416), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) }, "Object_008": { "pos": Vector3(0.000001, 2.61842, -0.547417), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) }, "Object_007": { "pos": Vector3(0.553218, 2.93279, 0), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) }, "Object_006": { "pos": Vector3(0.553217, 2.61842, 0), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) }, "Object_005": { "pos": Vector3(0, 2.87622, 0), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) }, "Object_004": { "pos": Vector3(0.000001, 3.79288, -0), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) }, "Object_003": { "pos": Vector3(0.000001, 3.12456, -0), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) }, "Object_002": { "pos": Vector3(0.000001, 4.33533, 0), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) }, "Object_001": { "pos": Vector3(0, 0.080907, 0), "rot": Vector3(0, 0, 0), "sca": Vector3(1, 1, 1) } }
-var obj_left = [
-	"Object_001",
-	"Object_024",
-	"Object_026",
-	"Object_027",
-	"Object_025",
-	"Object_018",
-	"Object_014",
-	"Object_020",
-	"Object_021",
-	"Object_022",
-	"Object_023",
-	"Object_015",
-	"Object_016",
-	"Object_017",
-	"Object_019",
-	"Object_006",
-	"Object_007",
-	"Object_008",
-	"Object_009",
-	"Object_010",
-	"Object_011",
-	"Object_012",
-	"Object_013",
-	"Object_005",
-	"Object_003",
-	"Object_004",
-	"Object_002",
-]
+var b_pos = {}
+var obj_left = []
 
-@export var rand_spread = 2
-@export var bounce_speed = 3.0
-@export var bounce_height = 3.0
+@export var rand_spread = 1
+@export var bounce_speed = 17
+@export var bounce_height = 0.15
+
+var turn_into_breakable = false
 
 var build_range = 1.5
 var bouncing = {}
@@ -46,10 +20,33 @@ var coins = 550
 var particles_size = Vector3(.6, 2.06, .6)
 var particles_pos = Vector3(0, 2.224, 0)
 
+var audio_player
+
+var push_out_frames = -1
+
+var current_mod = ""
+var sounds = {
+	"BuildStart" : {
+		"cSoundsPath" : ["LEGOFORM1.WAV"]
+	},
+	"BuildLoop" : {
+		"cSoundsPath" : ["LEGOSHAKELP.WAV"]
+	}
+}
+
+var col = null
+var static_body = null
+var trimesh_col = null
+
+var character_body = null
+var convex_col = null
+
 
 func _ready():
-	$AudioPlayer.add_sound(["LEGOFORM1.WAV"], "BuildStart", "Basic Characters")
-	$AudioPlayer.add_sound(["LEGOSHAKELP.WAV"], "BuildLoop", "Basic Characters")
+	add_to_group("Build")
+	audio_player = f.make("res://Scripts/AudioPlayer.tscn", position, self)
+	audio_player.add_library(sounds, current_mod)
+	setup()
 	
 	for b in b_pos.keys():
 		var m = get_node(b)
@@ -59,27 +56,60 @@ func _ready():
 		
 		m.rotation.y = randf_range(-180, 180)
 
+func setup():
+	for child in get_children():
+		if child is MeshInstance3D:
+			if child.name.begins_with("Col"):
+				col = child
+				
+				static_body = StaticBody3D.new()
+				trimesh_col = CollisionShape3D.new()
+				static_body.add_child(trimesh_col)
+				static_body.transform = child.transform
+				var trimesh_shape = child.mesh.create_trimesh_shape()
+				trimesh_col.disabled = true
+				trimesh_col.shape = trimesh_shape
+				add_child(static_body)
+				
+				character_body = CharacterBody3D.new()
+				convex_col = CollisionShape3D.new()
+				character_body.add_child(convex_col)
+				character_body.transform = child.transform
+				var convex_shape = child.mesh.create_convex_shape(true, true)
+				convex_col.disabled = true
+				convex_col.shape = convex_shape
+				add_child(character_body)
+				
+				col.hide()
+			else:
+				obj_left.append(str(child.name))
+				b_pos[str(child.name)] = {"pos":child.position,"rot":child.rotation,"sca":child.scale}
+				child.position = Vector3()
+				child.rotation = Vector3()
+				child.scale = Vector3(1, 1, 1)
+
 var build_end = 0.0
 var build_end_delay = .5
 var building = false
+var completely_done = false
 func _process(_delta):
 	
 	if not finished:
 		if building:
 			
-			if !$AudioPlayer.has_loop("BuildLoop"):
-				if !$AudioPlayer.is_playing("BuildStart"):
-					$AudioPlayer.start_loop("BuildLoop")
+			if !audio_player.has_loop("BuildLoop"):
+				if !audio_player.is_playing("BuildStart"):
+					audio_player.start_loop("BuildLoop")
 			
 			if build_end <= 0.0:
 				building = false
-				$AudioPlayer.end_loop("BuildLoop")
+				audio_player.end_loop("BuildLoop")
 			
 			build_end -= _delta
 		
 		for m in advancing:
 			if building == false:
-				$AudioPlayer.play("BuildStart")
+				audio_player.play("BuildStart")
 			
 			building = true
 			build_end = build_end_delay
@@ -112,17 +142,29 @@ func _process(_delta):
 		if obj_left.size() <= 0:
 			finish()
 	else:
-		var length = PI/build_jump_speed
 		
-		# If we have finished
-		final_jump_timer += _delta
-		final_jump_timer = clamp(final_jump_timer, 0.0, length)
 		
-		global_position.y = (sin(final_jump_timer*build_jump_speed)*build_jump_height)+final_jump_y_pos
+		if push_out_frames != -1:
+			push_out_frames -= 1
+			if push_out_frames == 0:
+				character_body.queue_free()
 		
-		if final_jump_timer >= length:
-			global_position.y = final_jump_y_pos
-			switch_out()
+		
+		if not completely_done:
+			var length = PI/build_jump_speed
+			
+			# If we have finished
+			final_jump_timer += _delta
+			final_jump_timer = clamp(final_jump_timer, 0.0, length)
+			
+			global_position.y = (sin(final_jump_timer*build_jump_speed)*build_jump_height)+final_jump_y_pos
+			
+			if final_jump_timer >= length:
+				
+				global_position.y = final_jump_y_pos
+				completely_done = true
+				audio_player.end_loop("BuildLoop")
+				final_touches()
 
 
 var build_jump_height = 1.2
@@ -135,14 +177,19 @@ func finish():
 	final_jump_timer = 0
 	final_jump_y_pos = global_position.y
 
-func switch_out():
+func final_touches():
 	
 	var particles = l.get_load("res://Objects/built.tscn").instantiate()
 	
 	particles.position = particles_pos+position
 	particles.emission_box_extents = particles_size
+	particles.current_mod = current_mod
 	get_parent().add_child(particles)
 	particles.emitting = true
+	
+	trimesh_col.disabled = false
+	convex_col.disabled = false
+	push_out_frames = 3
 	
 	# I think this might be slightly broken... I'm not sure
 	# loop until we have dropped enough money
@@ -177,8 +224,9 @@ func switch_out():
 			# drop the stud, based on what type the stud is
 			drop_stud(type_drop)
 	
-	spawn_replacement()
-	queue_free()
+	if turn_into_breakable:
+		spawn_replacement()
+		queue_free()
 
 
 # Variables to control how high and far studs fly out when we drop them

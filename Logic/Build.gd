@@ -83,4 +83,3 @@ func get_air_gravity():
 		return base_state.air_gravity
 	else:
 		return override_air_gravity
-

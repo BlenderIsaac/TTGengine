@@ -163,14 +163,12 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 									col.name = "Collision"+str(col_idx)
 								
 								col_idx += 1
-							
 							if attr.has("NAV"):
 								var nav = generate_nav(obj.mesh)
 								nav.transform = obj.transform
 								nav.name = "Navigation"+str(nav_idx)
 								nav_idx += 1
 								add_child(nav)
-							
 							if obj_type == "MATTE":
 								var mesh_obj = obj
 								
@@ -305,12 +303,14 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 										obj.set_script(l.get_load("res://Objects/Lever.gd"))
 									"gen_PANEL":
 										obj.set_script(l.get_load("res://Objects/Panel.gd"))
+									"gen_BUILD":
+										obj.set_script(l.get_load("res://Objects/Building.gd"))
+										obj.current_mod = N_mod
 								
 								if "props" in obj:
 									obj.props = props
 									obj.attr = attr
 									obj.gltf = gltf
-								
 							elif obj_type == "DIE_AREA":
 								
 								var area = generate_area(obj, "KillArea"+str(kill_area_idx), "KillCol"+str(kill_area_idx))
