@@ -19,7 +19,7 @@ var slash_times = [[0.49, 0.72], [0.2, 0.44], [0.42, 0.6]]
 # 0.42 -> 0.6
 
 var prev_activated = false
-var attack_speed = 1.5
+var attack_speed = 0.1
 var knockbacks = [10.0, 10.0, 10.0]
 
 func exclusive_physics(_delta):
@@ -29,7 +29,7 @@ func exclusive_physics(_delta):
 	
 	if anim.current_animation == "SwordIdleloop":
 		
-		if next_combo == true and combo_num < max_combo+1:
+		if next_combo == true:
 			swipe()
 		else:
 			slash_frozen = true
@@ -59,9 +59,14 @@ func exclusive_physics(_delta):
 	var track_vel = root_vel#*2
 	#TODO: When we fix root_vel, track_vel should only change when root_vel is non-zero
 	if f.is_character_valid(snapped_attack_target): #and root_vel.length() > 0:
-		#track_vel = (snapped_attack_target.global_position-C.global_position).normalized()*base_state.run_speed*C.var_scale*attack_speed
-		#track_vel.y = 0
-		track_vel *= 5
+		var extra_vel =(snapped_attack_target.global_position-C.global_position).normalized()*base_state.run_speed*C.var_scale*attack_speed
+		extra_vel.y = 0
+		
+		track_vel = root_vel.rotated(Vector3.UP, -C.mesh_angle_to)
+		track_vel.z *= 5
+		track_vel = track_vel.rotated(Vector3.UP, C.mesh_angle_to)
+		track_vel += extra_vel
+		
 		if snapped_attack_target.global_position.distance_to(C.global_position) < 1.2:
 			track_vel = Vector3()
 	
@@ -78,9 +83,9 @@ func block(_who_from):
 	if C.has_logic("Stamina"):
 		C.get_logic("Stamina").change_stamina(-3)
 
-func super_block(_who_from):
-	if C.has_logic("Stamina"):
-		C.get_logic("Stamina").change_stamina(-10)
+#func super_block(_who_from):
+	#if C.has_logic("Stamina"):
+		#C.get_logic("Stamina").change_stamina(-10)
 
 
 func swipe():
@@ -103,11 +108,15 @@ func swipe():
 		if snapped_attack_target.has_method("warn"):
 			snapped_attack_target.warn("sword", [self])
 	
-	anim.play("Slash"+str(combo_num+1))
-	anim.queue("SwordIdleloop")
-	audio_player.play(saber_sounds[combo_num])
-	next_combo = false
 	combo_num += 1
+	
+	if combo_num > max_combo+1:
+		combo_num = 1
+	
+	anim.play("Slash"+str(combo_num))
+	anim.queue("SwordIdleloop")
+	audio_player.play(saber_sounds[combo_num-1])
+	next_combo = false
 
 
 var snapped_attack_target = null
@@ -192,9 +201,9 @@ func inclusive_physics(_delta):
 					next_combo = true
 			
 			if slash_frozen:
-				if combo_num < max_combo+1:
-					swipe()
-					slash_frozen = false
+				#if combo_num < max_combo+1:
+				swipe()
+				slash_frozen = false
 			
 			if C.is_in_base_movement_state():
 				if C.is_on_floor():
@@ -206,20 +215,26 @@ func inclusive_physics(_delta):
 	prev_activated = C.weapon_prefix == our_prefix
 
 
+func doing_damage():
+	var anim_progress = anim.current_animation_position/anim.current_animation_length
+	var damage_start = 0.3
+	var damage_end = 0.95
+	
+	if slash_times.size() > combo_num:
+		damage_start = slash_times[combo_num-1][0]
+		damage_end = slash_times[combo_num-1][1]
+	
+	if anim_progress > damage_start and anim_progress < damage_end:
+		return true
+	
+	return false
+
+
 func exclusive_process(_delta):
 	
 	if anim.current_animation.begins_with("Slash"):
-		var anim_progress = anim.current_animation_position/anim.current_animation_length
 		
-		if Input.is_action_just_pressed("Click"):print(anim_progress)
-		var damage_start = 0.3
-		var damage_end = 0.95
-		
-		if slash_times.size() > combo_num:
-			damage_start = slash_times[combo_num-1][0]
-			damage_end = slash_times[combo_num-1][1]
-		
-		if anim_progress > damage_start and anim_progress < damage_end:
+		if doing_damage():
 			if hit < lightsaber_hurt_per_frame:
 				#$"../Sword".SwordExtras.scale.y = 2.0
 				for opponent in $"../Sword".in_lightsaber:
@@ -242,13 +257,23 @@ func exclusive_process(_delta):
 
 var valid_damage_logics = ["SwordSlam", "SwordLunge"]
 func exclusive_damage(_amount, _who_from=null):
+	var damage_done = false
 	
 	if _who_from != null:
 		if "movement_state" in _who_from:
-			if valid_damage_logics.has(_who_from.movement_state):
+			if valid_damage_logics.has(_who_from.movement_state) or !doing_damage():
 				C.generic_damage(_amount)
+				damage_done = true
 	else:
 		C.generic_damage(_amount)
+		damage_done = true
 	
 	if _who_from and _who_from.is_in_group("projectile"):
-		_who_from.deflect(C)
+		if doing_damage():
+			_who_from.deflect(C)
+		else:
+			C.generic_damage(_amount)
+			damage_done = true
+	
+	if !damage_done:
+		C.get_logic("Stamina").change_stamina(-2)

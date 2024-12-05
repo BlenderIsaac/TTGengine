@@ -144,7 +144,8 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 							if attr.has("COL"):
 								
 								if attr.has("ANIM"):
-									var animated_body = CharacterBody3D.new()
+									var animated_body = AnimatableBody3D.new()
+									animated_body.sync_to_physics = false
 									if not obj is MeshInstance3D:
 										var is_acutal_obj = obj.get_node_or_null(str(obj.name))
 										if is_acutal_obj:
@@ -153,7 +154,7 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 									var col = generate_box_col(obj, "Collision"+str(col_idx))
 									
 									animated_body.add_child(col)
-									
+									obj.set_meta("ColBody", animated_body)
 									obj.add_child(animated_body)
 								else:
 									
@@ -306,6 +307,8 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 									"gen_BUILD":
 										obj.set_script(l.get_load("res://Objects/Building.gd"))
 										obj.current_mod = N_mod
+									"lsw_FORCE":
+										obj.set_script(l.get_load("res://Objects/ForceObject.gd"))
 								
 								if "props" in obj:
 									obj.props = props
@@ -326,8 +329,7 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 								obj.props = props
 								obj.attr = attr
 								obj.gltf = gltf
-							
-							if obj_type == "N":
+							elif obj_type == "N":
 								obj.hide()
 				"SCENE":
 					var prop = line.split(":")

@@ -53,20 +53,8 @@ func exclusive_physics(_delta):
 				footsteps_played += 1
 				audio_player.play("Run")
 	
-	# Gravity
-	if not C.is_on_floor():
-		C.char_vel.y += air_gravity*_delta*C.var_scale
-		
-		# If we are in the air and we are playing one of the animations in not_air_anims
-		# Then make us be falling instead
-		for an in not_air_anims:
-			if anim.current_animation.ends_with(an):
-				# Play fallloop with a blend of .5
-				anim.play(C.weapon_prefix+"Fallloop", .5)
-				break
-	else:
-		# If we are not falling set char_vel.y to just slightly negative
-		C.char_vel.y = air_gravity*_delta*C.var_scale
+	gen_gravity(_delta, true)
+	
 	
 	# reset our movement direction
 	move_dir = Vector3()
@@ -161,6 +149,22 @@ func initiate():
 	#last_move_dir = facing_move_dir
 	#move_dir = facing_move_dir
 	#move_delay_timer = 0.0#move_delay+0.0
+
+func gen_gravity(_delta, animate=false):
+	if not C.is_on_floor():
+		C.char_vel.y += air_gravity*_delta*C.var_scale
+		
+		if animate:
+			# If we are in the air and we are playing one of the animations in not_air_anims
+			# Then make us be falling instead
+			for an in not_air_anims:
+				if anim.current_animation.ends_with(an):
+					# Play fallloop with a blend of .5
+					anim.play(C.weapon_prefix+"Fallloop", .5)
+					break
+	else:
+		# If we are not falling set char_vel.y to just slightly negative
+		C.char_vel.y = air_gravity*_delta*C.var_scale
 
 # This is so we can copy some variables across switches
 var vars_copied_on_switch = ["move_dir_to", "move_dir"]

@@ -25,12 +25,21 @@ func initiate():
 	
 	var move_angle = Vector2(-move_dir.x, move_dir.z).angle()+deg_to_rad(90)
 	
-	var angle_dif = abs(f.angle_to_angle(C.mesh_angle_to, move_angle))
+	var overwrite = false
+	
+	if snapped_attack_target:
+		var rot_dir = Basis.looking_at(f.vec3_0y(snapped_attack_target.position)-f.vec3_0y(C.position), Vector3.UP).get_euler().y
+		var rot_to = abs(f.angle_to_angle(move_angle, rot_dir))
+		
+		if not snapped_attack_target or rot_to < PI/3:
+			overwrite = true
+	
+	#var angle_dif = angle_difference(C.mesh_angle_to, move_angle)
+	
 	# if we don't have a target  or the angle to our target is greater than 90 degrees.
 	
-	if not snapped_attack_target or angle_dif < PI/2:
-		if move_dir != Vector3():
-			C.mesh_angle_to = move_angle
+	if move_dir != Vector3() and not overwrite:
+		C.mesh_angle_to = move_angle
 	
 	if snapped_attack_target:
 		if snapped_attack_target.has_method("warn"):
@@ -81,7 +90,7 @@ func exclusive_physics(_delta):
 			reached = true
 			track_vel = Vector3()
 	
-	C.set_velocity((C.char_vel+root_vel+track_vel)+C.push_vel)
+	C.set_velocity((C.char_vel+track_vel)+C.push_vel)
 	C.move_and_slide()
 	
 	if not C.is_on_floor():
@@ -221,16 +230,40 @@ func exclusive_process(_delta):
 							$"../Sword".in_lightsaber.erase(opponent)
 							hit += 1
 
+func doing_damage():
+	var anim_progress = anim.current_animation_position/anim.current_animation_length
+	var damage_start = 0.3
+	var damage_end = 0.95
+	
+	#if slash_times.size() > combo_num:
+	#	damage_start = slash_times[combo_num-1][0]
+	#	damage_end = slash_times[combo_num-1][1]
+	
+	if anim_progress > damage_start and anim_progress < damage_end:
+		return true
+	
+	return false
+
 
 var valid_damage_logics = ["SwordSlam", "SwordLunge"]
 func exclusive_damage(_amount, _who_from=null):
+	var damage_done = false
 	
 	if _who_from != null:
 		if "movement_state" in _who_from:
-			if valid_damage_logics.has(_who_from.movement_state):
+			if valid_damage_logics.has(_who_from.movement_state) or !doing_damage():
 				C.generic_damage(_amount)
+				damage_done = true
 	else:
 		C.generic_damage(_amount)
+		damage_done = true
 	
 	if _who_from and _who_from.is_in_group("projectile"):
-		_who_from.deflect(C)
+		if doing_damage():
+			_who_from.deflect(C)
+		else:
+			C.generic_damage(_amount)
+			damage_done = true
+	
+	if !damage_done:
+		C.get_logic("Stamina").change_stamina(-3)

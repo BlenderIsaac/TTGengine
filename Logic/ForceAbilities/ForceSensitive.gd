@@ -94,13 +94,12 @@ func inclusive_physics(_delta):
 						force_colour_2[3] = 0.1
 						force_colour_2.h = force_colour.h+(randf()*.05)
 						
-						var charge_colour = force_colour
-						#charge_colour.h *= 3
-						
 						# hide all abilities
 						for child in force_outline.get_children():
 							if child.is_in_group("ForceSlot"):
 								child.hide()
+						
+						var charge_colour = force_colour
 						
 						var Mesh1 = force_outline.get_node("Mesh1")
 						var Mesh2 = force_outline.get_node("Mesh2")
@@ -110,26 +109,31 @@ func inclusive_physics(_delta):
 						Mesh2.modulate = force_colour_2
 						Charge.set_instance_shader_parameter("albedo", Color(charge_colour))
 						
-						# load icons into sprite3ds
-						for slot in force_abilities.keys():
-							var data = force_abilities.get(slot)
-							var slot_node = force_outline.get_node(slot)
+						if !force_target.is_in_group("ForceObject"):
+							force_outline.scale = Vector3(1, 1, 1)
 							
-							var image = MATERIALS.load_texture(SETTINGS.mod_path+"/"+C.origin_mod+"/characters/textures/"+data.Icon)
+							# load icons into sprite3ds
+							for slot in force_abilities.keys():
+								var data = force_abilities.get(slot)
+								var slot_node = force_outline.get_node(slot)
+								
+								var image = MATERIALS.load_texture(SETTINGS.mod_path+"/"+C.origin_mod+"/characters/textures/"+data.Icon)
+								
+								slot_node.modulate = slot_colour
+								slot_node.transparency = 0
+								slot_node.texture = image
+								slot_node.show()
 							
-							slot_node.modulate = slot_colour
-							slot_node.transparency = 0
-							slot_node.texture = image
-							slot_node.show()
-						
-						# disable the ones that don't work
-						var valid_abilities = force_target_valid_abilities_list(force_target)
-						
-						for slot in force_abilities.keys():
-							var data = force_abilities.get(slot)
+							# disable the ones that don't work
+							var valid_abilities = force_target_valid_abilities_list(force_target)
 							
-							if !valid_abilities.has(data.Self):
-								force_outline.get_node(slot).transparency = 0.8
+							for slot in force_abilities.keys():
+								var data = force_abilities.get(slot)
+								
+								if !valid_abilities.has(data.Self):
+									force_outline.get_node(slot).transparency = 0.8
+						else:
+							force_outline.scale = Vector3(force_target.force_size, force_target.force_size, force_target.force_size)
 					
 					force_anim.stop()
 					force_anim.play("ForceTurnOn")
@@ -146,6 +150,11 @@ func initiate():
 
 var prev_key
 func exclusive_physics(_delta):
+	
+	base_state.gen_gravity(_delta)
+	C.set_velocity(C.char_vel+C.push_vel+C.knock_vel)
+	C.move_and_slide()
+	
 	if force_target:
 		## This activates when we are focused on a target, ready to select a force power to use on them
 		
@@ -162,82 +171,90 @@ func exclusive_physics(_delta):
 		
 		#if selected_ability == null:
 		
-		anim.play("ForceStatic", .2)
-		
-		# If we select a force power
-		var any_key_pressed = false
-		for key in force_abilities.keys():
-			var key_pressed = false
+		if !force_target.is_in_group("ForceObject"):
+			anim.play("ForceStatic", .2)
 			
-			if C.control_type == "keyboard":
-				if C.key_press(key):
-					key_pressed = true
-			elif C.control_type == "controller":
-				key_pressed = C.controller_direction_pressed(key)
-			
-			if key_pressed:
-					any_key_pressed = true
-					var ability_data = force_abilities.get(key)
-					
-					var force_ability = ability_data.Self
-					var target_ability = ability_data.Target
-					var target_ability_path = ability_data.TargetPath
-					var chargeup = ability_data.get("ChargeUp", 1.0)
-					var ab_range = ability_data.get("Range", 1.0)
-					var ab_vel_proj = ability_data.get("VelocityPredict", true)
-					
-					if can_use_ability_on_target(force_target, force_ability, target_ability, target_ability_path):
+			# If we select a force power
+			var any_key_pressed = false
+			for key in force_abilities.keys():
+				var key_pressed = false
+				
+				if C.control_type == "keyboard":
+					if C.key_press(key):
+						key_pressed = true
+				elif C.control_type == "controller":
+					key_pressed = C.controller_direction_pressed(key)
+				
+				if key_pressed:
+						any_key_pressed = true
+						var ability_data = force_abilities.get(key)
 						
-						#var target_consequence = force_abilities.get(key).Target
-						#force_target.get_logic(target_consequence).opponent = C
-						#force_target.set_movement_state(target_consequence)
+						var force_ability = ability_data.Self
+						var target_ability = ability_data.Target
+						var target_ability_path = ability_data.TargetPath
+						var chargeup = ability_data.get("ChargeUp", 1.0)
+						var ab_range = ability_data.get("Range", 1.0)
+						var ab_vel_proj = ability_data.get("VelocityPredict", true)
 						
-						if !key==prev_key:
-							current_charge = 0.0
-						
-						max_charge = chargeup
-						if chargeup == 0.0:
-							C.get_logic(force_ability).force_target = force_target
-							C.set_movement_state(force_ability)
+						if can_use_ability_on_target(force_target, force_ability, target_ability, target_ability_path):
 							
-							force_delay = force_delay_max
-						else:
-							if current_charge == 0.0:
-								predicted_pos = force_target.global_position + force_target.aim_pos
-								
-								if ab_vel_proj:
-									predicted_pos += force_target.velocity*chargeup
+							#var target_consequence = force_abilities.get(key).Target
+							#force_target.get_logic(target_consequence).opponent = C
+							#force_target.set_movement_state(target_consequence)
 							
-							current_charge += _delta
+							if !key==prev_key:
+								current_charge = 0.0
 							
-							var close_enough = predicted_pos.distance_to(force_target.global_position + force_target.aim_pos) < ab_range
-							if current_charge >= chargeup:
-								if close_enough:
-									C.get_logic(force_ability).force_target = force_target
-									C.set_movement_state(force_ability)
-								else:
-									force_target = null
+							max_charge = chargeup
+							if chargeup == 0.0:
+								C.get_logic(force_ability).force_target = force_target
+								C.set_movement_state(force_ability)
 								
 								force_delay = force_delay_max
-						
-						
-						
-						prev_key = key
-						break
+							else:
+								if current_charge == 0.0:
+									predicted_pos = force_target.global_position + force_target.aim_pos
+									
+									if ab_vel_proj:
+										predicted_pos += force_target.velocity*chargeup
+								
+								current_charge += _delta
+								
+								var close_enough = predicted_pos.distance_to(force_target.global_position + force_target.aim_pos) < ab_range
+								if current_charge >= chargeup:
+									if close_enough:
+										C.get_logic(force_ability).force_target = force_target
+										C.set_movement_state(force_ability)
+									else:
+										force_target = null
+									
+									force_delay = force_delay_max
+							
+							
+							
+							prev_key = key
+							break
+			
+			if !any_key_pressed:
+				current_charge = 0.0
+		else:
+			anim.play("ForceUse", .2)
+			force_target.forcing = true
 		
-		if !any_key_pressed:
-			current_charge = 0.0
 		
 		## This block resets us to base movement state we cancel or the target dies or is invalid
 		if !is_instance_valid(force_target) or !force_target or force_target.dead:
+			#if force_target.is_in_group("ForcedObject"):force_target.forcing=false
 			anim.play(C.weapon_prefix+"Idleloop", .2)
 			force_target = null
 			#selected_ability = null
 			get_node("ForceOutline").hide()
 			C.reset_movement_state()
 		
+		
 		# I changed this but I'm not exactly sure what it will effect
 		if !C.key_press("Special"):
+			#if force_target.is_in_group("ForceObject"):force_target.forcing=false
 			anim.play(C.weapon_prefix+"Idleloop", .2)
 			#selected_ability = null
 			get_node("ForceOutline").hide()
@@ -283,6 +300,18 @@ func update_force():
 
 
 func is_force_valid(force_object):
+	
+	if force_object.is_in_group("ForceObject"):
+		
+		if force_object.nogo == null:
+			return true
+		
+		for slide_idx in range(0, C.get_slide_collision_count()):
+			var collide = C.get_slide_collision(slide_idx)
+			if collide.get_collider() == force_object.nogo:
+				return false
+		
+		return true
 	
 	if force_target_valid_abilities_list(force_object).size() > 0:
 		return true

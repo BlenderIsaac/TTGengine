@@ -31,4 +31,3 @@ func character_exit(character):
 	if character.is_in_group("Character"):
 		if in_area.has(character):
 			in_area.erase(character)
-

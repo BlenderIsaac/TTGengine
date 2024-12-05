@@ -37,5 +37,3 @@ func logic_name():
 #	pass
 #func revive():
 #	pass
-
-

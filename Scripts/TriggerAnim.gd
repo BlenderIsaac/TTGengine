@@ -21,7 +21,13 @@ var anim_data = {
 	"UnTrigger" : "",
 }
 
+var incremental = false
+var increment_pause = 0.1
+var increment = 0.0
+
+var one_shot = false
 var triggered = false
+var toggle = false
 
 var lbl = null
 func _ready():
@@ -33,6 +39,9 @@ func _ready():
 	anim_data.Trigger = props.START
 	anim_data.UnTrigger = props.END
 	untrigger_wait = float(props.TIME)
+	one_shot = bool(int(props.ONE_SHOT))
+	toggle = bool(int(props.TOGGLE))
+	incremental = bool(int(props.get("INCREMENTAL", false)))
 	
 	base_anim_plyr = gltf.get_node("AnimationPlayer")
 	
@@ -54,17 +63,44 @@ func _process(_delta):
 	var triggering = is_triggering()
 	lbl.text = str(triggering)
 	
-	if triggering:
-		delay = untrigger_wait
-		if current_animation == "Default":
-			anim_play("Trigger")
+	if !incremental:
+		if triggering:
+			delay = untrigger_wait
+			if current_animation == "Default":
+				anim_play("Trigger")
+		else:
+			if !one_shot:
+				if !playing:
+					if current_animation == "Trigger":
+						
+						if delay <= 0:
+							anim_play("UnTrigger")
+							
+							
+							
+						else:
+							delay -= _delta
 	else:
-		if !playing:
-			if current_animation == "Trigger":
-				if delay <= 0:
-					anim_play("UnTrigger")
-				else:
-					delay -= _delta
+		if triggering:
+			increment = clamp(increment+_delta, 0.0, 1.0)
+			anim_seek("Trigger", increment)
+			
+			if increment == 1.0:delay = untrigger_wait
+		else:
+			var untrigger = true
+			if (increment >= 1.0 and one_shot):
+				untrigger = false
+			
+			if delay > 0.0:
+				delay -= _delta
+				untrigger = false
+			
+			if untrigger:
+				increment = clamp(increment-_delta, 0.0, 1.0)
+				anim_seek("UnTrigger", increment)
+		
+		
+		
 	
 	triggered = !playing and (triggering or (!triggering and delay > 0))
 	
@@ -107,6 +143,36 @@ func anim_play(anim_type): # Default, Trigger or UnTrigger
 		var anim = get_anim(anim_name)
 		anim.play(anim_name)
 		anim_time = anim.current_animation_length
+
+
+func anim_seek(anim_type, perc):
+	
+	var anim_name = anim_data[anim_type]
+	current_animation = anim_type
+	
+	if anim_type == "UnTrigger":
+		
+		if anim_data[anim_type] == "":
+			var anim = get_anim(anim_data["Trigger"])
+			anim.play_backwards(anim_data["Trigger"])
+			anim_time = anim.current_animation_length
+			anim.seek(perc*anim_time, true)
+			
+		else:
+			var anim = get_anim(anim_name)
+			anim.play(anim_name)
+			anim_time = anim.current_animation_length
+			anim.seek(perc*anim_time, true)
+			
+		
+		playing = true
+	else:
+		playing = true
+		
+		var anim = get_anim(anim_name)
+		anim.play(anim_name)
+		anim_time = anim.current_animation_length
+		anim.seek(perc*anim_time, true)
 
 
 # Button1

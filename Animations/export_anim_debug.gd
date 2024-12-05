@@ -10,7 +10,7 @@ func _ready():
 	#if special_folder != "":
 		#export_path += special_folder + "/"
 	
-	var glb_path = "res://Animations/NewPushes.glb"
+	var glb_path = "res://Animations/newpunch.glb"
 	
 	f.make(glb_path, Vector3(), self)
 	

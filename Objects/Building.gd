@@ -3,6 +3,10 @@ extends Node3D
 var b_pos = {}
 var obj_left = []
 
+var props
+var attr
+var gltf
+
 @export var rand_spread = 1
 @export var bounce_speed = 17
 @export var bounce_height = 0.15
@@ -15,7 +19,7 @@ var advancing = []
 
 var finished = false
 
-var coins = 550
+var coins = 0
 
 var particles_size = Vector3(.6, 2.06, .6)
 var particles_pos = Vector3(0, 2.224, 0)
@@ -23,6 +27,8 @@ var particles_pos = Vector3(0, 2.224, 0)
 var audio_player
 
 var push_out_frames = -1
+
+var aabb : AABB
 
 var current_mod = ""
 var sounds = {
@@ -61,6 +67,8 @@ func setup():
 		if child is MeshInstance3D:
 			if child.name.begins_with("Col"):
 				col = child
+				
+				aabb = col.mesh.get_aabb()
 				
 				static_body = StaticBody3D.new()
 				trimesh_col = CollisionShape3D.new()
@@ -181,8 +189,9 @@ func final_touches():
 	
 	var particles = l.get_load("res://Objects/built.tscn").instantiate()
 	
-	particles.position = particles_pos+position
-	particles.emission_box_extents = particles_size
+	particles.position = aabb.position+position + aabb.size/2
+	particles.emission_box_extents = aabb.size/2
+	particles.rotation = rotation
 	particles.current_mod = current_mod
 	get_parent().add_child(particles)
 	particles.emitting = true
@@ -193,6 +202,7 @@ func final_touches():
 	
 	# I think this might be slightly broken... I'm not sure
 	# loop until we have dropped enough money
+	coins = int(props.STUDS_DROPPED)
 	while coins > 0:
 		
 		# Variables for the type of stud we are dropping and the value of that stud
@@ -246,6 +256,8 @@ func drop_stud(type):
 	# Set the type of the stud
 	stud.set_type(type)
 	
+	stud.add_collision_exception_with(static_body)
+	stud.add_collision_exception_with(character_body)
 	
 	# Randomize a y velocity value between the min and max stud velocity height
 	var rand_vel_up = randf_range(stud_min_height, stud_max_height)

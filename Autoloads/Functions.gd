@@ -24,6 +24,8 @@ func get_all_children(node) -> Array:
 func to_vec2(vec3):
 	return Vector2(vec3.x, vec3.z)
 
+func vec3_0y(vec3):
+	return Vector3(vec3.x, 0, vec3.z)
 
 func LerpVector2(from, to, amount):
 	var x = lerp(from.x, to.x, amount)
@@ -50,6 +52,7 @@ func deg2radvec3(vec3):
 	return Vector3(deg_to_rad(vec3.x), deg_to_rad(vec3.y), deg_to_rad(vec3.z))
 
 func angle_to_angle(from, to):
+	#print("why are you using this? it doesn't work")
 	return fposmod(to-from + PI, PI*2) - PI
 
 func merge_arrays(array1, array2):
