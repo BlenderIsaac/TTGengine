@@ -43,8 +43,9 @@ func create_level(mod, level_name, section):
 	
 	return level
 
-
-func hub_into_level(mod_name, level_name):
+var current_door_into = null
+func hub_into_level(mod_name, level_name, door):
+	current_door_into = door
 	
 	Interface.transition_in()
 	
@@ -56,6 +57,29 @@ func hub_into_level(mod_name, level_name):
 func exit_menu_to_hub():
 	
 	Interface.transition_in()
+	
+	if current_door_into and is_instance_valid(current_door_into):
+		var current_level = get_child(0)
+		
+		var game_cam = current_level.get_node("GameCam")
+		game_cam.begin_transform_override = true
+		game_cam.transform = current_door_into.cam.transform
+		
+		var players_data = current_level.get_player_data()
+		var player_index = 0
+		
+		for player in current_level.player_spawns:
+			
+			var dist = 0.5
+			if players_data.size() > 1:
+				dist = player_index/(players_data.size()-1)
+			
+			var player_position = f.LerpVector3(current_door_into.spawn_positions[0], current_door_into.spawn_positions[1], dist)
+			
+			player.position = player_position
+			player.mesh_angle_to = current_door_into.rotation
+			
+			player_index += 1
 	
 	var prev_level = get_child(0)
 	prev_level.show()

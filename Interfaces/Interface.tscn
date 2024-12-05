@@ -1,4 +1,4 @@
-[gd_scene load_steps=68 format=3 uid="uid://dvgy5vxoqaq41"]
+[gd_scene load_steps=69 format=3 uid="uid://dvgy5vxoqaq41"]
 
 [ext_resource type="Script" path="res://Interfaces/Interface.gd" id="1_0holg"]
 [ext_resource type="Texture2D" uid="uid://ditscyjxgo1jd" path="res://Textures/select.png" id="3_di25h"]
@@ -15,6 +15,7 @@
 [ext_resource type="Texture2D" uid="uid://badk5hii0xgof" path="res://Textures/GreenBack.png" id="11_c2hfv"]
 [ext_resource type="Texture2D" uid="uid://6ediol0mp3qp" path="res://Textures/BrownBack.png" id="12_d0w3d"]
 [ext_resource type="Script" path="res://Interfaces/HeartGroup.gd" id="12_mrkh6"]
+[ext_resource type="PackedScene" uid="uid://s3e7ydia17e" path="res://Interfaces/minikit_building.tscn" id="19_g3ydy"]
 [ext_resource type="SpriteFrames" uid="uid://dwmabmgh5v2ni" path="res://Textures/HiResMinikit/minikit.tres" id="19_go61m"]
 [ext_resource type="Texture2D" uid="uid://df53q310suwco" path="res://Textures/HiResMinikit/Screenshot_3.png" id="19_nnllw"]
 [ext_resource type="Texture2D" uid="uid://tubcqx30qvos" path="res://Textures/HiResMinikit/Screenshot_4.png" id="20_j67og"]
@@ -56,227 +57,6 @@ Label/colors/font_outline_color = Color(0.423529, 0.0117647, 0.0588235, 1)
 Label/constants/outline_size = 9
 Label/font_sizes/font_size = 39
 Label/fonts/font = SubResource("SystemFont_04erk")
-
-[sub_resource type="SystemFont" id="SystemFont_5rq0x"]
-font_names = PackedStringArray("Franklin Gothic")
-subpixel_positioning = 0
-
-[sub_resource type="LabelSettings" id="LabelSettings_q0ixu"]
-line_spacing = -5.056
-font = SubResource("SystemFont_5rq0x")
-font_size = 26
-outline_size = 6
-outline_color = Color(0, 0, 0, 1)
-
-[sub_resource type="Animation" id="Animation_qhmf2"]
-resource_name = "DropIn"
-length = 4.0
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Icon/Head:modulate")
-tracks/0/interp = 0
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1),
-"update": 0,
-"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Icon/Name:modulate")
-tracks/1/interp = 0
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
-"update": 0,
-"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
-}
-
-[sub_resource type="Animation" id="Animation_o22tm"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Icon/Head:modulate")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Color(1, 1, 1, 1)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Icon/Name:modulate")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Color(1, 1, 1, 0)]
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_wndtb"]
-_data = {
-"DropIn": SubResource("Animation_qhmf2"),
-"RESET": SubResource("Animation_o22tm")
-}
-
-[sub_resource type="Animation" id="Animation_xchji"]
-resource_name = "DropInPromptFlash"
-length = 2.0
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("InGame/DropInPrompt:modulate")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.9, 1.1, 1.9, 2),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
-"update": 0,
-"values": [Color(1, 1, 1, 0.501961), Color(1, 1, 1, 1), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 0), Color(1, 1, 1, 0.501961)]
-}
-
-[sub_resource type="Animation" id="Animation_3gihs"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("InGame/DropInPrompt:modulate")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Color(1, 1, 1, 1)]
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_fuvmu"]
-_data = {
-"DropInPromptFlash": SubResource("Animation_xchji"),
-"RESET": SubResource("Animation_3gihs")
-}
-
-[sub_resource type="LabelSettings" id="LabelSettings_unepc"]
-font = SubResource("SystemFont_5rq0x")
-font_size = 28
-font_color = Color(0.952941, 0.713726, 0, 1)
-outline_size = 6
-outline_color = Color(0.160784, 0.121569, 0, 1)
-
-[sub_resource type="Animation" id="Animation_caxej"]
-resource_name = "Juice"
-length = 0.1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:scale")
-tracks/0/interp = 2
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [Vector2(1.5, 1.5), Vector2(1, 1)]
-}
-
-[sub_resource type="Animation" id="Animation_aywl0"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:scale")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(1, 1)]
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_dkble"]
-_data = {
-"Juice": SubResource("Animation_caxej"),
-"RESET": SubResource("Animation_aywl0")
-}
-
-[sub_resource type="SystemFont" id="SystemFont_2jegm"]
-font_names = PackedStringArray("Franklin Gothic")
-subpixel_positioning = 0
-
-[sub_resource type="Animation" id="Animation_14e2j"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Exit:theme_override_colors/font_color")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Color(1, 0, 0, 1)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Select:theme_override_colors/font_color")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Color(0.00784314, 0.956863, 0.00784314, 1)]
-}
-
-[sub_resource type="Animation" id="Animation_0obeb"]
-resource_name = "flash_loop"
-length = 0.3
-loop_mode = 1
-step = 0.05
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Exit:theme_override_colors/font_color")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.15, 0.3),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 0,
-"values": [Color(1, 0, 0, 1), Color(0.513726, 0, 0, 1), Color(1, 0, 0, 1)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Select:theme_override_colors/font_color")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.15, 0.3),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 0,
-"values": [Color(0.00784314, 0.956863, 0.00784314, 1), Color(0.00784314, 0.52549, 0.00784314, 1), Color(0.00784314, 0.956863, 0.00784314, 1)]
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_two08"]
-_data = {
-"RESET": SubResource("Animation_14e2j"),
-"flash_loop": SubResource("Animation_0obeb")
-}
 
 [sub_resource type="LabelSettings" id="LabelSettings_ris50"]
 line_spacing = -5.056
@@ -613,7 +393,7 @@ tracks/3/keys = {
 tracks/4/type = "value"
 tracks/4/imported = false
 tracks/4/enabled = true
-tracks/4/path = NodePath("%Player0HUD:position")
+tracks/4/path = NodePath("../Icons/Player0HUD:position")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/keys = {
@@ -625,7 +405,7 @@ tracks/4/keys = {
 tracks/5/type = "value"
 tracks/5/imported = false
 tracks/5/enabled = true
-tracks/5/path = NodePath("%Player1HUD:position")
+tracks/5/path = NodePath("../Icons/Player1HUD:position")
 tracks/5/interp = 1
 tracks/5/loop_wrap = true
 tracks/5/keys = {
@@ -637,7 +417,7 @@ tracks/5/keys = {
 tracks/6/type = "value"
 tracks/6/imported = false
 tracks/6/enabled = true
-tracks/6/path = NodePath("%Player2HUD:position")
+tracks/6/path = NodePath("../Icons/Player2HUD:position")
 tracks/6/interp = 1
 tracks/6/loop_wrap = true
 tracks/6/keys = {
@@ -649,7 +429,7 @@ tracks/6/keys = {
 tracks/7/type = "value"
 tracks/7/imported = false
 tracks/7/enabled = true
-tracks/7/path = NodePath("%Player3HUD:position")
+tracks/7/path = NodePath("../Icons/Player3HUD:position")
 tracks/7/interp = 1
 tracks/7/loop_wrap = true
 tracks/7/keys = {
@@ -737,7 +517,7 @@ length = 2.0
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("%Player0HUD:position")
+tracks/0/path = NodePath("../Icons/Player0HUD:position")
 tracks/0/interp = 2
 tracks/0/loop_wrap = false
 tracks/0/keys = {
@@ -749,7 +529,7 @@ tracks/0/keys = {
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("%Player1HUD:position")
+tracks/1/path = NodePath("../Icons/Player1HUD:position")
 tracks/1/interp = 2
 tracks/1/loop_wrap = false
 tracks/1/keys = {
@@ -761,7 +541,7 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("%Player2HUD:position")
+tracks/2/path = NodePath("../Icons/Player2HUD:position")
 tracks/2/interp = 2
 tracks/2/loop_wrap = false
 tracks/2/keys = {
@@ -773,7 +553,7 @@ tracks/2/keys = {
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("%Player3HUD:position")
+tracks/3/path = NodePath("../Icons/Player3HUD:position")
 tracks/3/interp = 2
 tracks/3/loop_wrap = false
 tracks/3/keys = {
@@ -925,6 +705,10 @@ _data = {
 "TrueJediStart": SubResource("Animation_xccne")
 }
 
+[sub_resource type="SystemFont" id="SystemFont_5rq0x"]
+font_names = PackedStringArray("Franklin Gothic")
+subpixel_positioning = 0
+
 [sub_resource type="LabelSettings" id="LabelSettings_vusaa"]
 line_spacing = -5.056
 font = SubResource("SystemFont_5rq0x")
@@ -1069,6 +853,223 @@ _data = {
 "ComeIn": SubResource("Animation_7lyip"),
 "Gain": SubResource("Animation_pffwb"),
 "RESET": SubResource("Animation_3qoow")
+}
+
+[sub_resource type="LabelSettings" id="LabelSettings_q0ixu"]
+line_spacing = -5.056
+font = SubResource("SystemFont_5rq0x")
+font_size = 26
+outline_size = 6
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="Animation" id="Animation_qhmf2"]
+resource_name = "DropIn"
+length = 4.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Icon/Head:modulate")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Icon/Name:modulate")
+tracks/1/interp = 0
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_o22tm"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Icon/Head:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Icon/Name:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_wndtb"]
+_data = {
+"DropIn": SubResource("Animation_qhmf2"),
+"RESET": SubResource("Animation_o22tm")
+}
+
+[sub_resource type="Animation" id="Animation_xchji"]
+resource_name = "DropInPromptFlash"
+length = 2.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("InGame/DropInPrompt:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.9, 1.1, 1.9, 2),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0.501961), Color(1, 1, 1, 1), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 0), Color(1, 1, 1, 0.501961)]
+}
+
+[sub_resource type="Animation" id="Animation_3gihs"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("InGame/DropInPrompt:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_fuvmu"]
+_data = {
+"DropInPromptFlash": SubResource("Animation_xchji"),
+"RESET": SubResource("Animation_3gihs")
+}
+
+[sub_resource type="LabelSettings" id="LabelSettings_unepc"]
+font = SubResource("SystemFont_5rq0x")
+font_size = 28
+font_color = Color(0.952941, 0.713726, 0, 1)
+outline_size = 6
+outline_color = Color(0.160784, 0.121569, 0, 1)
+
+[sub_resource type="Animation" id="Animation_caxej"]
+resource_name = "Juice"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:scale")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(1.5, 1.5), Vector2(1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_aywl0"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_dkble"]
+_data = {
+"Juice": SubResource("Animation_caxej"),
+"RESET": SubResource("Animation_aywl0")
+}
+
+[sub_resource type="SystemFont" id="SystemFont_2jegm"]
+font_names = PackedStringArray("Franklin Gothic")
+subpixel_positioning = 0
+
+[sub_resource type="Animation" id="Animation_14e2j"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Exit:theme_override_colors/font_color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 0, 0, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Select:theme_override_colors/font_color")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(0.00784314, 0.956863, 0.00784314, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_0obeb"]
+resource_name = "flash_loop"
+length = 0.3
+loop_mode = 1
+step = 0.05
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Exit:theme_override_colors/font_color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.15, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(1, 0, 0, 1), Color(0.513726, 0, 0, 1), Color(1, 0, 0, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Select:theme_override_colors/font_color")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.15, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(0.00784314, 0.956863, 0.00784314, 1), Color(0.00784314, 0.52549, 0.00784314, 1), Color(0.00784314, 0.956863, 0.00784314, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_two08"]
+_data = {
+"RESET": SubResource("Animation_14e2j"),
+"flash_loop": SubResource("Animation_0obeb")
 }
 
 [node name="Interface" type="Control"]
@@ -1789,6 +1790,533 @@ focus_neighbor_bottom = NodePath("../Columns/InputButtons/InputUp")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_1snwa")
 text = "Reset"
 flat = true
+
+[node name="LevelEnd" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_lock_ = true
+
+[node name="Back" type="Control" parent="LevelEnd"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_lock_ = true
+
+[node name="NinePatchRect" type="NinePatchRect" parent="LevelEnd/Back"]
+modulate = Color(0, 0, 0, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("9_nno8u")
+patch_margin_left = 30
+patch_margin_top = 30
+patch_margin_right = 30
+patch_margin_bottom = 30
+metadata/_edit_lock_ = true
+
+[node name="ModeUnlocks" type="Control" parent="LevelEnd"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_lock_ = true
+
+[node name="HBox" type="HBoxContainer" parent="LevelEnd/ModeUnlocks"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+metadata/_edit_lock_ = true
+
+[node name="VBox" type="VBoxContainer" parent="LevelEnd/ModeUnlocks/HBox"]
+layout_mode = 2
+alignment = 1
+metadata/_edit_lock_ = true
+
+[node name="LevelComplete" type="Label" parent="LevelEnd/ModeUnlocks/HBox/VBox"]
+layout_mode = 2
+text = "Level Complete"
+label_settings = SubResource("LabelSettings_saxkn")
+horizontal_alignment = 1
+metadata/_edit_lock_ = true
+
+[node name="FreePlayUnlock" type="Label" parent="LevelEnd/ModeUnlocks/HBox/VBox"]
+layout_mode = 2
+text = "Free Play Unlocked"
+label_settings = SubResource("LabelSettings_saxkn")
+horizontal_alignment = 1
+metadata/_edit_lock_ = true
+
+[node name="SuperFreePlayUnlock" type="Label" parent="LevelEnd/ModeUnlocks/HBox/VBox"]
+visible = false
+layout_mode = 2
+text = "Super Free Play Unlocked"
+label_settings = SubResource("LabelSettings_saxkn")
+horizontal_alignment = 1
+
+[node name="TrueJedi" type="Control" parent="LevelEnd"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_lock_ = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="LevelEnd/TrueJedi"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 18.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+metadata/_edit_lock_ = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LevelEnd/TrueJedi/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+metadata/_edit_lock_ = true
+
+[node name="Counter" type="Control" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(221.84, 51.415)
+layout_mode = 2
+metadata/_edit_lock_ = true
+
+[node name="Animated" type="Control" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -77.0
+offset_right = 1552.88
+offset_bottom = 282.905
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.815, 0.815)
+pivot_offset = Vector2(110.92, 25.708)
+
+[node name="Black" type="HBoxContainer" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated"]
+layout_mode = 0
+offset_right = 2240.0
+offset_bottom = 512.0
+scale = Vector2(0.1, 0.1)
+theme_override_constants/separation = -320
+
+[node name="Black" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Black"]
+layout_mode = 2
+texture = ExtResource("75_wjcnw")
+
+[node name="Black2" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Black"]
+layout_mode = 2
+texture = ExtResource("75_wjcnw")
+
+[node name="Black3" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Black"]
+layout_mode = 2
+texture = ExtResource("75_wjcnw")
+
+[node name="Black4" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Black"]
+layout_mode = 2
+texture = ExtResource("75_wjcnw")
+
+[node name="Black5" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Black"]
+layout_mode = 2
+texture = ExtResource("75_wjcnw")
+
+[node name="Black6" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Black"]
+layout_mode = 2
+texture = ExtResource("75_wjcnw")
+
+[node name="Black7" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Black"]
+layout_mode = 2
+texture = ExtResource("75_wjcnw")
+
+[node name="Black8" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Black"]
+layout_mode = 2
+texture = ExtResource("75_wjcnw")
+
+[node name="Black9" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Black"]
+layout_mode = 2
+texture = ExtResource("75_wjcnw")
+
+[node name="Black10" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Black"]
+layout_mode = 2
+texture = ExtResource("75_wjcnw")
+
+[node name="Yellow" type="HBoxContainer" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated"]
+layout_mode = 0
+offset_right = 2240.0
+offset_bottom = 512.0
+scale = Vector2(0.1, 0.1)
+theme_override_constants/separation = -320
+
+[node name="Yellow1" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Yellow"]
+layout_mode = 2
+texture = ExtResource("76_eueun")
+
+[node name="Yellow2" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Yellow"]
+layout_mode = 2
+texture = ExtResource("76_eueun")
+
+[node name="Yellow3" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Yellow"]
+layout_mode = 2
+texture = ExtResource("76_eueun")
+
+[node name="Yellow4" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Yellow"]
+layout_mode = 2
+texture = ExtResource("76_eueun")
+
+[node name="Yellow5" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Yellow"]
+layout_mode = 2
+texture = ExtResource("76_eueun")
+
+[node name="Yellow6" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Yellow"]
+layout_mode = 2
+texture = ExtResource("76_eueun")
+
+[node name="Yellow7" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Yellow"]
+layout_mode = 2
+texture = ExtResource("76_eueun")
+
+[node name="Yellow8" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Yellow"]
+layout_mode = 2
+texture = ExtResource("76_eueun")
+
+[node name="Yellow9" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Yellow"]
+layout_mode = 2
+texture = ExtResource("76_eueun")
+
+[node name="Yellow10" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Yellow"]
+layout_mode = 2
+texture = ExtResource("76_eueun")
+
+[node name="TrueJediLabel" type="Label" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+text = "True Jedi"
+label_settings = SubResource("LabelSettings_ris50")
+horizontal_alignment = 1
+metadata/_edit_lock_ = true
+
+[node name="Percentage" type="Label" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+text = "0%"
+label_settings = SubResource("LabelSettings_8s1sc")
+horizontal_alignment = 1
+metadata/_edit_lock_ = true
+
+[node name="AnimPerc" type="Control" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Percentage"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ZoomIn" type="Label" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Percentage/AnimPerc"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_right = 221.0
+offset_bottom = 59.0
+pivot_offset = Vector2(110.5, 29.5)
+text = "100%"
+label_settings = SubResource("LabelSettings_8s1sc")
+horizontal_alignment = 1
+metadata/_edit_lock_ = true
+
+[node name="ZoomOut" type="Label" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Percentage/AnimPerc"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_right = 221.0
+offset_bottom = 59.0
+pivot_offset = Vector2(110.5, 29.5)
+text = "100%"
+label_settings = SubResource("LabelSettings_8s1sc")
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_lock_ = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Percentage/AnimPerc"]
+libraries = {
+"": SubResource("AnimationLibrary_h7vso")
+}
+
+[node name="StudTotal" type="Control" parent="LevelEnd"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_lock_ = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="LevelEnd/StudTotal"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 78.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+metadata/_edit_lock_ = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LevelEnd/StudTotal/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+metadata/_edit_lock_ = true
+
+[node name="StudTotalLabel" type="Label" parent="LevelEnd/StudTotal/HBoxContainer/VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+z_index = 1
+layout_mode = 2
+text = "Stud Total"
+label_settings = SubResource("LabelSettings_ris50")
+horizontal_alignment = 1
+metadata/_edit_lock_ = true
+
+[node name="HBoxContainer" type="Control" parent="LevelEnd/StudTotal/HBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(2000, 57.73)
+layout_mode = 2
+metadata/_edit_lock_ = true
+
+[node name="Group" type="HBoxContainer" parent="LevelEnd/StudTotal/HBoxContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -196.0
+offset_right = 14000.0
+offset_bottom = 219.38
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+metadata/_edit_lock_ = true
+
+[node name="LeftStud" type="Control" parent="LevelEnd/StudTotal/HBoxContainer/VBoxContainer/HBoxContainer/Group"]
+layout_mode = 2
+
+[node name="Stud" type="AnimatedSprite2D" parent="LevelEnd/StudTotal/HBoxContainer/VBoxContainer/HBoxContainer/Group/LeftStud"]
+position = Vector2(-28, 31)
+sprite_frames = ExtResource("9_enyc4")
+animation = &"Gold"
+metadata/_edit_lock_ = true
+
+[node name="StudCount" type="Label" parent="LevelEnd/StudTotal/HBoxContainer/VBoxContainer/HBoxContainer/Group"]
+layout_mode = 2
+text = "0"
+label_settings = SubResource("LabelSettings_n34f1")
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_lock_ = true
+
+[node name="RightStud" type="Control" parent="LevelEnd/StudTotal/HBoxContainer/VBoxContainer/HBoxContainer/Group"]
+layout_mode = 2
+
+[node name="Stud" type="AnimatedSprite2D" parent="LevelEnd/StudTotal/HBoxContainer/VBoxContainer/HBoxContainer/Group/RightStud"]
+position = Vector2(28, 31)
+sprite_frames = ExtResource("9_enyc4")
+animation = &"Gold"
+metadata/_edit_lock_ = true
+
+[node name="MinikitBuildup" type="Control" parent="LevelEnd"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="LevelEnd/MinikitBuildup"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="LevelEnd/MinikitBuildup/SubViewportContainer"]
+own_world_3d = true
+transparent_bg = true
+handle_input_locally = false
+audio_listener_enable_3d = true
+size = Vector2i(1152, 648)
+render_target_update_mode = 0
+
+[node name="MinikitBuilding" parent="LevelEnd/MinikitBuildup/SubViewportContainer/SubViewport" instance=ExtResource("19_g3ydy")]
+visible = false
+
+[node name="Continue" type="CenterContainer" parent="LevelEnd"]
+visible = false
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("10_u2xjo")
+
+[node name="VBoxPause" type="VBoxContainer" parent="LevelEnd/Continue"]
+layout_mode = 2
+theme_override_constants/separation = -2
+alignment = 1
+
+[node name="ContinueStory" type="Button" parent="LevelEnd/Continue/VBoxPause"]
+visible = false
+layout_mode = 2
+focus_neighbor_top = NodePath("../Hub")
+focus_neighbor_bottom = NodePath("../Hub")
+theme_override_constants/outline_size = 14
+theme_override_font_sizes/font_size = 52
+text = "Continue Story"
+flat = true
+
+[node name="Hub" type="Button" parent="LevelEnd/Continue/VBoxPause"]
+layout_mode = 2
+theme_override_constants/outline_size = 14
+theme_override_font_sizes/font_size = 52
+text = "Hub"
+flat = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="LevelEnd"]
+libraries = {
+"": SubResource("AnimationLibrary_n14lr")
+}
+autoplay = "RESET"
+
+[node name="CharacterList" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_lock_ = true
+
+[node name="Container" type="VBoxContainer" parent="CharacterList"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 333.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Norm" type="Control" parent="CharacterList/Container"]
+visible = false
+layout_mode = 2
+
+[node name="Back" type="Sprite2D" parent="CharacterList/Container/Norm"]
+scale = Vector2(0.134, 0.134)
+texture = ExtResource("12_d0w3d")
+
+[node name="NAME" type="Sprite2D" parent="CharacterList/Container/Norm/Back"]
+scale = Vector2(1.017, 1.017)
+region_rect = Rect2(0, 2048, 256, 256)
+
+[node name="NormGrid" type="GridContainer" parent="CharacterList/Container"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/h_separation = 34
+theme_override_constants/v_separation = 34
+columns = 22
+
+[node name="SelectAnim" type="Control" parent="CharacterList"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Minikits" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_lock_ = true
+
+[node name="MiddlePos" type="HBoxContainer" parent="Minikits"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+metadata/_edit_lock_ = true
+
+[node name="BottomPos" type="VBoxContainer" parent="Minikits/MiddlePos"]
+layout_mode = 2
+alignment = 2
+
+[node name="Alignment" type="Control" parent="Minikits/MiddlePos/BottomPos"]
+layout_mode = 2
+
+[node name="Scaler" type="Node2D" parent="Minikits/MiddlePos/BottomPos/Alignment"]
+scale = Vector2(0.638, 0.638)
+
+[node name="Screenshot3" type="Sprite2D" parent="Minikits/MiddlePos/BottomPos/Alignment/Scaler"]
+visible = false
+position = Vector2(-1, -144.941)
+scale = Vector2(0.830066, 0.830065)
+texture = ExtResource("19_nnllw")
+
+[node name="Screenshot4" type="Sprite2D" parent="Minikits/MiddlePos/BottomPos/Alignment/Scaler"]
+visible = false
+modulate = Color(1, 1, 1, 0.454902)
+position = Vector2(135, -25.941)
+scale = Vector2(0.846, 0.846)
+texture = ExtResource("20_j67og")
+offset = Vector2(-163, -142)
+
+[node name="MinkitVis" type="AnimatedSprite2D" parent="Minikits/MiddlePos/BottomPos/Alignment/Scaler"]
+position = Vector2(0, 86.511)
+scale = Vector2(0.246094, 0.246094)
+sprite_frames = ExtResource("19_go61m")
+animation = &"Minikit"
+autoplay = "Minikit"
+frame = 94
+
+[node name="Name" type="Label" parent="Minikits/MiddlePos/BottomPos/Alignment/Scaler"]
+offset_left = -257.0
+offset_top = 109.511
+offset_right = 257.0
+offset_bottom = 188.511
+scale = Vector2(0.965, 0.965)
+pivot_offset = Vector2(257, 39.5)
+text = "0/10"
+label_settings = SubResource("LabelSettings_vusaa")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MinikitAnim" type="AnimationPlayer" parent="Minikits/MiddlePos/BottomPos/Alignment/Scaler"]
+root_node = NodePath("../..")
+libraries = {
+"": SubResource("AnimationLibrary_0dw70")
+}
+autoplay = "RESET"
 
 [node name="Icons" type="Control" parent="."]
 layout_mode = 1
@@ -2585,505 +3113,6 @@ libraries = {
 "": SubResource("AnimationLibrary_two08")
 }
 autoplay = "flash_loop"
-
-[node name="LevelEnd" type="Control" parent="."]
-visible = false
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-metadata/_edit_lock_ = true
-
-[node name="Back" type="Control" parent="LevelEnd"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-metadata/_edit_lock_ = true
-
-[node name="NinePatchRect" type="NinePatchRect" parent="LevelEnd/Back"]
-modulate = Color(0, 0, 0, 1)
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = ExtResource("9_nno8u")
-patch_margin_left = 30
-patch_margin_top = 30
-patch_margin_right = 30
-patch_margin_bottom = 30
-metadata/_edit_lock_ = true
-
-[node name="ModeUnlocks" type="Control" parent="LevelEnd"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-metadata/_edit_lock_ = true
-
-[node name="HBox" type="HBoxContainer" parent="LevelEnd/ModeUnlocks"]
-modulate = Color(1, 1, 1, 0)
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-alignment = 1
-metadata/_edit_lock_ = true
-
-[node name="VBox" type="VBoxContainer" parent="LevelEnd/ModeUnlocks/HBox"]
-layout_mode = 2
-alignment = 1
-metadata/_edit_lock_ = true
-
-[node name="LevelComplete" type="Label" parent="LevelEnd/ModeUnlocks/HBox/VBox"]
-layout_mode = 2
-text = "Level Complete"
-label_settings = SubResource("LabelSettings_saxkn")
-horizontal_alignment = 1
-metadata/_edit_lock_ = true
-
-[node name="FreePlayUnlock" type="Label" parent="LevelEnd/ModeUnlocks/HBox/VBox"]
-layout_mode = 2
-text = "Free Play Unlocked"
-label_settings = SubResource("LabelSettings_saxkn")
-horizontal_alignment = 1
-metadata/_edit_lock_ = true
-
-[node name="SuperFreePlayUnlock" type="Label" parent="LevelEnd/ModeUnlocks/HBox/VBox"]
-visible = false
-layout_mode = 2
-text = "Super Free Play Unlocked"
-label_settings = SubResource("LabelSettings_saxkn")
-horizontal_alignment = 1
-
-[node name="TrueJedi" type="Control" parent="LevelEnd"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-metadata/_edit_lock_ = true
-
-[node name="HBoxContainer" type="HBoxContainer" parent="LevelEnd/TrueJedi"]
-layout_mode = 1
-anchors_preset = -1
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = 18.0
-grow_horizontal = 2
-grow_vertical = 2
-alignment = 1
-metadata/_edit_lock_ = true
-
-[node name="VBoxContainer" type="VBoxContainer" parent="LevelEnd/TrueJedi/HBoxContainer"]
-layout_mode = 2
-theme_override_constants/separation = 8
-metadata/_edit_lock_ = true
-
-[node name="Counter" type="Control" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer"]
-custom_minimum_size = Vector2(221.84, 51.415)
-layout_mode = 2
-metadata/_edit_lock_ = true
-
-[node name="Animated" type="Control" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -77.0
-offset_right = 1552.88
-offset_bottom = 282.905
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(0.815, 0.815)
-pivot_offset = Vector2(110.92, 25.708)
-
-[node name="Black" type="HBoxContainer" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated"]
-layout_mode = 0
-offset_right = 2240.0
-offset_bottom = 512.0
-scale = Vector2(0.1, 0.1)
-theme_override_constants/separation = -320
-
-[node name="Black" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Black"]
-layout_mode = 2
-texture = ExtResource("75_wjcnw")
-
-[node name="Black2" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Black"]
-layout_mode = 2
-texture = ExtResource("75_wjcnw")
-
-[node name="Black3" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Black"]
-layout_mode = 2
-texture = ExtResource("75_wjcnw")
-
-[node name="Black4" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Black"]
-layout_mode = 2
-texture = ExtResource("75_wjcnw")
-
-[node name="Black5" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Black"]
-layout_mode = 2
-texture = ExtResource("75_wjcnw")
-
-[node name="Black6" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Black"]
-layout_mode = 2
-texture = ExtResource("75_wjcnw")
-
-[node name="Black7" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Black"]
-layout_mode = 2
-texture = ExtResource("75_wjcnw")
-
-[node name="Black8" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Black"]
-layout_mode = 2
-texture = ExtResource("75_wjcnw")
-
-[node name="Black9" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Black"]
-layout_mode = 2
-texture = ExtResource("75_wjcnw")
-
-[node name="Black10" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Black"]
-layout_mode = 2
-texture = ExtResource("75_wjcnw")
-
-[node name="Yellow" type="HBoxContainer" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated"]
-layout_mode = 0
-offset_right = 2240.0
-offset_bottom = 512.0
-scale = Vector2(0.1, 0.1)
-theme_override_constants/separation = -320
-
-[node name="Yellow1" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Yellow"]
-layout_mode = 2
-texture = ExtResource("76_eueun")
-
-[node name="Yellow2" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Yellow"]
-layout_mode = 2
-texture = ExtResource("76_eueun")
-
-[node name="Yellow3" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Yellow"]
-layout_mode = 2
-texture = ExtResource("76_eueun")
-
-[node name="Yellow4" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Yellow"]
-layout_mode = 2
-texture = ExtResource("76_eueun")
-
-[node name="Yellow5" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Yellow"]
-layout_mode = 2
-texture = ExtResource("76_eueun")
-
-[node name="Yellow6" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Yellow"]
-layout_mode = 2
-texture = ExtResource("76_eueun")
-
-[node name="Yellow7" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Yellow"]
-layout_mode = 2
-texture = ExtResource("76_eueun")
-
-[node name="Yellow8" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Yellow"]
-layout_mode = 2
-texture = ExtResource("76_eueun")
-
-[node name="Yellow9" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Yellow"]
-layout_mode = 2
-texture = ExtResource("76_eueun")
-
-[node name="Yellow10" type="TextureRect" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Counter/Animated/Yellow"]
-layout_mode = 2
-texture = ExtResource("76_eueun")
-
-[node name="TrueJediLabel" type="Label" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer"]
-modulate = Color(1, 1, 1, 0)
-layout_mode = 2
-text = "True Jedi"
-label_settings = SubResource("LabelSettings_ris50")
-horizontal_alignment = 1
-metadata/_edit_lock_ = true
-
-[node name="Percentage" type="Label" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer"]
-modulate = Color(1, 1, 1, 0)
-layout_mode = 2
-text = "0%"
-label_settings = SubResource("LabelSettings_8s1sc")
-horizontal_alignment = 1
-metadata/_edit_lock_ = true
-
-[node name="AnimPerc" type="Control" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Percentage"]
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="ZoomIn" type="Label" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Percentage/AnimPerc"]
-self_modulate = Color(1, 1, 1, 0)
-layout_mode = 0
-offset_right = 221.0
-offset_bottom = 59.0
-pivot_offset = Vector2(110.5, 29.5)
-text = "100%"
-label_settings = SubResource("LabelSettings_8s1sc")
-horizontal_alignment = 1
-metadata/_edit_lock_ = true
-
-[node name="ZoomOut" type="Label" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Percentage/AnimPerc"]
-self_modulate = Color(1, 1, 1, 0)
-layout_mode = 0
-offset_right = 221.0
-offset_bottom = 59.0
-pivot_offset = Vector2(110.5, 29.5)
-text = "100%"
-label_settings = SubResource("LabelSettings_8s1sc")
-horizontal_alignment = 1
-vertical_alignment = 1
-metadata/_edit_lock_ = true
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Percentage/AnimPerc"]
-libraries = {
-"": SubResource("AnimationLibrary_h7vso")
-}
-
-[node name="StudTotal" type="Control" parent="LevelEnd"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-metadata/_edit_lock_ = true
-
-[node name="HBoxContainer" type="HBoxContainer" parent="LevelEnd/StudTotal"]
-layout_mode = 1
-anchors_preset = -1
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = 78.0
-grow_horizontal = 2
-grow_vertical = 2
-alignment = 1
-metadata/_edit_lock_ = true
-
-[node name="VBoxContainer" type="VBoxContainer" parent="LevelEnd/StudTotal/HBoxContainer"]
-layout_mode = 2
-theme_override_constants/separation = 8
-metadata/_edit_lock_ = true
-
-[node name="StudTotalLabel" type="Label" parent="LevelEnd/StudTotal/HBoxContainer/VBoxContainer"]
-modulate = Color(1, 1, 1, 0)
-z_index = 1
-layout_mode = 2
-text = "Stud Total"
-label_settings = SubResource("LabelSettings_ris50")
-horizontal_alignment = 1
-metadata/_edit_lock_ = true
-
-[node name="HBoxContainer" type="Control" parent="LevelEnd/StudTotal/HBoxContainer/VBoxContainer"]
-custom_minimum_size = Vector2(2000, 57.73)
-layout_mode = 2
-metadata/_edit_lock_ = true
-
-[node name="Group" type="HBoxContainer" parent="LevelEnd/StudTotal/HBoxContainer/VBoxContainer/HBoxContainer"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -196.0
-offset_right = 14000.0
-offset_bottom = 219.38
-grow_horizontal = 2
-grow_vertical = 2
-alignment = 1
-metadata/_edit_lock_ = true
-
-[node name="LeftStud" type="Control" parent="LevelEnd/StudTotal/HBoxContainer/VBoxContainer/HBoxContainer/Group"]
-layout_mode = 2
-
-[node name="Stud" type="AnimatedSprite2D" parent="LevelEnd/StudTotal/HBoxContainer/VBoxContainer/HBoxContainer/Group/LeftStud"]
-position = Vector2(-28, 31)
-sprite_frames = ExtResource("9_enyc4")
-animation = &"Gold"
-metadata/_edit_lock_ = true
-
-[node name="StudCount" type="Label" parent="LevelEnd/StudTotal/HBoxContainer/VBoxContainer/HBoxContainer/Group"]
-layout_mode = 2
-text = "0"
-label_settings = SubResource("LabelSettings_n34f1")
-horizontal_alignment = 1
-vertical_alignment = 1
-metadata/_edit_lock_ = true
-
-[node name="RightStud" type="Control" parent="LevelEnd/StudTotal/HBoxContainer/VBoxContainer/HBoxContainer/Group"]
-layout_mode = 2
-
-[node name="Stud" type="AnimatedSprite2D" parent="LevelEnd/StudTotal/HBoxContainer/VBoxContainer/HBoxContainer/Group/RightStud"]
-position = Vector2(28, 31)
-sprite_frames = ExtResource("9_enyc4")
-animation = &"Gold"
-metadata/_edit_lock_ = true
-
-[node name="Continue" type="CenterContainer" parent="LevelEnd"]
-visible = false
-modulate = Color(1, 1, 1, 0)
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme = ExtResource("10_u2xjo")
-
-[node name="VBoxPause" type="VBoxContainer" parent="LevelEnd/Continue"]
-layout_mode = 2
-theme_override_constants/separation = -2
-alignment = 1
-
-[node name="ContinueStory" type="Button" parent="LevelEnd/Continue/VBoxPause"]
-visible = false
-layout_mode = 2
-focus_neighbor_top = NodePath("../Hub")
-focus_neighbor_bottom = NodePath("../Hub")
-theme_override_constants/outline_size = 14
-theme_override_font_sizes/font_size = 52
-text = "Continue Story"
-flat = true
-
-[node name="Hub" type="Button" parent="LevelEnd/Continue/VBoxPause"]
-layout_mode = 2
-theme_override_constants/outline_size = 14
-theme_override_font_sizes/font_size = 52
-text = "Hub"
-flat = true
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="LevelEnd"]
-libraries = {
-"": SubResource("AnimationLibrary_n14lr")
-}
-autoplay = "RESET"
-
-[node name="CharacterList" type="Control" parent="."]
-visible = false
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-metadata/_edit_lock_ = true
-
-[node name="Container" type="VBoxContainer" parent="CharacterList"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = 333.0
-offset_bottom = -7.0
-grow_horizontal = 2
-grow_vertical = 2
-alignment = 1
-
-[node name="Norm" type="Control" parent="CharacterList/Container"]
-visible = false
-layout_mode = 2
-
-[node name="Back" type="Sprite2D" parent="CharacterList/Container/Norm"]
-scale = Vector2(0.134, 0.134)
-texture = ExtResource("12_d0w3d")
-
-[node name="NAME" type="Sprite2D" parent="CharacterList/Container/Norm/Back"]
-scale = Vector2(1.017, 1.017)
-region_rect = Rect2(0, 2048, 256, 256)
-
-[node name="NormGrid" type="GridContainer" parent="CharacterList/Container"]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-theme_override_constants/h_separation = 34
-theme_override_constants/v_separation = 34
-columns = 22
-
-[node name="SelectAnim" type="Control" parent="CharacterList"]
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="Minikits" type="Control" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-metadata/_edit_lock_ = true
-
-[node name="MiddlePos" type="HBoxContainer" parent="Minikits"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-alignment = 1
-metadata/_edit_lock_ = true
-
-[node name="BottomPos" type="VBoxContainer" parent="Minikits/MiddlePos"]
-layout_mode = 2
-alignment = 2
-
-[node name="Alignment" type="Control" parent="Minikits/MiddlePos/BottomPos"]
-layout_mode = 2
-
-[node name="Scaler" type="Node2D" parent="Minikits/MiddlePos/BottomPos/Alignment"]
-scale = Vector2(0.638, 0.638)
-
-[node name="Screenshot3" type="Sprite2D" parent="Minikits/MiddlePos/BottomPos/Alignment/Scaler"]
-visible = false
-position = Vector2(-1, -144.941)
-scale = Vector2(0.830066, 0.830065)
-texture = ExtResource("19_nnllw")
-
-[node name="Screenshot4" type="Sprite2D" parent="Minikits/MiddlePos/BottomPos/Alignment/Scaler"]
-visible = false
-modulate = Color(1, 1, 1, 0.454902)
-position = Vector2(135, -25.941)
-scale = Vector2(0.846, 0.846)
-texture = ExtResource("20_j67og")
-offset = Vector2(-163, -142)
-
-[node name="MinkitVis" type="AnimatedSprite2D" parent="Minikits/MiddlePos/BottomPos/Alignment/Scaler"]
-position = Vector2(0, 86.511)
-scale = Vector2(0.246094, 0.246094)
-sprite_frames = ExtResource("19_go61m")
-animation = &"Minikit"
-autoplay = "Minikit"
-frame = 94
-
-[node name="Name" type="Label" parent="Minikits/MiddlePos/BottomPos/Alignment/Scaler"]
-offset_left = -257.0
-offset_top = 109.511
-offset_right = 257.0
-offset_bottom = 188.511
-scale = Vector2(0.965, 0.965)
-pivot_offset = Vector2(257, 39.5)
-text = "0/10"
-label_settings = SubResource("LabelSettings_vusaa")
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="MinikitAnim" type="AnimationPlayer" parent="Minikits/MiddlePos/BottomPos/Alignment/Scaler"]
-root_node = NodePath("../..")
-libraries = {
-"": SubResource("AnimationLibrary_0dw70")
-}
-autoplay = "RESET"
 
 [node name="Transition" type="Sprite2D" parent="."]
 z_index = 5

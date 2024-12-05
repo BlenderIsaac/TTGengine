@@ -18,11 +18,15 @@ var sounds = {
 func _ready():
 	$AudioPlayer.add_library(sounds, sound_mod)
 
+signal piece_added
+
 var model = null
 
 var t = 0.0
 
 var built = 0
+
+var build_up_to = 10
 
 var phase1 = 0.6
 var phase1_l = 0.0
@@ -36,9 +40,9 @@ var phase3_l = 0.0
 var done = false
 
 func _process(delta):
-	if Input.is_action_just_pressed("Click"):
-		load_model("Ahsoka Show", "Debe")
-		animate(model.get_child(0))
+	#if Input.is_action_just_pressed("Click"):
+		#load_model("Ahsoka Show", "Debe")
+		#animate(model.get_child(0))
 	
 	if model:
 		$Rotating/Pivoting.rotation.y += delta*2.0
@@ -59,6 +63,7 @@ func _process(delta):
 				obj.position = f.LerpVector3(obj.get_meta("og_pos"), obj.get_meta("nu_pos"), clamp(0.0, 1.0, phase2_l/phase2))
 				
 				if phase2_l <= 0:
+					emit_signal("piece_added")
 					$AudioPlayer.play("MinikitBuild")
 				
 			elif phase3_l > 0:
@@ -72,7 +77,7 @@ func _process(delta):
 				model.position = Vector3(0, 0, 0)
 				
 				built += 1
-				if built < 10:
+				if built < build_up_to:
 					animate(model.get_child(built))
 				else:
 					done = true
@@ -83,6 +88,16 @@ func animate(obj):
 	phase1_l = phase1
 	phase2_l = phase2
 	phase3_l = phase3
+
+func play_model(mod, level_name, up_to=10):
+	build_up_to = up_to
+	load_model(mod, level_name)
+	
+	built = 0
+	if built < build_up_to:
+		animate(model.get_child(built))
+	else:
+		done = true
 
 func load_model(mod, level_name):
 	
@@ -144,6 +159,12 @@ func load_model(mod, level_name):
 	
 	text.close()
 	$Rotating/Pivoting.add_child(gltf)
+
+
+func clear_model():
+	if model:
+		model.queue_free()
+		model = null
 
 
 func get_properties(array):

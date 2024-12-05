@@ -80,9 +80,10 @@ func _process(_delta):
 			if plyr.active:
 				if key_just_unpressed("Special", player_num):
 					
-					for icon in Interface.get_node("Icons").get_children():
-						icon.get_node("Control/InGame").show()
-						icon.get_node("Control/InSelect").hide()
+					set_icons_mode("hearts")
+					#for icon in Interface.get_node("Icons").get_children():
+						#icon.get_node("Control/InGame").show()
+						#icon.get_node("Control/InSelect").hide()
 					
 					get_tree().paused = false
 					
@@ -275,7 +276,7 @@ func Button_QuitMenu():
 	
 	unPause()
 	
-	$Icons.hide()
+	hide_element("Icons")
 	
 	get_tree().change_scene_to_file("res://Interfaces/main_menu.tscn")
 
@@ -359,7 +360,7 @@ func minikit_tick(_delta):
 	var minikit_anim = $Minikits/MiddlePos/BottomPos/Alignment/Scaler/MinikitAnim
 	
 	if traveling_minikits.is_empty() and minikit_anim.current_animation == "":
-		if $Pause.visible:
+		if $Pause.visible or finish_stage == "minikit":
 			minikit_displaying = true
 		else:
 			minikit_displaying = false
@@ -382,10 +383,10 @@ func minikit_tick(_delta):
 
 var finish_stage = "trueJedi"
 var finish_stages = [
-	"characterUpdate",
-	"trueJedi",
-	#"studTotal",
-	#"minikit",
+	#"characterUpdate",
+	#"trueJedi",
+	"studTotal",
+	"minikit",
 	#"goldBrickUpdate",
 	"continue",
 ]
@@ -404,6 +405,12 @@ func continue_init():
 	$LevelEnd/Continue.show()
 	$LevelEnd/Continue/VBoxPause/Hub.grab_focus()
 
+func studTotal_init():
+	show_element("Icons")
+	set_icons_mode("just_icons")
+	
+	advance_finish_stage()
+
 func init_level_finish():
 	pass
 
@@ -413,6 +420,32 @@ func trueJedi_init():
 	$LevelEnd/AnimationPlayer.play("TrueJediStart")
 	truejedi_tickup = 0.0
 
+func minikit_init():
+	show_element("Icons")
+	set_icons_mode("just_icons")
+	
+	minikits_count_up_to = minikits_collected
+	minikits_collected = 0
+	var minikit_buildup = $LevelEnd/MinikitBuildup/SubViewportContainer/SubViewport/MinikitBuilding
+	minikit_buildup.show()
+	$LevelEnd/MinikitBuildup.show()
+	minikit_buildup.play_model("Ahsoka Show", "Debe", minikits_count_up_to)
+	minikit_buildup.connect("piece_added", advance_minikit_count_up)
+
+func minikit_uninit():
+	minikit_displaying = false
+	var minikit_buildup = $LevelEnd/MinikitBuildup/SubViewportContainer/SubViewport/MinikitBuilding
+	minikit_buildup.hide()
+	$LevelEnd/MinikitBuildup.hide()
+	
+	minikit_buildup.clear_model()
+
+func advance_minikit_count_up():
+	var minikit_anim = $Minikits/MiddlePos/BottomPos/Alignment/Scaler/MinikitAnim
+	minikit_anim.play("Gain")
+	minikits_collected += 1
+
+var minikits_count_up_to = 0
 var truejedi_tickup = 0.0
 var truejedi_anim_point = 0.0
 func LevelFinish_tick(_delta):
@@ -478,6 +511,9 @@ func LevelFinish_tick(_delta):
 			advance_finish_stage()
 	elif finish_stage == "continue":
 		pass
+	elif finish_stage == "minikit":
+		if minikits_count_up_to == minikits_collected:
+			advance_finish_stage()
 
 func advance_finish_stage():
 	if has_method(finish_stage+"_uninit"):
@@ -854,9 +890,10 @@ func start_level():
 	
 	show_element("Icons")
 	
-	for icon in Interface.get_node("Icons").get_children():
-		icon.get_node("Control/InGame").show()
-		icon.get_node("Control/InSelect").hide()
+	set_icons_mode("hearts")
+	#for icon in Interface.get_node("Icons").get_children():
+		#icon.get_node("Control/InGame").show()
+		#icon.get_node("Control/InSelect").hide()
 	
 	hide_element("FreePlaySelect")
 	hide_element("CharacterList")
@@ -868,6 +905,31 @@ func start_level():
 func hide_element(ele):get_node(ele).hide()
 func show_element(ele):get_node(ele).show()
 func hide_all_elements():for node_name in ["FreePlaySelect", "CharacterList", "ModeSelect", "Pause", "ControlSettings", "Icons", "LevelEnd"]:get_node(node_name).hide()
+func set_icon_mode(player, mode):
+	var icon = get_node("Icons").get_child(player)
+	
+	icon.get_node("Control/InGame").hide()
+	icon.get_node("Control/InSelect").hide()
+	
+	if mode == "info":
+		icon.get_node("Control/InSelect").show()
+	elif mode == "hearts":
+		icon.get_node("Control/InGame").show()
+	elif mode == "dropped_out":
+		pass
+	elif mode == "off":
+		pass # icons move off screen
+	elif mode == "just_icon":
+		pass
+	elif mode == "just_hearts":
+		pass # only the hearts in a row
+	elif mode == "just_studs":
+		pass
+
+func set_icons_mode(new_mode):
+	set_icon_mode(0, new_mode)
+	set_icon_mode(1, new_mode)
+# hearts, dropped_out, just_studs, just_hearts, just_icon, info, off
 
 var freeplay_select_anim = false
 var freeplay_select_anim_data = []
@@ -949,9 +1011,10 @@ func play_character_select_anim():
 
 func load_mode_select(mod_name, level_name):
 	
-	for icon in Interface.get_node("Icons").get_children():
-		icon.get_node("Control/InGame").hide()
-		icon.get_node("Control/InSelect").show()
+	set_icons_mode("info")
+	#for icon in Interface.get_node("Icons").get_children():
+		#icon.get_node("Control/InGame").hide()
+		#icon.get_node("Control/InSelect").show()
 	
 	get_tree().paused = true
 	
@@ -971,9 +1034,10 @@ func Button_StoryMode():
 	
 	Levels.load_story_level(load_level_mod, load_level_name)
 	
-	for icon in Interface.get_node("Icons").get_children():
-		icon.get_node("Control/InGame").show()
-		icon.get_node("Control/InSelect").hide()
+	set_icons_mode("hearts")
+	#for icon in Interface.get_node("Icons").get_children():
+		#icon.get_node("Control/InGame").show()
+		#icon.get_node("Control/InSelect").hide()
 
 func Button_FreePlay():
 	team_indexes = {load_level_mod : []}

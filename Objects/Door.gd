@@ -30,7 +30,7 @@ func enter_door(body):
 			if destination.Type == "HubIntoLevel":
 				# entering into level
 				
-				Levels.hub_into_level(destination.Mod, destination.Level)#, player_data)
+				Levels.hub_into_level(destination.Mod, destination.Level, self)#, player_data)
 			elif destination.Type == "CycleHubs":
 				
 				var player_data = Interface.get_player_data()
