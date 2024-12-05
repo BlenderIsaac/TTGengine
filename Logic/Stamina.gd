@@ -68,11 +68,6 @@ func update_vis():
 	FrontBar.region_rect.size = Vector2(clamp(lerpf(-0.00001, 512.0, float(stamina)/float(max_stamina)), -0.00001, 512.0), 56.0)
 	FrontBar.offset.x = lerpf(-512.0/2.0, 0.0, float(stamina)/float(max_stamina))
 	
-	if !stamina == max_stamina:
-		BlockStamina.show()
-	else:
-		BlockStamina.hide()
-	
 	if stamina <= 0 and !C.movement_state == "Stamina":
 		stagger()
 
@@ -141,6 +136,11 @@ func exclusive_damage(value, _who_from):
 
 var states_cant_regen = ["SwordBlock", "Stamina"]
 func inclusive_physics(_delta):
+	
+	if !stamina == max_stamina:
+		BlockStamina.show()
+	else:
+		BlockStamina.hide()
 	
 	if !C.movement_state == "Stamina":
 		if C.has_logic("BaseSwordAI"):

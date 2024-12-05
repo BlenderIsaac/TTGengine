@@ -40,12 +40,11 @@ func exclusive_physics(_delta):
 	
 	if slash_frozen:
 		
-		
 		anim.play("Slash"+str(combo_num), 0)
 		anim.seek(anim.current_animation_length, true)
 		root_vel = Vector3()
 		
-		if reset_delay <= 0:
+		if reset_delay <= 0 or C.key_press("Jump"):
 			slash_frozen = false
 			C.reset_movement_state()
 		
@@ -255,25 +254,25 @@ func exclusive_process(_delta):
 			#$"../Sword".SwordExtras.scale.y = 1.0
 
 
-var valid_damage_logics = ["SwordSlam", "SwordLunge"]
+var valid_damage_logics = ["SwordSlam"]
 func exclusive_damage(_amount, _who_from=null):
-	var damage_done = false
+	var damage_taken = false
 	
 	if _who_from != null:
 		if "movement_state" in _who_from:
-			if valid_damage_logics.has(_who_from.movement_state) or !doing_damage():
+			if valid_damage_logics.has(_who_from.movement_state):
 				C.generic_damage(_amount)
-				damage_done = true
+				damage_taken = true
+			elif _who_from.movement_state == "SwordLunge":
+				C.get_logic("Stamina").change_stamina(-7)
 	else:
 		C.generic_damage(_amount)
-		damage_done = true
+		damage_taken = true
 	
 	if _who_from and _who_from.is_in_group("projectile"):
-		if doing_damage():
-			_who_from.deflect(C)
-		else:
-			C.generic_damage(_amount)
-			damage_done = true
+		_who_from.deflect(C)
+		C.generic_damage(_amount)
+		damage_taken = true
 	
-	if !damage_done:
+	if !damage_taken:
 		C.get_logic("Stamina").change_stamina(-2)

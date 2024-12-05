@@ -96,7 +96,7 @@ func get_sword():
 
 func block(_who_from):
 	if C.has_logic("Stamina"):
-		C.get_logic("Stamina").change_stamina(-100)
+		C.get_logic("Stamina").change_stamina(-7)
 
 
 func get_mesh_angle_to():

@@ -253,15 +253,13 @@ func exclusive_damage(_amount, _who_from=null):
 					
 					SwordLunge.block(self)
 					
-					change_stamina(-5)
-					
 					time_since_start -= extra_deflect_time
 					
 					#if time_since_start < superdeflect_time:
 					#	time_since_start = superdeflect_time
 					
 				else:
-					change_stamina(-100)
+					change_stamina(-7)
 			else:
 				change_stamina(-_amount)
 		
