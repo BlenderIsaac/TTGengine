@@ -112,7 +112,8 @@ func should_slide():
 	tail.force_raycast_update()
 	
 	if tail.is_colliding():
-		if tail.get_collider().is_in_group("Slide"):
+		
+		if C.standing_on("Slide"):
 			if tail.get_collision_point().distance_to(tail.global_position) < tail_range:
 				ray = true
 	
@@ -121,7 +122,7 @@ func should_slide():
 		var slide_col = C.get_last_slide_collision()
 		if slide_col:
 			var collider = slide_col.get_collider()
-			if collider and collider.is_in_group("Slide"):
+			if collider and C.standing_on("Slide"):
 				var normal = slide_col.get_normal()
 				#var deg = rad_to_deg(normal.angle_to(Vector3.UP))
 				
@@ -139,4 +140,3 @@ func should_slide():
 	
 	
 	return false
-

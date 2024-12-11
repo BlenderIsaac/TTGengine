@@ -5,8 +5,8 @@ var regen_timer = 0.0
 var regen_time = 1.0
 
 # the maximum amount of bullets we can deflect before staggering
-var max_stamina = 10
-var stamina = 10
+var max_stamina = 10.0
+var stamina = 10.0
 
 var damage_taken = 0
 var max_damage_during_stagger = 2
@@ -20,6 +20,8 @@ func _ready():
 	generate_block_stamina()
 	
 	add_child(BlockStamina)
+	
+	update_vis()
 
 func generate_block_stamina():
 	BlockStamina = Node3D.new()
@@ -43,6 +45,14 @@ func generate_block_stamina():
 	
 	BlockStamina.hide()
 	BlockStamina.position = C.aim_pos*2 + Vector3(0, 0.1, 0)
+
+
+func get_switched_var():
+	return stamina/max_stamina
+
+func set_switched_var(vars):
+	stamina = vars*max_stamina
+
 
 func die(_var):
 	stamina = max_stamina

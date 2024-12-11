@@ -112,6 +112,8 @@ var knock_vel = Vector3()
 # respawn variable
 var respawn_point = Vector3()
 
+var logic_switched_vars = {}
+
 # aim_pos - where projectiles aim
 var aim_pos = Vector3(0, 0.9, 0)
 
@@ -335,8 +337,14 @@ func _process(_delta):
 					
 					# If the tag exists and we haven't just_tagged someone then tag that character
 					if tag != null and just_tagged == false:
-						$AudioPlayer.play("CharacterTag")
-						tag_character(tag)
+						var mutual = true
+						if tag.AI == false:
+							if !tag.key_press("Tag"):
+								mutual = false
+						
+						if mutual:
+							$AudioPlayer.play("CharacterTag")
+							tag_character(tag)
 			else:
 				# If we have stopped pressing the tag key reset just_tagged
 				just_tagged = false
@@ -396,7 +404,9 @@ func _physics_process(_delta):
 				if is_instance_valid($Tail.get_collider()):
 					if $Tail.get_collision_point().distance_to(position) < 0.1:
 						# ...and if so check if the ground we are standing on is respawnable...
-						if $Tail.get_collider().is_in_group("respawnable"):
+						#RayCast3D.new().get_collider()
+						
+						if standing_on("respawnable"):
 							
 							# ...and if all that is true set respawn point to our position
 							# respawn_point is backup respawn position
@@ -606,6 +616,22 @@ func generic_can_draw_weapon():
 func warn(type, from_list):
 	if AI:
 		trigger_logics(str("warning_"+type), from_list)
+
+func standing_on(group):
+	var tail = $Tail
+	
+	if !tail.is_colliding():
+		return false
+	
+	if !is_instance_valid(tail.get_collider()):
+		return false
+	
+	var t = tail.get_collider() # A CollisionObject3D.
+	var shape_id = tail.get_collider_shape() # The shape index in the collider.
+	var owner_id = t.shape_find_owner(shape_id) # The owner ID in the collider.
+	var shape = t.shape_owner_get_owner(owner_id)
+	
+	return shape.is_in_group(group)
 
 func get_root_pos():
 	#var root = $Mesh/Armature/Skeleton3D/ROOT
@@ -1412,36 +1438,41 @@ func find_tag():
 var tag_part_num = 3
 # The spread of the particles
 var tag_particle_spread = Vector3(.2, .5, .2)
-func tag_character(tag):
-	
-	# Spawn all the tag particles
-	
-	# loop for the number of particles
+func create_particles(tag_from, tag_to):
 	for i in tag_part_num:
 		# Create a new particle
 		var tag_particle = l.get_load("res://Objects/tag_particle.tscn").instantiate()
 		
 		# Set the target of the tag particle
-		tag_particle.target = tag
+		tag_particle.target = tag_to
 		
 		# Generate random coordinates for the particle to be placed at, based off tag_particle_spread
-		var tag_x = randf_range(-tag_particle_spread.x, tag_particle_spread.x)
-		var tag_y = randf_range(-tag_particle_spread.y, tag_particle_spread.y)
-		var tag_z = randf_range(-tag_particle_spread.z, tag_particle_spread.z)
+		var tag_x = randf_range(-tag_from.tag_particle_spread.x, tag_from.tag_particle_spread.x)
+		var tag_y = randf_range(-tag_from.tag_particle_spread.y, tag_from.tag_particle_spread.y)
+		var tag_z = randf_range(-tag_from.tag_particle_spread.z, tag_from.tag_particle_spread.z)
 		
 		# get the colour of the particle from SETTINGS
-		var colour = SETTINGS.player_colours.get(str(player_number))
+		var colour = SETTINGS.player_colours.get(str(tag_from.player_number))
 		
 		# Set the material override to the tag particle material - TODO: globalize later into a global particle material
 		tag_particle.get_node("Trail").material_override = MATERIALS.get_tag_part_material(colour)
 		# Set the position to our position added to the aiming position and the random pos
-		tag_particle.position = aim_pos+position+Vector3(tag_x, tag_y, tag_z)
+		tag_particle.position = aim_pos+tag_from.position+Vector3(tag_x, tag_y, tag_z)
 		# Tell the tag_particle where it originated - so it can go to that same position on the tagged character
 		# This is so they don't group up while following
 		tag_particle.randomization = Vector3(tag_x, tag_y, tag_z)
 		
 		# Add the tag particle to the scene
 		get_parent().add_child(tag_particle)
+
+func tag_character(tag):
+	
+	# Spawn all the tag particles
+	
+	# loop for the number of particles
+	create_particles(self, tag)
+	if tag.AI == false:
+		create_particles(tag, self)
 	
 	# Store the current player numbers of us and the tagged character
 	var tag_new_number = player_number
@@ -1831,7 +1862,6 @@ func change_character(data, c_path, mod): # TODO: We don't need c_path here once
 	base_state = data.BaseState
 	
 	# I don't know if logic_switched_vars is necessary
-	var logic_switched_vars = {}
 	# delete all current logics
 	for logic in LogicParent.get_children():
 		if logic.has_method("get_switched_var"):
@@ -1891,7 +1921,7 @@ func change_character(data, c_path, mod): # TODO: We don't need c_path here once
 
 
 # A function to add a logic based off a path, a config, and some vars
-func add_logic(logic_path, config={}, logic_switched_vars=[]):
+func add_logic(logic_path, config={}, switched_vars=[]):
 	# Create a new Node for the logic
 	var logic_node = Node3D.new()
 	# Load the script
@@ -1903,9 +1933,9 @@ func add_logic(logic_path, config={}, logic_switched_vars=[]):
 	logic_node.name = logic_node.logic_name()
 	
 	# If there is a var that was switched, give it to the logic_node if it wants it
-	if logic_switched_vars.has(logic_node.logic_name()):
+	if switched_vars.has(logic_node.logic_name()):
 		if logic_node.has_method("set_switched_var"):
-			logic_node.set_switched_var(logic_switched_vars.get(logic_node.logic_name()))
+			logic_node.set_switched_var(switched_vars.get(logic_node.logic_name()))
 	
 	# loop through all the configurations
 	for config_name in config.keys():

@@ -56,8 +56,9 @@ func _ready():
 	audio_player.add_library(sounds, sound_mod)
 
 
+var transitioning_out = false
 func _process(_delta):
-	
+	Engine.time_scale = 1.0
 	if transition_left > 0:
 		if frame_delay <= 0:
 			
@@ -74,11 +75,17 @@ func _process(_delta):
 	
 	$Label.text = str(1/get_process_delta_time())#str(team_indexes)
 	
-	if $ModeSelect.visible:
+	if $ModeSelect.visible and !transitioning_out:
 		var player_num = 0
 		for plyr in Players.dropped_in:
 			if plyr.active:
 				if key_just_unpressed("Special", player_num):
+					
+					Levels.exit_menu_to_hub()
+					
+					transitioning_out = true
+					await get_tree().create_timer(0.05).timeout
+					transitioning_out = false
 					
 					set_icons_mode("hearts")
 					#for icon in Interface.get_node("Icons").get_children():
@@ -88,8 +95,6 @@ func _process(_delta):
 					get_tree().paused = false
 					
 					get_node("ModeSelect").hide()
-					
-					Levels.exit_menu_to_hub()
 					
 					for character in get_tree().get_nodes_in_group("Character"):
 						if character.player:
@@ -101,6 +106,8 @@ func _process(_delta):
 							character.reset_movement_state()
 							
 							character.anim.play(character.weapon_prefix+"Idleloop", 0)
+					
+					break
 			
 			player_num += 1
 	
@@ -576,6 +583,21 @@ func FreePlaySelect_tick():
 	var incomplete_row_columns = grid.get_child_count()-full_rows*columns
 	#var num_spaces_missing = columns-incomplete_row_columns
 	
+	var in_agreement_to_move_on = true
+	
+	if Input.is_action_just_pressed("select_all_characters"):
+		
+		for column in range(incomplete_row_columns):
+			#for column in range(columns):
+			#print(row, column)
+			
+			if !team_indexes.get(current_mod_selecting).has(column):
+				add_to_team(column)
+			else:
+				remove_from_team(column)
+		
+		update_selects()
+	
 	for player_number in selected_indexes.keys():
 		
 		if Players.dropped_in[int(player_number)].active == true:
@@ -583,11 +605,11 @@ func FreePlaySelect_tick():
 			var change = false
 			var new_num = team_indexes.keys().find(current_mod_selecting)
 			
-			if key_just_pressed("ChangeLeft", player_number):
+			if key_just_pressed("ChangeLeft", player_number) and mode_selected == "SuperFreePlay":
 				new_num += 1
 				change = true
 			
-			if key_just_pressed("ChangeRight", player_number):
+			if key_just_pressed("ChangeRight", player_number) and mode_selected == "SuperFreePlay":
 				new_num -= 1
 				change = true
 			
@@ -626,8 +648,8 @@ func FreePlaySelect_tick():
 				
 				#update = true
 			
-			if key_just_unpressed("Fight", player_number):
-				play_character_select_anim()
+			if !key_press("Fight", player_number):
+				in_agreement_to_move_on = false
 			
 			if key_just_unpressed("Special", player_number):
 				show_element("ModeSelect")
@@ -691,6 +713,9 @@ func FreePlaySelect_tick():
 			
 			#if update:
 			update_selects()
+	
+	if in_agreement_to_move_on:
+		play_character_select_anim()
 
 
 func update_freeplay_select_interface():
@@ -888,6 +913,10 @@ func start_level():
 			"Char" : char_data.get(current_mod_selecting)[char_index].Path
 		}
 	
+	var player_team = get_player_team()
+	
+	await Levels.load_freeplay_level(load_level_mod, load_level_name, player_data, player_team)
+	
 	show_element("Icons")
 	
 	set_icons_mode("hearts")
@@ -897,10 +926,6 @@ func start_level():
 	
 	hide_element("FreePlaySelect")
 	hide_element("CharacterList")
-	
-	var player_team = get_player_team()
-	
-	Levels.load_freeplay_level(load_level_mod, load_level_name, player_data, player_team)
 
 func hide_element(ele):get_node(ele).hide()
 func show_element(ele):get_node(ele).show()
@@ -1245,7 +1270,10 @@ func Button_SettingsReset():
 #endregion
 
 func transition_in():
+	await RenderingServer.frame_post_draw
+	
 	last_imagetexture = get_viewport_texture()
+	
 	$Transition.texture = last_imagetexture
 	$Transition.region_rect.size.y = last_imagetexture.get_size().y
 	transition_left = transition_speed

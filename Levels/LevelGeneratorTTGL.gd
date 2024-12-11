@@ -20,11 +20,24 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 	player_spawns = []
 	team_spawns = []
 	
+	var Nav = NavigationRegion3D.new()
+	add_child(Nav)
+	
 	var static_body = StaticBody3D.new()
 	static_body.hide()
-	static_body.add_to_group("respawnable")
+	#static_body.add_to_group("respawnable")
 	static_body.name = "LEVEL_COLLISION"
 	add_child(static_body)
+	
+	#var norespawn_body = StaticBody3D.new()
+	#norespawn_body.hide()
+	#norespawn_body.name = "LEVEL_COLLISION_NORESPAWN"
+	#add_child(norespawn_body)
+	#
+	#var slide_body = StaticBody3D.new()
+	#slide_body.hide()
+	#slide_body.name = "LEVEL_COLLISION_SLIPPERY"
+	#add_child(slide_body)
 	
 	# name indexes
 	var stud_idx = 0
@@ -157,19 +170,29 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 									obj.set_meta("ColBody", animated_body)
 									obj.add_child(animated_body)
 								else:
-									
 									var col = generate_col(obj.mesh)
 									col.transform = f.transform_based_on_parent(gltf, obj)#obj.transform
 									static_body.add_child(col)
+									
+									if not "NORESPAWN" in attr:
+										col.add_to_group("respawnable")
+									
+									if "SLIP" in attr:
+										col.add_to_group("Slide")
+									
 									col.name = "Collision"+str(col_idx)
 								
 								col_idx += 1
 							if attr.has("NAV"):
-								var nav = generate_nav(obj.mesh)
-								nav.transform = obj.transform
-								nav.name = "Navigation"+str(nav_idx)
-								nav_idx += 1
-								add_child(nav)
+								var dupe = obj.duplicate()
+								dupe.hide()
+								Nav.add_child(dupe)
+								
+								#var nav = generate_nav(obj.mesh)
+								#nav.transform = obj.transform
+								#nav.name = "Navigation"+str(nav_idx)
+								#nav_idx += 1
+								#add_child(nav)
 							if obj_type == "MATTE":
 								var mesh_obj = obj
 								
@@ -354,8 +377,12 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 	
 	text.close()
 	
-	
 	add_child(gltf)
+	
+	
+	Nav.navigation_mesh = NavigationMesh.new()
+	
+	Nav.call_deferred("bake_navigation_mesh")
 
 func get_properties(array):
 	var properties = {

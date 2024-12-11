@@ -245,7 +245,7 @@ func exclusive_physics(_delta):
 		## This block resets us to base movement state we cancel or the target dies or is invalid
 		if !is_instance_valid(force_target) or !force_target or force_target.dead:
 			
-			if is_instance_valid(force_target) and force_target.is_in_group("ForcedObject"):
+			if is_instance_valid(force_target) and force_target.is_in_group("ForceObject"):
 				force_target.forcing = false
 			
 			anim.play(C.weapon_prefix+"Idleloop", .2)
@@ -258,7 +258,8 @@ func exclusive_physics(_delta):
 		# I changed this but I'm not exactly sure what it will effect
 		if !C.key_press("Special"):
 			
-			if is_instance_valid(force_target) and force_target.is_in_group("ForcedObject"):
+			if is_instance_valid(force_target) and force_target.is_in_group("ForceObject"):
+				
 				force_target.forcing = false
 			
 			anim.play(C.weapon_prefix+"Idleloop", .2)

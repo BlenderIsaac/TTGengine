@@ -22,7 +22,7 @@ var is_jump_state
 
 func initiate_jump():
 	base_state.freeze()
-	un_attack = 0
+	un_attack = .25
 	attacks = 0
 	jump_recovery = 0
 	attacking = false
@@ -87,16 +87,17 @@ func jumping_physics(_delta):
 		
 		if max_attacks-1 >= attacks:
 			if C.key_just_pressed("Fight") and !C.AI:
-				C.weapon_prefix = get_our_prefix()
-				
-				quick_attack()
-				un_attack = 0
-				attacks += 1
+				if un_attack > .21:
+					C.weapon_prefix = get_our_prefix()
+					
+					quick_attack()
+					un_attack = 0
+					attacks += 1
 		else:
 			if has_attacked:
 				reset_jump()
 		
-		if un_attack > .3 and attacks > 0:
+		if un_attack > .5 and attacks > 0:
 			reset_jump()
 
 

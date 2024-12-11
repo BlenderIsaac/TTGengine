@@ -271,8 +271,8 @@ func exclusive_damage(_amount, _who_from=null):
 	
 	if _who_from and _who_from.is_in_group("projectile"):
 		_who_from.deflect(C)
-		C.generic_damage(_amount)
-		damage_taken = true
+		#C.generic_damage(_amount)
+		#damage_taken = true
 	
 	if !damage_taken:
 		C.get_logic("Stamina").change_stamina(-2)

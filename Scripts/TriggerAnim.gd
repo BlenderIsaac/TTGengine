@@ -65,6 +65,7 @@ func _process(_delta):
 	
 	if !incremental:
 		if triggering:
+			print("yo")
 			delay = untrigger_wait
 			if current_animation == "Default":
 				anim_play("Trigger")
@@ -115,7 +116,7 @@ func anim_play(anim_type): # Default, Trigger or UnTrigger
 	
 	if anim_type == "Default":
 		playing = false
-		if anim_data[anim_type] == "":
+		if is_null(anim_data[anim_type]):
 			var anim = get_anim(anim_data["Trigger"])
 			anim.play(anim_data["Trigger"])
 			anim.seek(0.0, true)
@@ -127,7 +128,7 @@ func anim_play(anim_type): # Default, Trigger or UnTrigger
 			anim_time = anim.current_animation_length
 	elif anim_type == "UnTrigger":
 		
-		if anim_data[anim_type] == "":
+		if is_null(anim_data[anim_type]):
 			var anim = get_anim(anim_data["Trigger"])
 			anim.play_backwards(anim_data["Trigger"])
 			anim_time = anim.current_animation_length
@@ -152,7 +153,7 @@ func anim_seek(anim_type, perc):
 	
 	if anim_type == "UnTrigger":
 		
-		if anim_data[anim_type] == "":
+		if is_null(anim_data[anim_type]):
 			var anim = get_anim(anim_data["Trigger"])
 			anim.play_backwards(anim_data["Trigger"])
 			anim_time = anim.current_animation_length
@@ -174,6 +175,9 @@ func anim_seek(anim_type, perc):
 		anim_time = anim.current_animation_length
 		anim.seek(perc*anim_time, true)
 
+
+func is_null(x):
+	return x == "" or x == null or x == "None"
 
 # Button1
 func get_anim(anim_name):

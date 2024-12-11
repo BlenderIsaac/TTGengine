@@ -18,6 +18,7 @@ var sounds = {
 func _ready():
 	$AudioPlayer.add_library(sounds, sound_mod)
 
+@warning_ignore("unused_signal")
 signal piece_added
 
 var model = null
@@ -84,7 +85,7 @@ func _process(delta):
 	
 
 
-func animate(obj):
+func animate(_obj):
 	phase1_l = phase1
 	phase2_l = phase2
 	phase3_l = phase3
@@ -126,7 +127,7 @@ func load_model(mod, level_name):
 			var properties = get_properties(array.slice(1))
 			
 			var props = properties.PROPERTIES
-			var attr = properties.ATTRIBUTES
+			var _attr = properties.ATTRIBUTES
 			
 			if obj:
 				@warning_ignore("unused_variable")

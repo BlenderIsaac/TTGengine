@@ -76,7 +76,8 @@ func update_heart_visuals():
 			HEART.position.x += offset_x*heart_index*mltply
 		else:
 			var column = fmod(heart_index, per_row)
-			var row = floor(heart_index/per_row)
+			@warning_ignore("integer_division")
+			var row = floor(int(heart_index)/int(per_row))
 			
 			HEART.position = initial_pos
 			HEART.position.y += offset_y*row

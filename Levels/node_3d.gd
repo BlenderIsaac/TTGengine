@@ -1,7 +1,7 @@
 extends Node3D
 
 
-func _process(delta):
+func _process(_delta):
 	if Input.is_action_just_pressed("Click") and false:
 		var m = SoftBody3D.new()
 		print("spawn cloak")

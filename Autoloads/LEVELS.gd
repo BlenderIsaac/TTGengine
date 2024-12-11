@@ -47,7 +47,8 @@ var current_door_into = null
 func hub_into_level(mod_name, level_name, door):
 	current_door_into = door
 	
-	Interface.transition_in()
+	await Interface.transition_in()
+	#await get_tree().create_timer(0.05).timeout
 	
 	var prev_level = get_child(0)
 	prev_level.hide()
@@ -56,28 +57,39 @@ func hub_into_level(mod_name, level_name, door):
 
 func exit_menu_to_hub():
 	
-	Interface.transition_in()
+	await Interface.transition_in()
+	#await get_tree().create_timer(0.05).timeout
 	
 	if current_door_into and is_instance_valid(current_door_into):
-		var current_level = get_child(0)
+		var c_level = get_child(0)
 		
-		var game_cam = current_level.get_node("GameCam")
+		var game_cam = c_level.get_node("GameCam")
 		game_cam.begin_transform_override = true
-		game_cam.transform = current_door_into.cam.transform
+		game_cam.transform = current_door_into.cam.global_transform
 		
-		var players_data = current_level.get_player_data()
+		var players_data = c_level.get_player_data()
 		var player_index = 0
 		
-		for player in current_level.player_spawns:
+		var players = []
+		
+		for player in get_tree().get_nodes_in_group("Character"):
+			if player.player:
+				players.append(player)
+		
+		for player in c_level.player_spawns:
 			
 			var dist = 0.5
 			if players_data.size() > 1:
-				dist = player_index/(players_data.size()-1)
+				dist = player_index/(players.size()-1.0)
 			
 			var player_position = f.LerpVector3(current_door_into.spawn_positions[0], current_door_into.spawn_positions[1], dist)
 			
-			player.position = player_position
-			player.mesh_angle_to = current_door_into.rotation
+			players[player_index].get_base_movement_state().freeze()
+			players[player_index].reset_movement_state()
+			players[player_index].weapon_prefix = ""
+			players[player_index].global_position = player_position
+			players[player_index].mesh_angle_to = current_door_into.rotation.y+PI
+			players[player_index].get_node("Mesh").rotation.y = current_door_into.rotation.y+PI
 			
 			player_index += 1
 	
@@ -111,9 +123,11 @@ func delete_prev_level():
 			prev_level.queue_free()
 
 func load_story_level(mod_name, level_name):
-	get_tree().paused = false
 	
-	Interface.transition_in()
+	await Interface.transition_in()
+	#await get_tree().create_timer(0.1).timeout
+	
+	get_tree().paused = false
 	
 	delete_prev_level()
 	
@@ -141,9 +155,12 @@ func load_story_level(mod_name, level_name):
 
 
 func load_freeplay_level(mod_name, level_name, player_data, new_player_team):
+	
+	await Interface.transition_in()
+	
 	get_tree().paused = false
 	
-	Interface.transition_in()
+	#await get_tree().create_timer(0.1).timeout
 	
 	delete_prev_level()
 	
@@ -178,7 +195,8 @@ func change_section(new_section, doorid=0):
 	var player_data = Interface.get_player_data()
 	var prev_level = get_child(0)
 	
-	Interface.transition_in()
+	await Interface.transition_in()
+	#await get_tree().create_timer(0.1).timeout
 	
 	# obtain changed data
 	object_changes[level_state.Section] = {}
@@ -239,7 +257,8 @@ func change_section(new_section, doorid=0):
 
 func finish_level():
 	
-	Interface.transition_in()
+	await Interface.transition_in()
+	#await get_tree().create_timer(0.1).timeout
 	
 	#var player_data = Interface.get_player_data()
 	var prev_level = get_child(0)
@@ -263,7 +282,7 @@ var next_level_load_data = {
 
 func load_hub(mod, player_data):
 	
-	Interface.transition_in()
+	await Interface.transition_in()
 	
 	var section = get_initial_section(mod, "HUB")
 	
@@ -303,7 +322,7 @@ func load_hub(mod, player_data):
 func cycle_hubs(_current_mod, player_data, _direction):
 	var levelroot = get_tree().get_first_node_in_group("LEVELROOT")
 	
-	Interface.transition_in()
+	await Interface.transition_in()
 	
 	levelroot.queue_free()
 	

@@ -35,9 +35,9 @@ func _on_load_level_pressed():
 				if c.ends_with(".json"):
 					p_team.append({"Mod":mod, "Path":c})
 			
-			Levels.load_freeplay_level(mod, level, p_data, p_team)
+			await Levels.load_freeplay_level(mod, level, p_data, p_team)
 		else:
-			Levels.load_story_level(mod, level)
+			await Levels.load_story_level(mod, level)
 	else:
 		
 		var create_level = Levels.create_level(mod, level, section)

@@ -26,13 +26,13 @@ var begin_transform_delay = 0.0
 var begin_transform_override = false:
 	set(value):
 		begin_transform_override = value
-		begin_transform_delay = 1.0
+		begin_transform_delay = 2.0
 
 @onready var target_agent = $NavigationAgent3D
 
 func _process(_delta):
 	
-	movement_at = lerp(movement_at, movement_to, _delta)
+	
 	
 	if start_timer == 1:
 		if begin_transform_override == false:
@@ -42,6 +42,11 @@ func _process(_delta):
 	if begin_transform_override:
 		if begin_transform_delay > 0:
 			begin_transform_delay -= _delta
+	
+	if begin_transform_delay <= 0:
+		movement_at = lerp(movement_at, movement_to, _delta)
+	else:
+		movement_at = 0.0
 	
 	if move_type == "Curves" and targets.size() > 0:
 		
@@ -160,6 +165,7 @@ func _process(_delta):
 				global_position += (next_pos-global_position).normalized()*minf(speed/30, 3.0)*movement_at
 			else:
 				movement_to = 0.0
+		
 		#elif final_vec2_dist < 3.0:
 			#var next_pos = target_agent.get_next_path_position() + Vector3(0, -0.3, 0)
 			#
@@ -176,7 +182,7 @@ func _process(_delta):
 		else:
 			
 			var new_transform = global_transform.looking_at(avg, Vector3.UP)
-			global_transform = global_transform.interpolate_with(new_transform, 2 * _delta)
+			global_transform = global_transform.interpolate_with(new_transform, (2 * _delta)*movement_at)
 	
 	
 	start_timer += 1
