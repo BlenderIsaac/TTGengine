@@ -44,7 +44,7 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 	var point_idx = 0
 	var sun_idx = 0
 	var col_idx = 0
-	var nav_idx = 0
+	#var nav_idx = 0
 	var blwup_idx = 0
 	var door_idx = 0
 	var anim_idx = 0

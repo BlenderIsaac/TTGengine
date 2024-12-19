@@ -186,54 +186,58 @@ func exclusive_physics(_delta):
 					key_pressed = C.controller_direction_pressed(key)
 				
 				if key_pressed:
-						any_key_pressed = true
-						var ability_data = force_abilities.get(key)
+					print("yo")
+					any_key_pressed = true
+					var ability_data = force_abilities.get(key)
+					
+					var force_ability = ability_data.Self
+					var target_ability = ability_data.Target
+					var target_ability_path = ability_data.TargetPath
+					var chargeup = ability_data.get("ChargeUp", 1.0)
+					var ab_range = ability_data.get("Range", 1.0)
+					var ab_vel_proj = ability_data.get("VelocityPredict", true)
+					
+					if can_use_ability_on_target(force_target, force_ability, target_ability, target_ability_path):
 						
-						var force_ability = ability_data.Self
-						var target_ability = ability_data.Target
-						var target_ability_path = ability_data.TargetPath
-						var chargeup = ability_data.get("ChargeUp", 1.0)
-						var ab_range = ability_data.get("Range", 1.0)
-						var ab_vel_proj = ability_data.get("VelocityPredict", true)
+						#var target_consequence = force_abilities.get(key).Target
+						#force_target.get_logic(target_consequence).opponent = C
+						#force_target.set_movement_state(target_consequence)
 						
-						if can_use_ability_on_target(force_target, force_ability, target_ability, target_ability_path):
+						if !key==prev_key:
+							current_charge = 0.0
+						
+						max_charge = chargeup
+						if chargeup == 0.0:
+							C.get_logic(force_ability).force_target = force_target
+							C.set_movement_state(force_ability)
 							
-							#var target_consequence = force_abilities.get(key).Target
-							#force_target.get_logic(target_consequence).opponent = C
-							#force_target.set_movement_state(target_consequence)
+							force_delay = force_delay_max
+						else:
+							if current_charge == 0.0:
+								predicted_pos = force_target.global_position + force_target.aim_pos
+								
+								if ab_vel_proj:
+									predicted_pos += force_target.velocity*chargeup
 							
-							if !key==prev_key:
-								current_charge = 0.0
+							current_charge += _delta
 							
-							max_charge = chargeup
-							if chargeup == 0.0:
-								C.get_logic(force_ability).force_target = force_target
-								C.set_movement_state(force_ability)
+							var close_enough = predicted_pos.distance_to(force_target.global_position + force_target.aim_pos) < ab_range
+							if current_charge >= chargeup:
+								if close_enough:
+									C.get_logic(force_ability).force_target = force_target
+									C.set_movement_state(force_ability)
+								else:
+									force_target = null
 								
 								force_delay = force_delay_max
-							else:
-								if current_charge == 0.0:
-									predicted_pos = force_target.global_position + force_target.aim_pos
-									
-									if ab_vel_proj:
-										predicted_pos += force_target.velocity*chargeup
-								
-								current_charge += _delta
-								
-								var close_enough = predicted_pos.distance_to(force_target.global_position + force_target.aim_pos) < ab_range
-								if current_charge >= chargeup:
-									if close_enough:
-										C.get_logic(force_ability).force_target = force_target
-										C.set_movement_state(force_ability)
-									else:
-										force_target = null
-									
-									force_delay = force_delay_max
-							
-							
-							
-							prev_key = key
-							break
+						
+						
+						
+						prev_key = key
+						break
+					else:
+						force_target = null
+						C.reset_movement_state()
 			
 			if !any_key_pressed:
 				current_charge = 0.0
@@ -305,6 +309,21 @@ func update_force():
 	# return the best force we found
 	return best_force
 
+func generic_check_force_validity(force_object):
+	if !force_object:
+		return false
+	
+	if !is_instance_valid(force_object):
+		return false
+	
+	if force_object.is_in_group("Character"):
+		if force_object.dead:
+			return false
+	
+	if !is_force_valid(force_object):
+		return false
+	
+	return true
 
 func is_force_valid(force_object):
 	

@@ -122,8 +122,7 @@ func jumping_physics(_delta):
 	C.set_velocity(C.char_vel+base_state.move_dir_to+C.push_vel+C.knock_vel)
 	C.move_and_slide()
 	
-	if not backjumpped:
-		C.mesh_angle_lerp(_delta, 0.2)
+	C.mesh_angle_lerp(_delta, 0.2)
 	
 	if C.is_on_floor():
 		audio_player.play("Land")
@@ -190,6 +189,8 @@ func click_jump():
 
 
 func initiate_backjump():
+	
+	C.mesh_angle_to = Vector2(-base_state.move_dir.x, base_state.move_dir.z).angle()+deg_to_rad(-90)
 	
 	var prefix = C.weapon_prefix
 	

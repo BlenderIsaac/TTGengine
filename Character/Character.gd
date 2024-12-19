@@ -20,6 +20,10 @@ extends CharacterBody3D
 # variable scaling
 @export var var_scale = 4.1
 
+var pausing_in_transition:
+	get():
+		return player and !Interface.transition_left < 0.15
+
 # flash value that character meshes borrows from
 @export var flash_value = Vector4()
 var meshes_to_modulate = []
@@ -35,6 +39,8 @@ var char_spawn_index = 0
 var origin_mod
 
 var char_name = "NULL"
+
+var delayed_keys = []
 
 # variables for root vel
 var prev_pose = Vector3()
@@ -628,10 +634,13 @@ func standing_on(group):
 	
 	var t = tail.get_collider() # A CollisionObject3D.
 	var shape_id = tail.get_collider_shape() # The shape index in the collider.
-	var owner_id = t.shape_find_owner(shape_id) # The owner ID in the collider.
-	var shape = t.shape_owner_get_owner(owner_id)
+	if t.has_method("shape_find_owner"):
+		var owner_id = t.shape_find_owner(shape_id) # The owner ID in the collider.
+		var shape = t.shape_owner_get_owner(owner_id)
+		
+		return shape.is_in_group(group)
 	
-	return shape.is_in_group(group)
+	return false
 
 func get_root_pos():
 	#var root = $Mesh/Armature/Skeleton3D/ROOT
@@ -674,6 +683,8 @@ func controller_direction_pressed(key):
 
 # A function to get the direction we are supposed to be moving based on key/controller inputs
 func get_move_dir():
+	
+	
 	# A variable to hold the movement direction we are going to return
 	var new_move_dir = Vector3()
 	
@@ -704,6 +715,9 @@ func get_move_dir():
 	
 	# Rotate the move_dir to align with our camera
 	new_move_dir = new_move_dir.rotated(Vector3.UP, get_viewport().get_camera_3d().rotation.y)
+	
+	
+	if pausing_in_transition:new_move_dir = Vector3()
 	
 	# return new_move_dir
 	return new_move_dir

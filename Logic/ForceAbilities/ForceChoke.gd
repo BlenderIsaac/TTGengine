@@ -23,9 +23,9 @@ var target_anims = {
 }
 
 func exclusive_physics(_delta):
-	
-	if force_target and is_instance_valid(force_target):
-		var ForceSensitive = C.get_logic("ForceSensitive")
+	var ForceSensitive = C.get_logic("ForceSensitive")
+	if ForceSensitive.generic_check_force_validity(force_target):
+		
 		ForceSensitive.generic_force_stuff(force_target, _delta)
 		
 		var TargetLogic = "ForceChoked"
@@ -33,6 +33,8 @@ func exclusive_physics(_delta):
 			force_target.get_logic(TargetLogic).opponent = C
 			force_target.set_movement_state(TargetLogic)
 	else:
+		
+		force_target = null
 		C.reset_movement_state()
 
 

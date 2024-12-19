@@ -973,16 +973,15 @@ func play_character_select_anim():
 	
 	var final_team = team_indexes.duplicate(true)
 	
-	for i in selected_indexes.keys():
-		
-		var cell_index = int(selected_indexes.get(i))
-		
-		if team_indexes.get(current_mod_selecting).has(cell_index):
-			final_team.get(current_mod_selecting).erase(cell_index)
-			final_team.get(current_mod_selecting).insert(int(i), cell_index)
-		
-		if !team_indexes.get(current_mod_selecting).has(cell_index):
-			final_team.get(current_mod_selecting).insert(int(i), cell_index)
+	#for i in selected_indexes.keys():
+		#var cell_index = int(selected_indexes.get(i))
+		#
+		#if team_indexes.get(current_mod_selecting).has(cell_index):
+			#
+			#final_team.get(current_mod_selecting).erase(cell_index)
+			#final_team.get(current_mod_selecting).insert(int(i), cell_index)
+		#else:
+			#final_team.get(current_mod_selecting).insert(int(i), cell_index)
 	
 	freeplay_select_anim_data.clear()
 	
@@ -991,7 +990,7 @@ func play_character_select_anim():
 	for team in final_team.values():
 		team_size += team.size()
 	
-	var pos = 0
+	var pos = 2
 	for mod in final_team.keys():
 		
 		var index = 0
@@ -1007,12 +1006,18 @@ func play_character_select_anim():
 			icon.get_node("Back").modulate.a = 1.0
 			icon.get_node("Back").show()
 			
-			if selected_indexes.values().has(team_index):
+			var override = -1
+			
+			if selected_indexes.values().has(team_index) and mod == current_mod_selecting:
 				for str_play_index in selected_indexes.keys():
 					if int(str_play_index) == index:
 						icon.get_node("Back").texture = get_node(str("FreePlaySelect/PlayerSelects/Player", str_play_index, "/Back")).texture
+						override = int(str_play_index)
 			
 			var pos_index = pos+0.5 - (float(team_size)/2.0)
+			if override != -1:
+				pos_index = override+0.5 - (float(team_size)/2.0)
+			
 			var center_of_screen = get_viewport_rect().size/2
 			freeplay_select_anim_data.append(
 					{
@@ -1026,7 +1031,8 @@ func play_character_select_anim():
 			
 			index += 1
 			
-			pos += 1
+			if override == -1:
+				pos += 1
 	
 	freeplay_select_anim = true
 

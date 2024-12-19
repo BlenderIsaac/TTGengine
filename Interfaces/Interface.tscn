@@ -2241,7 +2241,7 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_override_constants/h_separation = 34
 theme_override_constants/v_separation = 34
-columns = 22
+columns = 10
 
 [node name="SelectAnim" type="Control" parent="CharacterList"]
 anchors_preset = 0
