@@ -1175,6 +1175,7 @@ offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="Player0" type="Control" parent="FreePlaySelect/PlayerSelects"]
+visible = false
 layout_mode = 2
 anchors_preset = 0
 offset_top = -50.0
@@ -1191,6 +1192,7 @@ scale = Vector2(1.017, 1.017)
 region_rect = Rect2(0, 2048, 256, 256)
 
 [node name="Player1" type="Control" parent="FreePlaySelect/PlayerSelects"]
+visible = false
 layout_mode = 2
 anchors_preset = 0
 offset_left = 50.0
@@ -3131,12 +3133,14 @@ wait_time = 0.5
 autostart = true
 
 [node name="Label" type="Label" parent="."]
+visible = false
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 23.0
 scale = Vector2(0.999586, 0.99911)
 
 [node name="Label2" type="Label" parent="."]
+visible = false
 layout_mode = 0
 offset_top = 24.0
 offset_right = 40.0

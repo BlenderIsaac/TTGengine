@@ -58,7 +58,6 @@ func exclusive_physics(_delta):
 	volatile_timer -= _delta
 	
 	
-	
 	# MOVING
 	base_state.gen_gravity(_delta, false)
 	
@@ -84,7 +83,10 @@ func exclusive_physics(_delta):
 	if !moved:
 		if not blocks_to_choose.has(anim.current_animation):
 			if not reflects_to_choose.has(anim.current_animation):
-				new_block()
+				if volatile_timer <= 0.0:
+					new_block()
+	
+	#Engine.time_scale = 0.1
 	
 	if C.key_press("Fight") and !C.AI:
 		if delay_released_fight > 0.0:

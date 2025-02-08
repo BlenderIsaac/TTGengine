@@ -55,14 +55,25 @@ func inclusive_physics(_delta):
 	# if we are still alive and not dead
 	if !C.AI and !C.dead:
 		
-		## This block here positions the force outline position and checks if we press special
+		## This block here positions the force outline position and checks if we press special and visually shows which forces are avaliable
 		# If we have a force target and they are valid and not dead
-		if force_target and is_instance_valid(force_target) and !force_target.dead:
+		if generic_check_force_validity(force_target):#force_target and is_instance_valid(force_target) and !force_target.dead and global_position.distance_squared_to(force_target.global_position) < force_dist*force_dist:
 			force_outline.show()
 			if current_charge > 0.0:
 				force_outline.global_position = predicted_pos
 			else:
 				force_outline.global_position = force_target.global_position + force_target.aim_pos
+			
+			# disable the ones that don't work
+			var valid_abilities = force_target_valid_abilities_list(force_target)
+			
+			for slot in force_abilities.keys():
+				var data = force_abilities.get(slot)
+				
+				if !valid_abilities.has(data.Self):
+					force_outline.get_node(slot).transparency = 0.8
+				else:
+					force_outline.get_node(slot).transparency = 0.0
 			
 			# We set our movement state to ForceSensitive and get ready to pick a power
 			if C.key_press("Special") and C.is_on_floor() and valid_logics.has(C.movement_state):
@@ -72,7 +83,8 @@ func inclusive_physics(_delta):
 		else:
 			force_target = null
 		
-		## This block here deals with the visuals of the force outlines
+		
+		## This block here deals with the visuals (updated every second) of the force outlines
 		# If we are not currently using the force and are in our base state
 		if C.is_in_base_movement_state():
 			if force_delay > force_delay_max:
@@ -124,14 +136,6 @@ func inclusive_physics(_delta):
 								slot_node.texture = image
 								slot_node.show()
 							
-							# disable the ones that don't work
-							var valid_abilities = force_target_valid_abilities_list(force_target)
-							
-							for slot in force_abilities.keys():
-								var data = force_abilities.get(slot)
-								
-								if !valid_abilities.has(data.Self):
-									force_outline.get_node(slot).transparency = 0.8
 						else:
 							force_outline.scale = Vector3(force_target.force_size, force_target.force_size, force_target.force_size)
 					
@@ -160,7 +164,6 @@ func exclusive_physics(_delta):
 		
 		ensureForceOutline_exists()
 		
-		# TODO: fix here - What is this? Not sure
 		# look at our target
 		var rot_to_force = Basis.looking_at(C.global_position-force_target.global_position).get_euler().y+PI
 		C.mesh_angle_to = rot_to_force
@@ -168,14 +171,14 @@ func exclusive_physics(_delta):
 		
 		base_state.freeze()
 		
-		
-		#if selected_ability == null:
-		
+		# IF THE OBJECT IS A CHARACTER
 		if !force_target.is_in_group("ForceObject"):
 			anim.play("ForceStatic", .2)
 			
-			# If we select a force power
+			# if any force power has been selected
 			var any_key_pressed = false
+			
+			# loop through the keys to check if they are pressed
 			for key in force_abilities.keys():
 				var key_pressed = false
 				
@@ -186,7 +189,7 @@ func exclusive_physics(_delta):
 					key_pressed = C.controller_direction_pressed(key)
 				
 				if key_pressed:
-					print("yo")
+					#print("yo")
 					any_key_pressed = true
 					var ability_data = force_abilities.get(key)
 					
@@ -221,7 +224,7 @@ func exclusive_physics(_delta):
 							
 							current_charge += _delta
 							
-							var close_enough = predicted_pos.distance_to(force_target.global_position + force_target.aim_pos) < ab_range
+							var close_enough = predicted_pos.distance_squared_to(force_target.global_position + force_target.aim_pos) < ab_range*ab_range
 							if current_charge >= chargeup:
 								if close_enough:
 									C.get_logic(force_ability).force_target = force_target
@@ -284,7 +287,7 @@ func update_force():
 		
 		if !local_force == C and !local_force.dead:
 			
-			if local_force.position.distance_to(C.position) <= force_dist:
+			if local_force.position.distance_squared_to(C.position) <= force_dist*force_dist:
 				
 				# the distance to the current force in the loop
 				var angle_to = get_angle_to_angle_force(local_force)
@@ -310,10 +313,15 @@ func update_force():
 	return best_force
 
 func generic_check_force_validity(force_object):
+	#print('where is this being checked?')
+	
 	if !force_object:
 		return false
 	
 	if !is_instance_valid(force_object):
+		return false
+	
+	if global_position.distance_squared_to(force_target.global_position) >= force_dist*force_dist:
 		return false
 	
 	if force_object.is_in_group("Character"):
@@ -341,6 +349,8 @@ func is_force_valid(force_object):
 	
 	if force_target_valid_abilities_list(force_object).size() > 0:
 		return true
+	
+	return false
 
 
 func force_target_valid_abilities_list(force_object):
@@ -368,7 +378,6 @@ func target_viable_for_ability(target, ability):
 
 func can_use_ability_on_target(target, ability_name, target_ability_name, target_ability_path):
 	var logics = target.get_logics_list()
-	
 	
 	var t_viable = target_viable_for_ability(target, C.get_logic(ability_name))
 	

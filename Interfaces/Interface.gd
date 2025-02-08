@@ -4,10 +4,10 @@ var team_indexes = {}
 var current_mod_selecting = ""
 
 var selected_indexes = {
-	"0" : 0,
-	"1" : 1,
-	#"2" : 2,
-	#"3" : 3,
+	0 : 0,
+	1 : 1,
+	#2 : 2,
+	#3 : 3,
 	}
 var player_back = {
 	"0" : "Blue",
@@ -58,12 +58,12 @@ func _ready():
 
 var transitioning_out = false
 func _process(_delta):
-	Engine.time_scale = 1.0
+	
+	
 	if transition_left > 0:
 		if frame_delay <= 0:
 			
 			transition_left -= _delta
-			
 			
 			$Transition.region_rect.size.x = lerp(0.0, last_imagetexture.get_size().x, transition_left)
 		else:
@@ -129,9 +129,10 @@ func _process(_delta):
 	if $LevelEnd.visible:
 		LevelFinish_tick(_delta)
 	
+	
 	if freeplay_select_anim:
 		
-		if freeplay_select_anim_timer >= 1.0:
+		if freeplay_select_anim_timer >= 1.0 and freeplay_select_anim_stage == 0.0:
 			freeplay_select_anim_timer = 0.0
 			freeplay_select_anim_stage = 1.0
 		
@@ -144,7 +145,7 @@ func _process(_delta):
 				node.global_position = f.LerpVector2(anim.StartPosition, anim.EndPosition, ease(freeplay_select_anim_timer, freeplay_select_anim_ease))
 				node.get_node("Back").scale = f.LerpVector2(anim.StartScale, anim.EndScale, ease(freeplay_select_anim_timer, freeplay_select_anim_ease))
 			elif freeplay_select_anim_stage == 1:
-				node.position.x += 10
+				node.position.x = anim.EndPosition.x + freeplay_select_anim_timer*600#10*60
 				
 				if node.position.x > get_viewport_rect().size.x+60:
 					freeplay_select_anim_data.erase(anim)
@@ -567,7 +568,7 @@ var mode_selected = ""
 @onready var character_container = $CharacterList/Container
 
 func FreePlaySelect_tick():
-	
+	# animate the icons that denote the players
 	$FreePlaySelect/PlayerSelects/Player0/Back.position.x = 2*sin(sin_time1*5)
 	$FreePlaySelect/PlayerSelects/Player0/Back.position.y = 2*cos(sin_time1*5)
 	
@@ -576,6 +577,7 @@ func FreePlaySelect_tick():
 	
 	var grid = character_container.get_node(current_mod_selecting)
 	
+	# calculate the size of the table
 	var columns = grid.columns
 	var full_rows = grid.get_child_count()/columns
 	var rows = ceil(float(grid.get_child_count())/columns)
@@ -587,7 +589,7 @@ func FreePlaySelect_tick():
 	
 	if Input.is_action_just_pressed("select_all_characters"):
 		
-		for column in range(incomplete_row_columns):
+		for column in range(incomplete_row_columns + columns*full_rows):
 			#for column in range(columns):
 			#print(row, column)
 			
@@ -600,7 +602,7 @@ func FreePlaySelect_tick():
 	
 	for player_number in selected_indexes.keys():
 		
-		if Players.dropped_in[int(player_number)].active == true:
+		if Players.dropped_in[player_number].active == true:
 			
 			var change = false
 			var new_num = team_indexes.keys().find(current_mod_selecting)
@@ -629,8 +631,8 @@ func FreePlaySelect_tick():
 				character_container.get_node(current_mod_selecting).show()
 				
 				selected_indexes = {
-				"0" : 0,
-				"1" : 1,
+				0 : 0,
+				1 : 1,
 				}
 			
 			var select_index = selected_indexes.get(player_number)
@@ -709,7 +711,7 @@ func FreePlaySelect_tick():
 			
 			var new_select_index = int(vec.y)*int(columns) + int(vec.x)
 			
-			selected_indexes[str(player_number)] = new_select_index
+			selected_indexes[player_number] = new_select_index
 			
 			#if update:
 			update_selects()
@@ -720,7 +722,16 @@ func FreePlaySelect_tick():
 
 func update_freeplay_select_interface():
 	if $FreePlaySelect.visible:
+		
+		$FreePlaySelect/PlayerSelects.hide()
+		$FreePlaySelect/Center.hide()
+		await update_selects()
+		$FreePlaySelect/Center.show()
+		$FreePlaySelect/PlayerSelects.show()
+		
+		
 		var char_num = 0
+		
 		for player in Players.dropped_in:
 			if player.active:
 				$FreePlaySelect/Center/PlayerContainers.get_node(str("Player", char_num, "Container")).show()
@@ -730,8 +741,6 @@ func update_freeplay_select_interface():
 				$FreePlaySelect/PlayerSelects.get_node(str("Player", char_num)).hide()
 			
 			char_num += 1
-		
-		update_selects()
 
 
 func clear_icons():
@@ -749,7 +758,7 @@ func clear_icons():
 
 func load_icons(mod):
 	
-	var mod_grid = character_container.get_node("NormGrid").duplicate()
+	var mod_grid:GridContainer = character_container.get_node("NormGrid").duplicate()
 	
 	character_container.add_child(mod_grid)
 	
@@ -792,11 +801,14 @@ func load_icons(mod):
 				"Mod" : mod,
 			})
 			
+			icon.name = char_name
 			mod_grid.add_child(icon)
+	
 	
 	mod_grid.name = mod
 	
 	return mod_grid
+
 
 func create_icon(icon, char_name):
 	var norm = character_container.get_node('Norm')
@@ -812,7 +824,11 @@ func create_icon(icon, char_name):
 
 
 func update_selects():
-	var grid = character_container.get_node(current_mod_selecting)
+	var grid:GridContainer = character_container.get_node(current_mod_selecting)
+	grid.queue_sort()
+	grid.modulate.a = 0.0
+	await grid.sort_children
+	grid.modulate.a = 1.0
 	
 	var cell_index = 0
 	for cell in grid.get_children():
@@ -828,7 +844,9 @@ func update_selects():
 				
 				if Players.dropped_in[player_num].active == true:
 					cell.get_node("Back").hide()
+					
 					sprite.get_node("Back/Icon").texture = cell.get_node("Back").get_child(0).texture
+					
 					sprite.position = cell.get_node("Back").global_position
 					
 					sprite.show()
@@ -859,6 +877,7 @@ func update_selects():
 func add_to_team(index):
 	team_indexes.get(current_mod_selecting).append(index)
 
+
 func remove_from_team(index):
 	team_indexes.get(current_mod_selecting).erase(index)
 
@@ -880,11 +899,13 @@ func get_player_data():
 func get_player_team():
 	var player_team = []
 	
-	for select_index in selected_indexes.values():
-		var player_index = int(select_index)
+	for player_number in selected_indexes.keys():
+		var select_index = selected_indexes[player_number]
+		var player_index = select_index
 		
-		if !player_team.has(char_data.get(current_mod_selecting)[player_index]):
-			player_team.append(char_data.get(current_mod_selecting)[player_index])
+		if Players.dropped_in[player_number].active:
+			if !player_team.has(char_data.get(current_mod_selecting)[player_index]):
+				player_team.append(char_data.get(current_mod_selecting)[player_index])
 	
 	for mod in team_indexes.keys():
 		var team_list = team_indexes.get(mod)
@@ -905,7 +926,7 @@ func start_level():
 	
 	for str_index in selected_indexes.keys():
 		
-		var index = int(str_index)
+		var index = str_index
 		var char_index = selected_indexes.get(str_index)
 		
 		player_data[index] = {
@@ -956,6 +977,7 @@ func set_icons_mode(new_mode):
 	set_icon_mode(1, new_mode)
 # hearts, dropped_out, just_studs, just_hearts, just_icon, info, off
 
+
 var freeplay_select_anim = false
 var freeplay_select_anim_data = []
 var freeplay_select_anim_timer = 0.0
@@ -972,6 +994,20 @@ func play_character_select_anim():
 	hide_element("CharacterList")
 	
 	var final_team = team_indexes.duplicate(true)
+	var pos = 0
+	var players_to_pos_id = {}
+	# add all players to the final team
+	for player_idx in selected_indexes.keys():
+		if Players.dropped_in[player_idx].active:
+			
+			# this only adds the character index if it is not already present
+			if not selected_indexes[player_idx] in final_team[current_mod_selecting]:
+				final_team[current_mod_selecting].append(selected_indexes[player_idx])
+			
+			players_to_pos_id[player_idx] = pos
+			
+			pos += 1
+	#var player_team = get_player_team()
 	
 	#for i in selected_indexes.keys():
 		#var cell_index = int(selected_indexes.get(i))
@@ -990,10 +1026,10 @@ func play_character_select_anim():
 	for team in final_team.values():
 		team_size += team.size()
 	
-	var pos = 2
+	
 	for mod in final_team.keys():
 		
-		var index = 0
+		#var index = 0
 		var team = final_team.get(mod)
 		
 		for team_index in team:
@@ -1008,11 +1044,13 @@ func play_character_select_anim():
 			
 			var override = -1
 			
+			# if a player has selected this team member in this mod
 			if selected_indexes.values().has(team_index) and mod == current_mod_selecting:
-				for str_play_index in selected_indexes.keys():
-					if int(str_play_index) == index:
-						icon.get_node("Back").texture = get_node(str("FreePlaySelect/PlayerSelects/Player", str_play_index, "/Back")).texture
-						override = int(str_play_index)
+				for player_index in selected_indexes.keys():
+					if Players.dropped_in[player_index].active:
+						if selected_indexes[player_index] == team_index:
+							icon.get_node("Back").texture = get_node(str("FreePlaySelect/PlayerSelects/Player", str(player_index), "/Back")).texture
+							override = players_to_pos_id[player_index]
 			
 			var pos_index = pos+0.5 - (float(team_size)/2.0)
 			if override != -1:
@@ -1029,7 +1067,7 @@ func play_character_select_anim():
 					}
 				)
 			
-			index += 1
+			#index += 1
 			
 			if override == -1:
 				pos += 1
@@ -1075,7 +1113,9 @@ func Button_FreePlay():
 	current_mod_selecting = load_level_mod
 	
 	clear_icons()
-	load_icons(load_level_mod)
+	var grid = load_icons(load_level_mod)
+	grid.queue_sort()
+	await grid.sort_children
 	
 	setup_freeplay()
 	mode_selected = "FreePlay"
@@ -1092,10 +1132,12 @@ func Button_SuperFreePlay():
 	
 	for mod in mods:
 		team_indexes[mod] = []
-		var grid = load_icons(mod)
+		var grid:GridContainer = load_icons(mod)
 		
 		if mod == load_level_mod:
-			grid.show()
+			
+			grid.queue_sort()
+			await grid.sort_children
 		else:
 			grid.hide()
 	
@@ -1112,7 +1154,7 @@ func setup_freeplay():
 			var index = 0
 			for data in char_data.get(current_mod_selecting):
 				if data.Path == filename:
-					selected_indexes[str(character.player_number)] = index
+					selected_indexes[character.player_number] = index
 				
 				index += 1
 	
