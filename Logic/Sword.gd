@@ -28,6 +28,7 @@ var weapon_materials = {
 }
 var our_prefix = "Sword"
 var in_lightsaber = []
+#var ray_hit_this_frame = []
 var SwordExtras
 
 func _ready():
@@ -35,7 +36,8 @@ func _ready():
 
 func _process(_delta):
 	if C.weapon_prefix == our_prefix:
-		SwordExtras.show()
+		#SwordExtras.show()
+		pass
 	else:
 		SwordExtras.hide()
 
@@ -71,6 +73,24 @@ func store_weapon(overide=false):
 func reset():
 	SwordExtras.free()
 	TestHurt.free()
+	for ray in hurt_rays:
+		ray.free()
+	hurt_rays = []
+
+var weapon_length = 1.7
+var rays_num = 4
+var hurt_rays = []
+func spawn_rays():
+	for num in rays_num:
+		
+		var ray = RayCast3D.new()
+		
+		ray.enabled = true
+		#ray.set_collision_mask_value(1, false)
+		ray.set_collision_mask_value(2, true)
+		
+		add_child(ray)
+		hurt_rays.append(ray)
 
 
 var Hurt_nums = 4
@@ -82,10 +102,10 @@ func spawn_inbetween_hurts():
 			Col.top_level = true
 			Col.name = "Col_"+str(weapon_col)+"_"+str(num)
 			
-			TestHurt.add_child(Col)
+			add_child(Col)
 			Col.top_level = true
 
-var TestHurt = null
+var TestHurt:Area3D = null
 func spawn_test_hurt():
 	TestHurt = Area3D.new()
 	
@@ -110,6 +130,7 @@ func spawn_test_hurt():
 func spawn_objects():
 	
 	spawn_test_hurt()
+	spawn_rays()
 	
 	SwordExtras = BoneAttachment3D.new()
 	SwordExtras.hide()
@@ -157,8 +178,15 @@ func spawn_objects():
 		gltf_anim.play("Off_loop")
 
 
-
+var prev_trans = Transform3D()
 func inclusive_physics(_delta):
+	
+	
+	#Caster.global_position = TestHurt.global_position
+	#Caster.target_position = prev_trans.origin
+	#Caster.force_shapecast_update()
+	
+	SwordExtras.hide()
 	
 	if !C.weapon_prefix == our_prefix:
 		if audio_player.has_loop("SaberLoop"):
@@ -169,6 +197,24 @@ func inclusive_physics(_delta):
 	TestHurt.position = bone_pose.origin
 	TestHurt.rotation = bone_pose.basis.get_euler()
 	
+	
+	var ray_index = 0
+	for ray:RayCast3D in hurt_rays:
+		var ray_perc = 0
+		if rays_num != 1:
+			ray_perc = float(ray_index)/float(rays_num-1)
+		
+		ray.debug_shape_custom_color = Color.GREEN
+		
+		var from_pos = TestHurt.global_position + TestHurt.global_transform.basis.y*(weapon_length*ray_perc)
+		var to_pos = prev_trans.origin + prev_trans.basis.y*(weapon_length*ray_perc)
+		
+		ray.global_position = from_pos
+		ray.target_position = to_pos-from_pos
+		
+		ray_index += 1
+	
+	
 	if !C.AI:
 		if C.key_just_pressed("Fight"):
 			if C.generic_can_draw_weapon():
@@ -177,6 +223,33 @@ func inclusive_physics(_delta):
 		if C.key_press("Special"):
 			if C.is_in_base_movement_state():
 				store_weapon()
+	
+	prev_trans = TestHurt.global_transform
+
+func get_in_rays():
+	var ray_hit_this_frame = []
+	
+	for ray:RayCast3D in hurt_rays:
+		
+		ray.force_raycast_update()
+		if ray.is_colliding():
+			
+			var body = ray.get_collider()
+			if f.is_valid_character(body):
+				if not body in ray_hit_this_frame:
+					ray_hit_this_frame.append(body)
+	
+	return ray_hit_this_frame
+
+
+func get_objs_hit():
+	var hitted = in_lightsaber.duplicate()
+	
+	for hit in get_in_rays():
+		if not hit in hitted:
+			hitted.append(hit)
+	
+	return hitted
 
 
 func generate_gltf(gltf, mod):

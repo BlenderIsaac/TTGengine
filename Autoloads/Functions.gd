@@ -281,12 +281,18 @@ func generate_gltf(path):
 	
 	return node
 
-func does_character_exist(character):
-	
-	if character == null:
+func is_object_valid(obj):
+	if obj == null:
 		return false
 	
-	if !is_instance_valid(character):
+	if !is_instance_valid(obj):
+		return false
+	
+	return true
+
+func does_character_exist(character):
+	
+	if !is_object_valid(character):
 		return false
 	
 	return true
@@ -294,16 +300,27 @@ func does_character_exist(character):
 
 func is_character_valid(character):
 	
-	if character == null:
-		return false
-	
-	if !is_instance_valid(character):
+	if !is_object_valid(character):
 		return false
 	
 	if character.dead:
 		return false
 	
 	return true
+
+
+func is_valid_character(body):
+	if !is_object_valid(body):
+		return false
+	
+	if body.is_in_group("Character"):
+		if body.dead:
+			return false
+	else:
+		return false
+	
+	return true
+
 
 var stud_value = {
 	"Silver" : 10,

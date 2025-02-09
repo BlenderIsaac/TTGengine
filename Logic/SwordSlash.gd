@@ -215,6 +215,9 @@ func inclusive_physics(_delta):
 
 
 func doing_damage():
+	#TEMP
+	return true
+	
 	var anim_progress = anim.current_animation_position/anim.current_animation_length
 	var damage_start = 0.3
 	var damage_end = 0.95
@@ -236,7 +239,8 @@ func exclusive_process(_delta):
 		if doing_damage():
 			if hit < lightsaber_hurt_per_frame:
 				#$"../Sword".SwordExtras.scale.y = 2.0
-				for opponent in $"../Sword".in_lightsaber:
+				
+				for opponent in C.get_logic("Sword").get_objs_hit():
 					if not opponent == C:
 						
 						if opponent.has_method("take_knockback"):
@@ -247,7 +251,7 @@ func exclusive_process(_delta):
 						if opponent.has_method("take_damage"):
 							opponent.take_damage(1, C)
 							audio_player.play("SaberSmack")
-							$"../Sword".in_lightsaber.erase(opponent)
+							#$"../Sword".in_lightsaber.erase(opponent)
 							hit += 1
 		else:
 			pass
