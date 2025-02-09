@@ -16,12 +16,13 @@ var move_delay = 0.0#0.2
 # move delay time left
 var move_delay_timer = 0.0
 var move_delay_reset = false
-var moved_since_online = false
+#var moved_since_online = true
 
 var move_dir_to = Vector3()
 var move_dir = Vector3()
 var last_move_dir = Vector3()
-var facing_move_dir = Vector3()
+
+#var facing_move_dir = Vector3()
 
 var not_air_anims = ["Idleloop", "Runloop"]
 
@@ -30,6 +31,9 @@ var footsteps_played = 0
 
 # Set the correct navigational layer values
 func _ready():
+	last_move_dir = mesh.transform.basis.z
+	#facing_move_dir = mesh.transform.basis.z
+	
 	move_delay_timer = move_delay
 	nav_agent.set_navigation_layer_value(1, true)
 
@@ -42,6 +46,15 @@ func anim_started(vars):
 		footsteps_played = 0
 
 var on_floor_last_frame = true
+
+#func inclusive_physics(_delta):
+	#DebugDraw3D.draw_arrow(C.position, C.position+last_move_dir, Color.RED)
+	#DebugDraw3D.draw_arrow(C.position, C.position-mesh.transform.basis.z, Color.GREEN)
+	##DebugDraw3D.draw_arrow(C.position, C.position-mesh.basis.z, Color.GREEN_YELLOW)
+	#
+	##DebugDraw3D.draw_arrow(C.position, C.position+move_dir_to, Color.YELLOW)
+	#DebugDraw3D.draw_arrow(C.position, C.position+move_dir, Color.BLUE)
+
 
 func exclusive_physics(_delta):
 	
@@ -57,7 +70,7 @@ func exclusive_physics(_delta):
 	
 	
 	# reset our movement direction
-	move_dir = Vector3()
+	#move_dir = Vector3()
 	
 	# Reset movement
 	if C.is_on_ceiling():
@@ -75,9 +88,10 @@ func exclusive_physics(_delta):
 	
 	# If we did move, then set the mesh angle we want to go to
 	if moved:
-		moved_since_online = true
 		
 		var change = last_move_dir.normalized().dot(move_dir.normalized())
+		
+		DebugDraw2D.set_text("change "+C.char_name, change)
 		
 		if change < -0.6:
 			if move_delay_reset == true:
@@ -102,9 +116,9 @@ func exclusive_physics(_delta):
 				anim.play(prefix+"Idleloop", .04)
 	
 	
-	if move_delay_timer > move_delay and moved_since_online:
+	if move_delay_timer > move_delay:# and moved_since_online:
 		C.mesh_angle_to = Vector2(-last_move_dir.x, last_move_dir.z).angle()+deg_to_rad(90)
-		facing_move_dir = last_move_dir
+		#facing_move_dir = last_move_dir
 	else:
 		move_delay_timer += _delta
 	
@@ -142,9 +156,9 @@ func exclusive_physics(_delta):
 	C.mesh_angle_lerp(_delta, 0.2)
 
 func initiate():
-	moved_since_online = false
+	#moved_since_online = false
 	move_delay_reset = true
-	last_move_dir = facing_move_dir
+	#last_move_dir = mesh.transform.basis.z#facing_move_dir
 	#move_delay_timer = move_delay + 0.1
 	#last_move_dir = facing_move_dir
 	#move_dir = facing_move_dir
@@ -210,6 +224,8 @@ func freeze():
 	move_dir = Vector3()
 	move_dir_to = Vector3()
 
+func revive(_args):
+	last_move_dir = -mesh.transform.basis.z
 
 func get_move_dir(_delta):
 	var new_move_dir = Vector3()

@@ -73,6 +73,7 @@ func exclusive_physics(_delta):
 	if not C.AI:
 		if can_start_jump() and C.key_press("Jump"):
 			if can_backjump():
+				
 				backjumpped = true
 			click_jump()
 		elif can_continue_jumping() and C.PHYSkey_just_pressed("Jump"):
@@ -81,6 +82,9 @@ func exclusive_physics(_delta):
 		base_state.move_dir = base_state.get_move_dir(_delta)
 		
 		C.get_logic(current_jumping_logic).jumping_physics(_delta)
+		
+		if base_state.move_dir != Vector3():
+			base_state.last_move_dir = base_state.move_dir
 	else:
 		if C.get_logic(jump_ai_logic).has_method("ai"):
 			C.get_logic(jump_ai_logic).ai(_delta)
@@ -132,6 +136,9 @@ func jumping_physics(_delta):
 	if not C.AI:
 		if C.is_on_floor():
 			if not C.key_press("Jump"):
+				if backjumpped:
+					base_state.last_move_dir = -mesh.transform.basis.z
+				
 				C.reset_movement_state()
 
 
@@ -154,7 +161,7 @@ func has_nav(details):
 func can_backjump():
 	#if C.movement_state == "Base":
 	if backjump:
-		var change = base_state.facing_move_dir.normalized().dot(base_state.move_dir.normalized())
+		var change = (-mesh.transform.basis.z).normalized().dot(base_state.move_dir.normalized())
 		
 		if change < -0.6:
 			if C.get_logic("Base").move_delay_timer < C.get_logic("Base").move_delay:
