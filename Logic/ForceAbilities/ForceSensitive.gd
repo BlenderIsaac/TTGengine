@@ -64,16 +64,17 @@ func inclusive_physics(_delta):
 			else:
 				force_outline.global_position = force_target.global_position + force_target.aim_pos
 			
-			# disable the ones that don't work
-			var valid_abilities = force_target_valid_abilities_list(force_target)
-			
-			for slot in force_abilities.keys():
-				var data = force_abilities.get(slot)
+			# disable the ones that don't work if its a force box
+			if force_target.is_in_group("Character"):
+				var valid_abilities = force_target_valid_abilities_list(force_target)
 				
-				if !valid_abilities.has(data.Self):
-					force_outline.get_node(slot).transparency = 0.8
-				else:
-					force_outline.get_node(slot).transparency = 0.0
+				for slot in force_abilities.keys():
+					var data = force_abilities.get(slot)
+					
+					if !valid_abilities.has(data.Self):
+						force_outline.get_node(slot).transparency = 0.8
+					else:
+						force_outline.get_node(slot).transparency = 0.0
 			
 			# We set our movement state to ForceSensitive and get ready to pick a power
 			if C.key_press("Special") and C.is_on_floor() and valid_logics.has(C.movement_state):

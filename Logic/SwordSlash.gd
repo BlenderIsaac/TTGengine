@@ -215,8 +215,6 @@ func inclusive_physics(_delta):
 
 
 func doing_damage():
-	#TEMP
-	return true
 	
 	var anim_progress = anim.current_animation_position/anim.current_animation_length
 	var damage_start = 0.3

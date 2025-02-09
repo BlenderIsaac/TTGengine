@@ -1198,8 +1198,7 @@ func format_num(num):
 		i = i - 3
 	return num
 
-# TODO: All the health functions need to be changed to go on a global "Player Num Health"
-# But that only takes effect when the character is being controlled
+
 func take_damage(amount, _who_from=null):
 	
 	# make sure we can actually take damage

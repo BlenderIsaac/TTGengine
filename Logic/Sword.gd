@@ -28,7 +28,6 @@ var weapon_materials = {
 }
 var our_prefix = "Sword"
 var in_lightsaber = []
-#var ray_hit_this_frame = []
 var SwordExtras
 
 func _ready():
@@ -36,8 +35,7 @@ func _ready():
 
 func _process(_delta):
 	if C.weapon_prefix == our_prefix:
-		#SwordExtras.show()
-		pass
+		SwordExtras.show()
 	else:
 		SwordExtras.hide()
 
@@ -86,24 +84,12 @@ func spawn_rays():
 		var ray = RayCast3D.new()
 		
 		ray.enabled = true
-		#ray.set_collision_mask_value(1, false)
+		ray.set_collision_mask_value(1, false)
 		ray.set_collision_mask_value(2, true)
 		
 		add_child(ray)
 		hurt_rays.append(ray)
 
-
-var Hurt_nums = 4
-func spawn_inbetween_hurts():
-	for num in Hurt_nums:
-		
-		for weapon_col in weapon_cols:
-			var Col = l.get_load(SETTINGS.mod_path+"/"+C.origin_mod+"/characters/collisions/"+weapon_col).instantiate()
-			Col.top_level = true
-			Col.name = "Col_"+str(weapon_col)+"_"+str(num)
-			
-			add_child(Col)
-			Col.top_level = true
 
 var TestHurt:Area3D = null
 func spawn_test_hurt():
@@ -181,12 +167,6 @@ func spawn_objects():
 var prev_trans = Transform3D()
 func inclusive_physics(_delta):
 	
-	
-	#Caster.global_position = TestHurt.global_position
-	#Caster.target_position = prev_trans.origin
-	#Caster.force_shapecast_update()
-	
-	SwordExtras.hide()
 	
 	if !C.weapon_prefix == our_prefix:
 		if audio_player.has_loop("SaberLoop"):
