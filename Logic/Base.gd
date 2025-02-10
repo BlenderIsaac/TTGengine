@@ -91,8 +91,6 @@ func exclusive_physics(_delta):
 		
 		var change = last_move_dir.normalized().dot(move_dir.normalized())
 		
-		DebugDraw2D.set_text("change "+C.char_name, change)
-		
 		if change < -0.6:
 			if move_delay_reset == true:
 				move_delay_timer = 0.0
@@ -158,6 +156,7 @@ func exclusive_physics(_delta):
 func initiate():
 	#moved_since_online = false
 	move_delay_reset = true
+	last_move_dir = -mesh.transform.basis.z
 	#last_move_dir = mesh.transform.basis.z#facing_move_dir
 	#move_delay_timer = move_delay + 0.1
 	#last_move_dir = facing_move_dir

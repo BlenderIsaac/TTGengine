@@ -11,13 +11,22 @@ func logic_name():
 	
 	return logic
 
-@onready var audio_player = get_parent().get_parent().get_node("AudioPlayer")
-@onready var anim:AnimationPlayer = get_node("../../Mesh/AnimationPlayer")
-@onready var C = get_parent().get_parent()
-@onready var mesh = get_node("../../Mesh")
-@onready var nav_agent:NavigationAgent3D = get_node("../../Agent")
-@onready var var_scale = C.var_scale
-@onready var base_state = C.get_base_movement_state()
+@onready var audio_player
+@onready var anim:AnimationPlayer
+@onready var C
+@onready var mesh
+@onready var nav_agent:NavigationAgent3D
+@onready var var_scale
+@onready var base_state
+
+func establish_connections(char):
+	C = char
+	audio_player = C.get_node("AudioPlayer")
+	mesh = C.get_node("Mesh")
+	anim = mesh.get_node("AnimationPlayer")
+	nav_agent = C.get_node("Agent")
+	var_scale = C.var_scale
+	base_state = C.get_base_movement_state()
 
 #func exclusive_physics(_delta):
 #	pass

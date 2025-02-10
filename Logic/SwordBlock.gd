@@ -198,19 +198,19 @@ func exclusive_knockback(_amount, _who_from=null):
 
 
 var valid_damage_logics = ["SwordSlam"]
-func exclusive_damage(_amount, _who_from=null):
+func exclusive_damage(damage:f.Damage):
 	
-	if _who_from != null:
+	if damage.from != null:
 		
 		if moved:
 			change_stamina(-1)
 		
-		if "movement_state" in _who_from:
-			if valid_damage_logics.has(_who_from.movement_state):
-				C.generic_damage(_amount)
+		if "movement_state" in damage.from:
+			if valid_damage_logics.has(damage.from.movement_state):
+				C.generic_damage(damage.amount)
 			
-			if _who_from.movement_state == "SwordSlash":
-				var SwordSlash = _who_from.get_logic("SwordSlash")
+			if damage.from.movement_state == "SwordSlash":
+				var SwordSlash = damage.from.get_logic("SwordSlash")
 				
 				#if time_since_start < superdeflect_time:
 					#if SwordSlash.has_method("super_block"):
@@ -238,8 +238,8 @@ func exclusive_damage(_amount, _who_from=null):
 				else:
 					change_stamina(-3)
 			
-			elif _who_from.movement_state == "SwordLunge":
-				var SwordLunge = _who_from.get_logic("SwordLunge")
+			elif damage.from.movement_state == "SwordLunge":
+				var SwordLunge = damage.from.get_logic("SwordLunge")
 				
 				#if time_since_start < superdeflect_time:
 					#if SwordLunge.has_method("super_block"):
@@ -263,11 +263,11 @@ func exclusive_damage(_amount, _who_from=null):
 				else:
 					change_stamina(-7)
 			else:
-				change_stamina(-_amount)
+				change_stamina(-damage.amount)
 		
-		elif _who_from.is_in_group("projectile"):
+		elif damage.from.is_in_group("projectile"):
 			if (C.key_press("Fight") and not C.AI) or C.AI:
-				deflected_bullet_rot = _who_from.rotation
+				deflected_bullet_rot = damage.from.rotation
 				#if time_since_start < superdeflect_time:
 				#	if _who_from.has_method("super_reflect"):
 				#		audio_player.play("SaberBullet") # change to different sound effect
@@ -280,7 +280,7 @@ func exclusive_damage(_amount, _who_from=null):
 				#	change_stamina(5)
 				if time_since_start < deflect_time:
 					#C.take_knockback(Vector3(0, 0, .5).rotated(Vector3.UP, _who_from.rotation.y))
-					_who_from.reflect(C)
+					damage.from.reflect(C)
 					
 					time_since_start -= extra_deflect_time
 					
@@ -294,16 +294,16 @@ func exclusive_damage(_amount, _who_from=null):
 					#C.take_knockback(Vector3(0, 0, 1).rotated(Vector3.UP, _who_from.rotation.y))
 					audio_player.play("SaberBullet")
 					
-					_who_from.deflect(C)
+					damage.from.deflect(C)
 					change_stamina(-1)
 				
 				new_block(false)
 			else:
-				C.generic_damage(_amount)
+				C.generic_damage(damage.amount)
 		else:
-			C.generic_damage(_amount)
+			C.generic_damage(damage.amount)
 	else:
-		C.generic_damage(_amount)
+		C.generic_damage(damage.amount)
 
 
 func change_stamina(value):

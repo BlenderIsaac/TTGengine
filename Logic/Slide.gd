@@ -112,7 +112,6 @@ func should_slide():
 	tail.force_raycast_update()
 	
 	if tail.is_colliding():
-		
 		if C.standing_on("Slide"):
 			if tail.get_collision_point().distance_to(tail.global_position) < tail_range:
 				ray = true

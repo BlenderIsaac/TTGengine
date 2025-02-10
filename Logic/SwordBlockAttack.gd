@@ -225,7 +225,7 @@ func exclusive_process(_delta):
 							opponent.take_knockback(Vector3(0, 0, -knockback).rotated(Vector3.UP, C.get_node("Mesh").rotation.y), self)
 						
 						if opponent.has_method("take_damage"):
-							opponent.take_damage(1, C)
+							opponent.take_damage(f.Damage.new(1, C))
 							audio_player.play("SaberSmack")
 							$"../Sword".in_lightsaber.erase(opponent)
 							hit += 1
@@ -246,23 +246,23 @@ func doing_damage():
 
 
 var valid_damage_logics = ["SwordSlam", "SwordLunge"]
-func exclusive_damage(_amount, _who_from=null):
+func exclusive_damage(damage:f.Damage):
 	var damage_done = false
 	
-	if _who_from != null:
-		if "movement_state" in _who_from:
-			if valid_damage_logics.has(_who_from.movement_state) or !doing_damage():
-				C.generic_damage(_amount)
+	if damage.from != null:
+		if "movement_state" in damage.from:
+			if valid_damage_logics.has(damage.from.movement_state) or !doing_damage():
+				C.generic_damage(damage.amount)
 				damage_done = true
 	else:
-		C.generic_damage(_amount)
+		C.generic_damage(damage.amount)
 		damage_done = true
 	
-	if _who_from and _who_from.is_in_group("projectile"):
+	if damage.from and damage.from.is_in_group("projectile"):
 		if doing_damage():
-			_who_from.deflect(C)
+			damage.from.deflect(C)
 		else:
-			C.generic_damage(_amount)
+			C.generic_damage(damage.amount)
 			damage_done = true
 	
 	if !damage_done:

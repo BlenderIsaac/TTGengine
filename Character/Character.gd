@@ -8,12 +8,16 @@ extends CharacterBody3D
 @onready var nav_agent = $Agent
 @onready var modulate_anim = $Modulation
 @onready var audio = $AudioPlayer
+@onready var tail:RayCast3D = $Tail
+@onready var tailcast:ShapeCast3D = $TailCast
 
 # player variables
 @export var player = false
 @export var player_number = -1
 @export var control_type = "keyboard"
 @export var controller_number = 0
+
+
 
 @export var base_state = ""
 
@@ -98,6 +102,9 @@ var controller_buttons = {
 var respawn_left = 3.0
 var respawn_wait = 3.0
 
+# invincibility frames post damage
+var iframes_left = 0.0
+
 # the other characters pushing on us
 var bodys_pushing = []
 var push_strength = 20
@@ -138,9 +145,6 @@ var health_ratio = 0.0
 var health_ratio_accurate = false
 var hearts_per_row = -1
 var heart_x_offset = 30
-
-# health variables for non-party characters
-
 
 # the lerp angles for mesh turning
 var mesh_angle_to = 0.0
@@ -211,6 +215,9 @@ func _process(_delta):
 	
 	#Engine.time_scale = 1.0#0.1
 	#$Label3D.text = movement_state#anim.current_animation
+	
+	if iframes_left > 0.0:
+		iframes_left -= _delta
 	
 	# delete the oldest point in respawn_histroy if there are more than ten of them
 	if respawn_history.size() > 9:
@@ -405,10 +412,10 @@ func _physics_process(_delta):
 	# if we aren't dead, on the floor and our tail raycast is colliding...
 	if not dead:
 		if is_on_floor():
-			if $Tail.is_colliding():
+			if tail.is_colliding():
 				# ...then check that the collision point distance to our position is less than 0.1...
-				if is_instance_valid($Tail.get_collider()):
-					if $Tail.get_collision_point().distance_to(position) < 0.1:
+				if is_instance_valid(tail.get_collider()):
+					if tail.get_collision_point().distance_to(position) < 0.1:
 						# ...and if so check if the ground we are standing on is respawnable...
 						#RayCast3D.new().get_collider()
 						
@@ -624,19 +631,20 @@ func warn(type, from_list):
 		trigger_logics(str("warning_"+type), from_list)
 
 func standing_on(group):
-	var tail = $Tail
 	
-	if !tail.is_colliding():
+	
+	if !tailcast.is_colliding():
 		return false
 	
-	if !is_instance_valid(tail.get_collider()):
+	var collider = tailcast.get_collider(0)
+	
+	if !is_instance_valid(collider):
 		return false
 	
-	var t = tail.get_collider() # A CollisionObject3D.
-	var shape_id = tail.get_collider_shape() # The shape index in the collider.
-	if t.has_method("shape_find_owner"):
-		var owner_id = t.shape_find_owner(shape_id) # The owner ID in the collider.
-		var shape = t.shape_owner_get_owner(owner_id)
+	var shape_id = tailcast.get_collider_shape(0) # The shape index in the collider.
+	if collider.has_method("shape_find_owner"):
+		var owner_id = collider.shape_find_owner(shape_id) # The owner ID in the collider.
+		var shape = collider.shape_owner_get_owner(owner_id)
 		
 		return shape.is_in_group(group)
 	
@@ -1199,7 +1207,9 @@ func format_num(num):
 	return num
 
 
-func take_damage(amount, _who_from=null):
+func take_damage(damage:f.Damage):
+	
+	assert(damage.iframes is float)
 	
 	# make sure we can actually take damage
 	if not is_invincible():
@@ -1207,7 +1217,7 @@ func take_damage(amount, _who_from=null):
 		for logic in $Logic.get_children():
 			# if a logic has the function inclusive damage we run that
 			if logic.has_method("inclusive_damage"):
-				logic.inclusive_damage(amount, _who_from)
+				logic.inclusive_damage(damage)
 		
 		# we need to check if we get overwritten by a logic
 		var overwritten = false
@@ -1217,21 +1227,23 @@ func take_damage(amount, _who_from=null):
 			# override the damage we should take
 			if movement_state == logic.name:
 				if logic.has_method("exclusive_damage"):
-					logic.exclusive_damage(amount, _who_from)
+					logic.exclusive_damage(damage)
 					overwritten = true
 		
 		# if we didn't overwrite it then we run generic damage
 		if overwritten == false:
-			generic_damage(amount)
+			generic_damage(damage.amount, damage.iframes)
 
 
 # a function that runs the damage flash values and takes off health
-func generic_damage(amount):
+func generic_damage(amount, iframes=0.2):
 	# If the damage taken was more than nothing (negative values would be adding health, and
 	# we don't want to red flash for that)
 	if amount > 0:
 		# Play the flash animation and then queue reset
+		modulate_anim.stop()
 		modulate_anim.play("FlashAnims/Flash")
+		iframes_left = iframes
 		modulate_anim.queue("FlashAnims/RESET")
 	
 	# Change our healt by the amount of damage, just negative
@@ -1349,8 +1361,15 @@ func update_HUD():
 
 # function to check if we are currently invincible
 func is_invincible():
-	if dead or ["FlashAnims/Flash", "FlashAnims/respawn"].has(modulate_anim.current_animation):
+	if dead:
 		return true
+	
+	if iframes_left > 0.0:
+		return true
+	
+	if modulate_anim.current_animation == "FlashAnims/respawn":
+		return true
+	
 	return false
 
 
@@ -1753,14 +1772,18 @@ func change_character(data, c_path, mod): # TODO: We don't need c_path here once
 		#current_col.name = "ColPushDelete"
 		current_push_col.free()
 	
-	var new_col = col_load.instantiate()
-	var new_push_col = col_load.instantiate()
+	var new_col:CollisionShape3D = col_load.instantiate()
+	var new_push_col:CollisionShape3D = col_load.instantiate()
+	var new_cast_shape = new_col.shape.duplicate()
 	
 	add_child(new_col)
 	new_col.name = "Col"
 	
 	$Pushaway.add_child(new_push_col)
 	new_push_col.name = "Col"
+	
+	$TailCast.shape = new_cast_shape
+	$TailCast.position = new_col.position
 	
 	# delete current rig
 	var m = get_node_or_null("Mesh")
@@ -1888,6 +1911,7 @@ func change_character(data, c_path, mod): # TODO: We don't need c_path here once
 	# loop through all the logics and create them
 	for logic in data.Logics:
 		var config = {}
+		
 		if logic.has("Config"):
 			config = logic.Config
 		
@@ -1942,6 +1966,7 @@ func add_logic(logic_path, config={}, switched_vars=[]):
 	
 	# Set the node's script to be the loaded script
 	logic_node.set_script(logic_script)
+	logic_node.establish_connections(self)
 	# Set the name of the logic_node to the logic's name
 	logic_node.name = logic_node.logic_name()
 	
@@ -1973,6 +1998,7 @@ func add_logic(logic_path, config={}, switched_vars=[]):
 	# Add the logic to the character
 	var LogicParent = get_node("Logic")
 	LogicParent.add_child(logic_node)
+	
 
 
 # This function attaches a model based on a couple arguments

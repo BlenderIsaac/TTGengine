@@ -20,7 +20,7 @@ func exclusive_physics(_delta):
 		if current_delay >= damage_delay:
 			current_delay = 0.0
 			
-			C.take_damage(1)
+			C.take_damage(f.Damage.new(1))
 		
 		base_state.freeze()
 		

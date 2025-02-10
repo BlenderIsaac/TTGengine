@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://bxapwt6p41rba"]
+[gd_scene load_steps=14 format=3 uid="uid://bxapwt6p41rba"]
 
 [ext_resource type="Script" path="res://Character/Character.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://5boy2nmhka18" path="res://Textures/Point.png" id="4_mwcyx"]
@@ -63,6 +63,8 @@ size = Vector2(0.4, 0.4)
 _data = [Vector2(0, 1), 0.0, 0.140351, 0, 0, Vector2(1, 0), -2.84211, 0.0, 0, 0]
 point_count = 2
 
+[sub_resource type="SphereShape3D" id="SphereShape3D_ix23q"]
+
 [node name="Character" type="CharacterBody3D" groups=["AttackLockOn", "Attackable", "Character", "Pushaway", "Taggable"]]
 collision_layer = 2
 collision_mask = 17
@@ -98,6 +100,11 @@ scale_amount_curve = SubResource("Curve_mgo1q")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 visible = false
 target_position = Vector3(0, -20, 0)
+
+[node name="TailCast" type="ShapeCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+shape = SubResource("SphereShape3D_ix23q")
+target_position = Vector3(0, -0.2, 0)
 
 [node name="Agent" type="NavigationAgent3D" parent="."]
 navigation_layers = 0

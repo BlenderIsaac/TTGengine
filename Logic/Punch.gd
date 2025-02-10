@@ -187,7 +187,7 @@ func exclusive_process(_delta):
 						snapped_attack_target.take_knockback(knockback)
 					
 					if snapped_attack_target.has_method("take_damage"):
-						snapped_attack_target.take_damage(1, C)
+						snapped_attack_target.take_damage(f.Damage.new(1, C))
 						
 						hit += 1
 					

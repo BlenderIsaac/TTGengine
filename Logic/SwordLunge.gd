@@ -55,7 +55,7 @@ func exclusive_physics(_delta):
 							opponent.take_knockback(Vector3(0, 0, -knockback).rotated(Vector3.UP, C.get_node("Mesh").rotation.y))
 						
 						if opponent.has_method("take_damage"):
-							opponent.take_damage(1, C)
+							opponent.take_damage(f.Damage.new(1, C))
 							$"../Sword".in_lightsaber.erase(opponent)
 		
 		# If we have hit the ground play LungeHit and queue base so we know when its over

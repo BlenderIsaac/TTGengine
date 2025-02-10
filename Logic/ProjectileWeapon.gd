@@ -101,7 +101,7 @@ func reset_cooldown():
 func reset():
 	Extras.free()
 
-func shoot(rot, target):
+func shoot(rot, target, iframes=0.2):
 	
 	if anim.current_animation == our_prefix+"Idleloop":
 		anim.play(our_prefix+"Shoot")
@@ -110,16 +110,17 @@ func shoot(rot, target):
 	
 	audio_player.play("Shoot")
 	
-	spawn_bullet(rot, target)
+	spawn_bullet(rot, target, iframes)
 	reset_cooldown()
 
 
 var bullet_splat_color = "ff3224"
-func spawn_bullet(rot, target):
+func spawn_bullet(rot, target, iframes=0.2):
 	var origination = get_gun_tip()
 	
 	var new_bullet = generate_bullet_scene()
 	C.get_parent().add_child(new_bullet)
+	new_bullet.iframes = iframes
 	new_bullet.rotation = rot
 	new_bullet.position = origination
 	new_bullet.who_shot_me = C
@@ -172,7 +173,7 @@ func can_shoot():
 	return false
 
 
-func test_shoot():
+func test_shoot(iframes=0.2):
 	
 	var opponent = find_opponent()
 	var rot = Vector3(0, C.mesh_angle_to+PI, 0)
@@ -180,8 +181,7 @@ func test_shoot():
 	if opponent:
 		rot = get_gun_rot_to_char(opponent)
 	
-	shoot(rot, opponent)
-
+	shoot(rot, opponent, iframes)
 
 
 func get_rot_to_char(c):

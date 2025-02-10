@@ -281,6 +281,17 @@ func generate_gltf(path):
 	
 	return node
 
+class Damage:
+	var amount = 1
+	var from = null
+	var iframes = 0.2
+	
+	func _init(Amount=1, From=null, IFrames=0.2):
+		amount = Amount
+		from = From
+		iframes = IFrames
+
+
 func is_object_valid(obj):
 	if obj == null:
 		return false

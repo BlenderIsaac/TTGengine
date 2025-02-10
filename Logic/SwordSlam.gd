@@ -44,7 +44,7 @@ func exclusive_physics(_delta):
 							
 							if opponent.has_method("take_damage"):
 								if opponent.position.distance_to(C.position) < slam_range:
-									opponent.take_damage(1, C)
+									opponent.take_damage(f.Damage.new(1, C))
 			
 			audio_player.play("SaberSlam")
 			anim.play("SlamHit", 0)
@@ -91,15 +91,13 @@ func initiate():
 	C.char_vel.y = slam_jumpspeed*C.var_scale
 
 
-func exclusive_damage(_amount, _who_from=null):
+func exclusive_damage(damage:f.Damage):
 	
-	if _who_from == null:
-		C.generic_damage(_amount)
+	if damage.from == null:
+		C.generic_damage(damage.amount)
 	
 	elif not C.is_on_floor():
-		if _who_from.is_in_group("projectile"):
-			_who_from.deflect(C)
+		if damage.from.is_in_group("projectile"):
+			damage.from.deflect(C)
 	else:
-		C.generic_damage(_amount)
-
-
+		C.generic_damage(damage.amount)
