@@ -31,7 +31,7 @@ var footsteps_played = 0
 
 # Set the correct navigational layer values
 func _ready():
-	last_move_dir = mesh.transform.basis.z
+	last_move_dir = -mesh.transform.basis.z
 	#facing_move_dir = mesh.transform.basis.z
 	
 	move_delay_timer = move_delay
