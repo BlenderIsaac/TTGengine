@@ -28,8 +28,8 @@ func take_knockback(amount, _who_from=null):
 	knock_vel = amount
 
 var health = 1
-func take_damage(value, _who_from=null):
-	health -= value
+func take_damage(damage:f.Damage):
+	health -= damage.amount
 	if health <= 0:
 		die()
 

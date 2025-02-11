@@ -92,8 +92,9 @@ func _physics_process(delta):
 							collider.generic_knockback(Vector3(0, 0, -1).rotated(Vector3.UP, col.get_angle()))
 						
 						elif col.get_angle() == 0:
+							#if not box.is_on_floor():
 							if collider.has_method("take_damage"):
-								collider.take_damage(10, self)
+								collider.take_damage(f.Damage.new(10, self))
 			
 			
 			

@@ -632,7 +632,6 @@ func warn(type, from_list):
 
 func standing_on(group):
 	
-	
 	if !tailcast.is_colliding():
 		return false
 	

@@ -658,7 +658,7 @@ func FreePlaySelect_tick():
 				hide_element("FreePlaySelect")
 				hide_element("CharacterList")
 				
-				$ModeSelect/CenterPause/VBoxPause.get_node(mode_selected).grab_focus()
+				$ModeSelect.v_box.get_node(mode_selected).grab_focus()
 			
 			if key_just_pressed("Up", player_number):
 				vec.y -= 1
@@ -1093,7 +1093,7 @@ func load_mode_select(mod_name, level_name):
 	
 	pause_owner = null
 	
-	$ModeSelect/CenterPause/VBoxPause/StoryMode.grab_focus()
+	$ModeSelect.Buttons[0].grab_focus()
 
 
 func Button_StoryMode():

@@ -6,9 +6,12 @@ extends "res://Logic/LOGIC.gd"
 var box_push_speed = 2.0
 var valid_logics = ["Base", "PushBox"]
 
+#var push_vel = 0.1
+
 func inclusive_physics(_delta):
 	
 	current_box = null
+	#var pushed = false
 	
 	if C.is_on_floor() and valid_logics.has(C.movement_state):
 		if !C.AI:
@@ -17,36 +20,47 @@ func inclusive_physics(_delta):
 				var normal = collision.get_normal(0)
 				var collider = collision.get_collider(0)
 				
-				
 				if collider:
 					if collider.is_in_group("Pushable"):
 						
-						var direction = "none"
+						#var direction = "none"
 						
-						match normal:
-							Vector3(0, 0, 1):
-								direction = "north"
-							Vector3(0, 0, -1):
-								direction = "south"
-							Vector3(1, 0, 0):
-								direction = "west"
-							Vector3(-1, 0, 0):
-								direction = "east"
+						DebugDraw2D.set_text("normal"+str(i), normal)#.draw_arrow(C.position, C.position+normal)
 						
-						if !direction == "none":
-							var vel = -normal*box_push_speed/collider.get_meta("weight")
-							collider.velocity.x = vel.x
-							collider.velocity.z = vel.z
+						#match normal:
+							#Vector3(0, 0, 1):
+								#direction = "north"
+							#Vector3(0, 0, -1):
+								#direction = "south"
+							#Vector3(1, 0, 0):
+								#direction = "west"
+							#Vector3(-1, 0, 0):
+								#direction = "east"
+						
+						var norm2d = f.to_vec2(normal).normalized()
+						var norm3d = Vector3(norm2d.x, 0, norm2d.y)
+						
+						if norm2d != Vector2():#!direction == "none":
+							#push_vel = lerp(push_vel, 1.0, _delta)
+							#pushed = true
+							var vel = -norm3d*box_push_speed/collider.get_meta("weight")
+							collider.velocity.x = vel.x#*push_vel
+							collider.velocity.z = vel.z#*push_vel
 							
 							current_box = collider
-							push_normal = normal
+							push_normal = norm3d
 							
 							if !C.movement_state == "PushBox":
 								C.set_movement_state("PushBox")
+	
+	#if !C.AI:print(pushed)
+	#if pushed == false:
+		#push_vel = 0.1
 
 
 func initiate():
 	C.weapon_prefix = ""
+	#push_vel = 0.1
 
 
 var current_box = null
@@ -57,7 +71,7 @@ func exclusive_physics(_delta):
 		end()
 	else:
 		var move_dir = C.get_move_dir()
-		C.velocity = -push_normal*box_push_speed*current_box.get_meta("weight")*5
+		C.velocity = -push_normal*box_push_speed*current_box.get_meta("weight")*5#*push_vel
 		C.move_and_slide()
 		
 		anim.play("Pushloop", 0.1)
@@ -82,5 +96,3 @@ func exclusive_physics(_delta):
 func end():
 	C.reset_movement_state()
 	anim.play("Idleloop", .1)
-
-

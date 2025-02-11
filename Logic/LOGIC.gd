@@ -18,15 +18,19 @@ func logic_name():
 @onready var nav_agent:NavigationAgent3D
 @onready var var_scale
 @onready var base_state
+@onready var tail
+@onready var tailcast
 
-func establish_connections(char):
-	C = char
+func establish_connections(c):
+	C = c
 	audio_player = C.get_node("AudioPlayer")
 	mesh = C.get_node("Mesh")
 	anim = mesh.get_node("AnimationPlayer")
 	nav_agent = C.get_node("Agent")
 	var_scale = C.var_scale
 	base_state = C.get_base_movement_state()
+	tail = C.get_node("Tail")
+	tailcast = C.get_node("TailCast")
 
 #func exclusive_physics(_delta):
 #	pass

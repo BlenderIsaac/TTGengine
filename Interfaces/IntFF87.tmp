@@ -1385,6 +1385,47 @@ patch_margin_top = 30
 patch_margin_right = 30
 patch_margin_bottom = 30
 
+[node name="CenterPause" type="CenterContainer" parent="ModeSelect"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -85.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxPause" type="VBoxContainer" parent="ModeSelect/CenterPause"]
+layout_mode = 2
+theme_override_constants/separation = -2
+alignment = 1
+
+[node name="StoryMode" type="Button" parent="ModeSelect/CenterPause/VBoxPause"]
+layout_mode = 2
+focus_neighbor_top = NodePath("../SuperFreePlay")
+focus_neighbor_bottom = NodePath("../FreePlay")
+theme_override_constants/outline_size = 14
+theme_override_font_sizes/font_size = 52
+text = "Story Mode"
+flat = true
+
+[node name="FreePlay" type="Button" parent="ModeSelect/CenterPause/VBoxPause"]
+layout_mode = 2
+focus_neighbor_top = NodePath("../StoryMode")
+focus_neighbor_bottom = NodePath("../SuperFreePlay")
+theme_override_constants/outline_size = 14
+theme_override_font_sizes/font_size = 52
+text = "Free Play"
+flat = true
+
+[node name="SuperFreePlay" type="Button" parent="ModeSelect/CenterPause/VBoxPause"]
+layout_mode = 2
+focus_neighbor_top = NodePath("../FreePlay")
+focus_neighbor_bottom = NodePath("../StoryMode")
+theme_override_constants/outline_size = 14
+theme_override_font_sizes/font_size = 52
+text = "Super Free Play"
+flat = true
+
 [node name="Pause" type="Control" parent="."]
 visible = false
 layout_mode = 1
@@ -2219,7 +2260,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
 metadata/_edit_lock_ = true
 
 [node name="MiddlePos" type="HBoxContainer" parent="Minikits"]
@@ -2229,18 +2269,15 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
 alignment = 1
 metadata/_edit_lock_ = true
 
 [node name="BottomPos" type="VBoxContainer" parent="Minikits/MiddlePos"]
 layout_mode = 2
-mouse_filter = 2
 alignment = 2
 
 [node name="Alignment" type="Control" parent="Minikits/MiddlePos/BottomPos"]
 layout_mode = 2
-mouse_filter = 2
 
 [node name="Scaler" type="Node2D" parent="Minikits/MiddlePos/BottomPos/Alignment"]
 scale = Vector2(0.638, 0.638)
@@ -3112,6 +3149,9 @@ offset_right = 40.0
 offset_bottom = 47.0
 scale = Vector2(0.999586, 0.99911)
 
+[connection signal="pressed" from="ModeSelect/CenterPause/VBoxPause/StoryMode" to="." method="Button_StoryMode"]
+[connection signal="pressed" from="ModeSelect/CenterPause/VBoxPause/FreePlay" to="." method="Button_FreePlay"]
+[connection signal="pressed" from="ModeSelect/CenterPause/VBoxPause/SuperFreePlay" to="." method="Button_SuperFreePlay"]
 [connection signal="pressed" from="Pause/Center/Main Pause/DropOut" to="." method="Button_DropOut"]
 [connection signal="pressed" from="Pause/Center/Main Pause/Resume" to="." method="Button_Resume"]
 [connection signal="pressed" from="Pause/Center/Main Pause/ControlSetup" to="." method="Button_ControlSetup"]
