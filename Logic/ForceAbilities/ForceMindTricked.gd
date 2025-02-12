@@ -13,10 +13,10 @@ func initiate():
 	current_length = 0.0
 	base_state.freeze()
 
-func exclusive_damage(value, _who_from=null):
+func exclusive_damage(damage:f.Damage):
 	anim.play(C.weapon_prefix+"Idleloop", 0.2)
 	C.reset_movement_state()
-	C.generic_damage(value)
+	C.generic_damage(damage.amount)
 
 func exclusive_physics(_delta):
 	if opponent and !opponent.dead and is_instance_valid(opponent):

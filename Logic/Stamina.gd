@@ -139,10 +139,10 @@ func stagger():
 	C.set_movement_state("Stamina")
 
 
-func exclusive_damage(value, _who_from):
+func exclusive_damage(damage:f.Damage):
 	
-	if value > 0:
-		damage_taken += value
+	if damage.amount > 0:
+		damage_taken += damage.amount
 		
 		if damage_taken >= max_damage_during_stagger:
 			
@@ -152,7 +152,7 @@ func exclusive_damage(value, _who_from):
 			C.reset_movement_state()
 			anim.play(C.weapon_prefix+"Idleloop", .3)
 	
-	C.generic_damage(value)
+	C.generic_damage(damage.amount, damage.iframes)
 
 
 var states_cant_regen = ["SwordBlock", "Stamina"]

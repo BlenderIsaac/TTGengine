@@ -106,7 +106,6 @@ func should_slide():
 	#CharacterBody3D.new().get_last_slide_collision()
 	
 	var ray = false
-	var tail = C.get_node("Tail")
 	var tail_range = 2
 	
 	tail.force_raycast_update()

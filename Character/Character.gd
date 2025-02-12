@@ -5,7 +5,7 @@ extends CharacterBody3D
 
 # Some references
 @onready var anim = $Mesh/AnimationPlayer
-@onready var nav_agent = $Agent
+@onready var nav_agent:NavigationAgent3D = $Agent
 @onready var modulate_anim = $Modulation
 @onready var audio = $AudioPlayer
 @onready var tail:RayCast3D = $Tail
@@ -156,8 +156,11 @@ var buttons_pressed_last_frame = []
 var PHYSkeys_pressed_last_frame = []
 var PHYSbuttons_pressed_last_frame = []
 
+# keys that we have disabled until they are released and re-pressed
+var keys_unconscious = []
+
 # These are the keys that can be used with key_just_pressed and key_just_unpressed
-var keys_pressed_checking = ["Fight", "Jump", "Pause", "ChangeLeft", "ChangeRight", "Tag", "Special"]
+#var keys_pressed_checking = ["Fight", "Jump", "Pause", "ChangeLeft", "ChangeRight", "Tag", "Special"]
 
 # This is the history of where we can respawn
 var respawn_history = []
@@ -383,15 +386,19 @@ func _process(_delta):
 	
 	
 	# make sure this is at the bottom of the _process(delta) function.
-	for key_checked in keys_pressed_checking:
+	for key_checked in keys.keys():
 		
 		# KEYBOARD
 		var has_key = keys_pressed_last_frame.has(key_checked)
 		
-		if key_press(key_checked, "keyboard"):
+		if key_press(key_checked, "keyboard", true):
 			if not has_key:
 				keys_pressed_last_frame.append(key_checked)
 		else:
+			
+			if key_checked in keys_unconscious:
+				keys_unconscious.erase(key_checked)
+			
 			if has_key:
 				keys_pressed_last_frame.erase(key_checked)
 		
@@ -488,7 +495,7 @@ func _physics_process(_delta):
 						logic.exclusive_physics(_delta)
 	
 	# The physics version of keys_just_pressed/unpressed
-	for key_checked in keys_pressed_checking:
+	for key_checked in keys.keys():
 		
 		# KEYBOARD
 		var has_key = PHYSkeys_pressed_last_frame.has(key_checked)
@@ -571,6 +578,8 @@ func setup_keys():
 	# Update the HUD
 	update_HUD()
 
+func knock_out_key(key):
+	keys_unconscious.append(key)
 
 func dispose_audio_player():
 	var AudioPlayer = $AudioPlayer
@@ -1141,6 +1150,9 @@ func get_logic(state):
 
 # This checks whether a movement state exists - if it doesn't it returns an error
 func logic_exists(state):
+	if state == null:
+		return false
+	
 	if get_node_or_null("Logic/"+state):
 		return true
 	print("invalid movement state: "+state)
@@ -1153,10 +1165,14 @@ func get_movement_state():
 # This sets the movement state to a new state
 func set_movement_state(new_state):
 	
+	if logic_exists(movement_state):
+		if get_logic(movement_state).has_method("uninitiate"):
+			get_logic(movement_state).uninitiate()
+	
 	# first check if the movement state exists
 	if logic_exists(new_state):
-		# Then check if it is online - NOTE: online is not a used feature yet
-		if get_logic(new_state).online:
+		## Then check if it is online - NOTE: online is not a used feature yet
+		#if get_logic(new_state).online:
 			# Set the movement state to this new state
 			movement_state = new_state
 			# If the movement state has the method initiate(), initiate the movement state
@@ -1383,6 +1399,7 @@ func trigger_logics(function_name, variables=[]):
 			logic.call(function_name, variables)
 
 
+var velocity_compute_obstacle = Vector3()
 # AI function that gets the current position of our target
 # We don't do this every frame to save on lag
 func _on_target_update():
@@ -1404,12 +1421,51 @@ func _on_target_update():
 	
 	# ask the current general ai logic something maybe
 
+func velocity_computed(safe_velocity:Vector3):
+	velocity_compute_obstacle = safe_velocity
 
 # a function that simply returns the distance to the current target
 # It's so simple that I might remove it in future
 func get_distance_to_target():
 	return target.distance_to(global_position)
 
+var last_location = Vector3()
+var next_location = Vector3()
+func get_ai_direction(delta):
+	var direction = Vector2()
+	
+	if nav_agent.is_target_reachable() and not nav_agent.is_target_reached():
+		
+		if not next_location == nav_agent.get_next_path_position():
+			last_location = next_location
+		
+		next_location = nav_agent.get_next_path_position()
+		
+		direction = f.to_vec2(global_position).direction_to(f.to_vec2(next_location))
+	
+	var dodge_left:Vector3 = velocity_compute_obstacle.rotated(Vector3(0, 1, 0), PI/2)
+	var dodge_right:Vector3 = velocity_compute_obstacle.rotated(Vector3(0, 1, 0), -PI/2)
+	
+	var dodge = dodge_left
+	var dir_n = Vector3(direction.x, 0, direction.y).normalized()
+	
+	if dodge_right.normalized().dot(dir_n) > 0:
+		dodge = dodge_right
+	
+	if velocity_compute_obstacle.normalized().dot(dir_n) > 0:
+		dodge = dir_n
+	
+	var movement = (direction + f.to_vec2(dodge)).normalized()
+	
+	var global_pos2 = f.to_vec2(global_position)
+	var target_pos2 = f.to_vec2(next_location)
+	var amount_moved_each_frame = 1
+	var dist_to_target = (global_pos2.distance_to(target_pos2)/delta)/amount_moved_each_frame
+	
+	if dist_to_target <= 1:
+		movement *= dist_to_target
+	
+	return Vector3(movement.x, 0, movement.y)
 
 # These variables are to do with tagging
 var tag_range = 2 # The distance from a character we must at least be in order to tag them
@@ -2149,13 +2205,16 @@ func key_just_unpressed(key, override=null):
 	return false
 
 # Basic function to just get when a key is pressed
-func key_press(key, override=null):
+func key_press(key, override=null, override_unconscious=false):
 	
 	var local_control_type = control_type
 	if override != null:
 		local_control_type = override
 	
 	if local_control_type == "keyboard":
+		if not override_unconscious and keys_unconscious.has(key):
+			return false
+		
 		if Input.is_key_pressed(OS.find_keycode_from_string(keys.get(key))):
 			return true
 	elif local_control_type == "controller":

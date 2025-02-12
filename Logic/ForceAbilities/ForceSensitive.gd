@@ -215,6 +215,8 @@ func exclusive_physics(_delta):
 							C.get_logic(force_ability).force_target = force_target
 							C.set_movement_state(force_ability)
 							
+							C.knock_out_key(key)
+							
 							force_delay = force_delay_max
 						else:
 							if current_charge == 0.0:
@@ -230,6 +232,7 @@ func exclusive_physics(_delta):
 								if close_enough:
 									C.get_logic(force_ability).force_target = force_target
 									C.set_movement_state(force_ability)
+									C.knock_out_key(key)
 								else:
 									force_target = null
 								
@@ -333,6 +336,15 @@ func generic_check_force_validity(force_object):
 		return false
 	
 	return true
+
+
+#func uninitiate():
+	#for key in force_abilities.keys():
+		#
+		#if C.control_type == "keyboard":
+			#if C.key_press(key):
+				#C.knock_out_key(key)
+
 
 func is_force_valid(force_object):
 	
@@ -443,13 +455,13 @@ func patch_up_targets_anims(target, anims):
 			target.add_animation(animation.Name, l.get_load(anim_path))
 
 
-func exclusive_damage(_amount, _who_from=null):
+func exclusive_damage(damage:f.Damage):
 	# When damaged also remove our force target
 	C.get_logic("ForceSensitive").force_target = null
 	C.get_logic("ForceSensitive").force_delay = 0.0
 	
 	C.reset_movement_state()
-	C.generic_damage(_amount)
+	C.generic_damage(damage.amount)
 
 
 func generic_force_stuff(f_target, delta):

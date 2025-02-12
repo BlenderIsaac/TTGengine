@@ -54,9 +54,17 @@ visible = false
 mesh = SubResource("PrismMesh_h1qod")
 skeleton = NodePath("../..")
 
-[node name="NavigationAgent3D" type="NavigationAgent3D" parent="GameCam"]
+[node name="MoveCloser" type="NavigationAgent3D" parent="GameCam"]
 navigation_layers = 128
-height = 0.01
+debug_enabled = true
+debug_use_custom = true
+debug_path_custom_color = Color(1, 0, 1, 1)
+
+[node name="PullBack" type="NavigationAgent3D" parent="GameCam"]
+navigation_layers = 128
+debug_enabled = true
+debug_use_custom = true
+debug_path_custom_color = Color(0, 1, 1, 1)
 
 [node name="Camera3D" type="Camera3D" parent="."]
 process_mode = 3

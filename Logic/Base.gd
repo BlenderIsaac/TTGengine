@@ -243,8 +243,8 @@ func vector3to2(vector3):
 
 var chilling = true
 
-var last_location = Vector3()
-var next_location = Vector3()
+
+
 func ai(_delta):
 	
 	var max_distance = C.AI_max_distance
@@ -252,31 +252,18 @@ func ai(_delta):
 	if chilling == false:
 		max_distance = C.AI_desired_distance
 	
-	if C.target != null and C.get_distance_to_target() > max_distance:
-		
-		var direction = Vector3()
-		
-		if nav_agent.is_target_reachable() and not nav_agent.is_target_reached():
+	if C.target != null:
+		if C.get_distance_to_target() > max_distance:
 			
-			if not next_location == nav_agent.get_next_path_position():
-				last_location = next_location
+			var movement = C.get_ai_direction(_delta)
 			
-			next_location = nav_agent.get_next_path_position()
+			chilling = false
+			return movement
+		elif C.velocity_compute_obstacle != Vector3():
 			
-			direction = vector3to2(C.global_position).direction_to(vector3to2(next_location))
-		
-		var movement = direction.normalized()
-		
-		var global_pos2 = vector3to2(C.global_position)
-		var target_pos2 = vector3to2(next_location)
-		var amount_moved_each_frame = 1
-		var dist_to_target = (global_pos2.distance_to(target_pos2)/_delta)/amount_moved_each_frame
-		
-		if dist_to_target <= 1:
-			movement *= dist_to_target
-		
-		chilling = false
-		return Vector3(movement.x, 0, movement.y)
+			var vec2_compute = f.to_vec2(C.velocity_compute_obstacle).normalized()
+			
+			return Vector3(vec2_compute.x, 0, vec2_compute.y)
 	else:
 		chilling = true
 	

@@ -352,6 +352,33 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 								obj.props = props
 								obj.attr = attr
 								obj.gltf = gltf
+							elif obj_type == "NAVOID":
+								var obstacle = NavigationObstacle3D.new()
+								
+								if props.TYPE == "STATIC":
+									obstacle.avoidance_enabled = false
+									obstacle.affect_navigation_mesh = true
+									obstacle.carve_navigation_mesh = props.EXACT
+									obstacle.height = float(props.HEIGHT)
+									
+									var obj_mesh:Mesh = obj.mesh
+									var vertex_list = obj_mesh.surface_get_arrays(0)[0]
+									
+									#var debug_vertex_list = PackedVector3Array()
+									#for v in vertex_list:
+										#debug_vertex_list.append(obj.transform * v)
+									#DebugDraw3D.draw_point_path(debug_vertex_list, DebugDraw3D.POINT_TYPE_SQUARE, 0.25, Color.RED, Color.ORANGE, 1000.0)
+									
+									obstacle.vertices = vertex_list
+								
+								
+								elif props.TYPE == "DYNAMIC":
+									obstacle.radius = obj.scale.x
+								
+								obj.hide()
+								obstacle.transform = obj.transform
+								Nav.add_child(obstacle)
+								
 							elif obj_type == "N":
 								obj.hide()
 				"SCENE":
