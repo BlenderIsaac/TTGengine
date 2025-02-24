@@ -56,13 +56,11 @@ skeleton = NodePath("../..")
 
 [node name="MoveCloser" type="NavigationAgent3D" parent="GameCam"]
 navigation_layers = 128
-debug_enabled = true
 debug_use_custom = true
 debug_path_custom_color = Color(1, 0, 1, 1)
 
 [node name="PullBack" type="NavigationAgent3D" parent="GameCam"]
 navigation_layers = 128
-debug_enabled = true
 debug_use_custom = true
 debug_path_custom_color = Color(0, 1, 1, 1)
 
