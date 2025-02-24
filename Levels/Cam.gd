@@ -28,11 +28,13 @@ var begin_transform_override = false:
 		begin_transform_override = value
 		begin_transform_delay = 2.0
 
-@onready var target_agent = $NavigationAgent3D
+@onready var target_agent = $MoveCloser
+@onready var pull_back = $PullBack
+
+var camera_velocity = Vector3()
+var direction = Vector3()
 
 func _process(_delta):
-	
-	
 	
 	if start_timer == 1:
 		if begin_transform_override == false:
@@ -138,33 +140,108 @@ func _process(_delta):
 				
 				var new_transform = global_transform.looking_at(avg, Vector3.UP)
 				global_transform = global_transform.interpolate_with(new_transform, 4 * _delta)
-	
 	elif move_type == "Navigation" and targets.size() > 0 and begin_transform_delay <= 0:
 		var avg = get_target_avg_pos()
 		var pos = get_special_avg_pos()
 		
-		#var vec2_dist = f.to_vec2(global_position).distance_to(f.to_vec2(pos))
-		var final_vec2_dist = f.to_vec2(global_position).distance_to(f.to_vec2(target_agent.get_final_position()))
+		var dist2d = f.to_vec2(global_position).distance_to(f.to_vec2(target_agent.get_final_position()))
 		
+		pos.y = position.y
 		target_agent.target_position = Vector3(pos)
 		
-		var min_dist = 5.0
-		#var pushaway_dist = 2.0
+		
+		var backaway = basis.z
+		backaway.y = 0
+		backaway = position+(backaway.normalized()*5)
+		
+		pull_back.target_position = backaway
+		
+		if !current:
+			DebugDraw3D.draw_position(Transform3D(Basis(), pos), Color.RED)
+			DebugDraw3D.draw_position(Transform3D(Basis(), backaway), Color.RED)
+			DebugDraw3D.draw_position(Transform3D(Basis(), position), Color.ORANGE)
+			DebugDraw3D.draw_camera_frustum(self, Color.GREEN)
+		
+		var target = Vector3()
+		
+		DebugDraw2D.set_text("Distance 2D", dist2d)
+		
+		var follow_dist = 5.0
+		var back_off_dist = 3.0
+		var accel = 0.0001
+		
+		var accel2 = 0.1
+		
+		DebugDraw2D.set_text("Move", "Stay")
+		DebugDraw2D.set_text("Camera Velocity", camera_velocity)
+		
+		
+		#DebugDraw3D.draw_position(Transform3D(Basis(), position), Color.RED, 3.0)
+		
+		DebugDraw3D.draw_sphere(target_agent.get_final_position(), follow_dist)
+		var velocity_to = Vector3()
+		
+		if dist2d > follow_dist:
+			DebugDraw2D.set_text("Move", "Follow!")
+			camera_velocity += -(position-target_agent.get_next_path_position()).normalized()*accel*dist2d
+			
+			velocity_to = -(position-target_agent.get_next_path_position())*accel2#*dist2d
+		elif dist2d < back_off_dist:
+			DebugDraw2D.set_text("Move", "Back Off, Tony!")
+			camera_velocity += -(position-pull_back.get_next_path_position()).normalized()*accel*dist2d
+			
+			velocity_to = -(position-pull_back.get_next_path_position()).normalized()*accel2#*dist2d
+		else:
+			camera_velocity = Vector3()#camera_velocity.lerp(Vector3(), accel*_delta*60)
+			velocity_to = Vector3()
+		
+		#camera_velocity = Vector3()
+		
+		global_position += velocity_to
+		#global_position += camera_velocity
+		movement_to = 1.0
+		#var min_dist = 5.0
+		#var pushaway_dist = 4.0
+		
+		#var should_move = false
 		
 		#if final_vec2_dist < pushaway_dist:
-			#target_agent.target_position = Vector3(pos) + Vector3(0.0, 0, 0).rotated(Vector3.UP, rotation.z)
-			#min_dist = pushaway_dist
 		
-		if final_vec2_dist > min_dist:
+		
+		#var move_pos = Vector3()
+		#DebugDraw2D.set_text("Pushing", false)
+		#if final_vec2_dist < pushaway_dist:
+			#DebugDraw2D.set_text("Pushing", true)
 			
-			var next_pos = target_agent.get_next_path_position() + Vector3(0, -0.3, 0)
+		#	var pull_back_pos = pull_back.get_next_path_position()# + Vector3(0, -0.3, 0)
+		#	var back_vec2_dist = f.to_vec2(global_position).distance_to(f.to_vec2(pull_back.get_final_position()))
 			
-			if final_vec2_dist > 0.2:
-				movement_to = 1.0
-				var speed = (final_vec2_dist-min_dist)
-				global_position += (next_pos-global_position).normalized()*minf(speed/30, 3.0)*movement_at
-			else:
-				movement_to = 0.0
+		#	pull_back.target_position = backaway
+			
+		#	var speed = (back_vec2_dist-pushaway_dist)
+			#DebugDraw2D.set_text("speed", speed)
+			#DebugDraw3D.draw_position(Transform3D(Basis(), pull_back_pos), Color.BLUE)
+			
+		#	move_pos += (pull_back_pos-global_position).normalized()*minf(speed/30, 3.0)
+		
+		
+		#if final_vec2_dist > min_dist:
+			
+		#	var next_pos = target_agent.get_next_path_position()# + Vector3(0, -0.3, 0)
+			
+		#	var speed = (final_vec2_dist-min_dist)
+		#	move_pos += (next_pos-global_position).normalized()*minf(speed/30, 3.0)#(next_pos-global_position).normalized()*minf(speed/30, 3.0)*movement_at
+		
+		
+		#DebugDraw2D.set_text("Move Pos", move_pos.length())
+		#DebugDraw2D.set_text("Movement To", movement_to)
+		#DebugDraw2D.set_text("Movement At", movement_at)
+		#if move_pos.length() > 0.001:
+		#	movement_to = 1.0
+		#else:
+		#	movement_to = 0.0
+		
+		#global_position += move_pos#*movement_at
 		
 		#elif final_vec2_dist < 3.0:
 			#var next_pos = target_agent.get_next_path_position() + Vector3(0, -0.3, 0)
@@ -187,6 +264,12 @@ func _process(_delta):
 	
 	start_timer += 1
 
+func path_length(vector_array):
+	var path_length = 0
+	for vector in vector_array:
+		path_length += vector.length()
+	
+	return path_length
 
 func snap():
 	
