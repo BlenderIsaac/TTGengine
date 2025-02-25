@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://3ix1fp3sllsx"]
+[gd_scene load_steps=11 format=3 uid="uid://3ix1fp3sllsx"]
 
 [ext_resource type="Script" path="res://Levels/LevelGeneratorTTGL.gd" id="1_qvxlj"]
 [ext_resource type="Script" path="res://Levels/Cam.gd" id="2_mq7dq"]
@@ -11,6 +11,9 @@
 
 [sub_resource type="PrismMesh" id="PrismMesh_h1qod"]
 size = Vector3(0.12, 1.47, 0.08)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_q7nh5"]
+radius = 0.186708
 
 [node name="Level" type="Node3D" groups=["LEVELROOT"]]
 process_mode = 1
@@ -63,6 +66,12 @@ debug_path_custom_color = Color(1, 0, 1, 1)
 navigation_layers = 128
 debug_use_custom = true
 debug_path_custom_color = Color(0, 1, 1, 1)
+
+[node name="Collision" type="CharacterBody3D" parent="GameCam"]
+top_level = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GameCam/Collision"]
+shape = SubResource("SphereShape3D_q7nh5")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 process_mode = 3

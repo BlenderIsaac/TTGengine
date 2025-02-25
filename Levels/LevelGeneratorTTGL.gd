@@ -591,7 +591,7 @@ func generate_cam_nav(mesh):
 	var n = NavigationRegion3D.new()
 	
 	var source_data = NavigationMeshSourceGeometryData3D.new()
-	source_data.add_mesh(mesh, Transform3D())
+	source_data.add_mesh(mesh, Transform3D(Basis(), Vector3(0, -0.47, 0)))
 	
 	NavigationMeshGenerator.bake_from_source_geometry_data(nav_mesh, source_data)
 	

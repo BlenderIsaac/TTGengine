@@ -6,6 +6,7 @@ var targets = []
 var closest_point
 
 @export var distance = Vector3(0, 4, 6)#Vector3(0, 8, 12)#
+@onready var collision = $Collision
 
 @export var follow_path = false
 var cam_path = null
@@ -33,6 +34,9 @@ var begin_transform_override = false:
 
 var camera_velocity = Vector3()
 var direction = Vector3(0, 0, 0)
+
+func _ready():
+	collision.position = position
 
 func _process(_delta):
 	
@@ -149,6 +153,7 @@ func _process(_delta):
 		pos.y = position.y
 		target_agent.target_position = Vector3(pos)
 		
+		#DebugDraw3D.draw_position(Transform3D(Basis(), target_agent.get_final_position()))
 		
 		var backaway = basis.z
 		backaway.y = 0
@@ -182,10 +187,10 @@ func _process(_delta):
 		else:
 			velocity_to = Vector3()
 		
-		direction = direction.slerp(velocity_to, _delta*3)
+		direction = direction.lerp(velocity_to, _delta*3)
 		
 		var speed = 1
-		global_position += direction*speed
+		global_position += (direction*speed)#+Vector3(0, -0.04, 0)
 		movement_at = 1.0
 		
 		rotation.z = 0
@@ -199,6 +204,26 @@ func _process(_delta):
 	
 	
 	start_timer += 1
+
+func _physics_process(_delta):
+	#DebugDraw3D.draw_position(Transform3D(Basis(), position))
+	
+	collision.set_velocity((position-collision.position)/_delta)
+	var col:bool = collision.move_and_slide()
+	
+	DebugDraw2D.set_text("Collided", col)
+	
+	if col:
+		position = collision.position
+	
+	#if col:DebugDraw2D.set_text("Col Count", col.get_collision_count())
+	#if col and col.get_collision_count() > 0:
+		#DebugDraw3D.draw_arrow(position, position+col.get_position(0))
+		#DebugDraw2D.set_text("Col Angle", col.get_angle(0))
+		#DebugDraw2D.set_text("Col Pos", col.get_position())
+	
+	#DebugDraw3D.draw_arrow(position, position+col.get_angle(0))
+	#print(col)
 
 func get_path_length(vector_array):
 	var path_length = 0
