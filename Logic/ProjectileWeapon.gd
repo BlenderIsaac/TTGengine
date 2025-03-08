@@ -110,8 +110,11 @@ func shoot(rot, target, iframes=0.2):
 	
 	audio_player.play("Shoot")
 	
-	spawn_bullet(rot, target, iframes)
 	reset_cooldown()
+	
+	
+	await Engine.get_main_loop().process_frame
+	spawn_bullet(rot, target, iframes)
 
 
 var bullet_splat_color = "ff3224"

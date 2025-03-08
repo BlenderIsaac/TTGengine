@@ -253,7 +253,12 @@ func ai(_delta):
 		max_distance = C.AI_desired_distance
 	
 	if C.target != null:
-		if C.get_distance_to_target() > max_distance:
+		var last_location = C.nav_agent.get_final_position()
+		var sqrd_dist = f.to_vec2(global_position).distance_squared_to(f.to_vec2(last_location))
+		
+		#DebugDraw2D.set_text("Squared Distance", sqrd_dist)
+		
+		if sqrd_dist > max_distance*max_distance:
 			
 			var movement = C.get_ai_direction(_delta)
 			

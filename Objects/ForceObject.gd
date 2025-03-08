@@ -18,5 +18,10 @@ func extends_ready():
 	add_to_group("ForceObject")
 
 
+func _process(delta):
+	super._process(delta)
+	forcing = false
+
+
 func is_triggering():
 	return forcing

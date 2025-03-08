@@ -105,6 +105,7 @@ func Spawn_at_door(players_data, door_pos):
 	if "CamTransform" in door_pos:
 		$GameCam.begin_transform_override = true
 		$GameCam.transform = door_pos.CamTransform
+		$GameCam/Collision.position = door_pos.CamTransform.origin
 	
 	var player_index = 0
 	for player in player_spawns:

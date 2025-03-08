@@ -65,7 +65,7 @@ func _process(_delta):
 	
 	if !incremental:
 		if triggering:
-			print("yo")
+			#print("yo")
 			delay = untrigger_wait
 			if current_animation == "Default":
 				anim_play("Trigger")

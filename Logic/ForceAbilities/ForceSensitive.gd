@@ -3,7 +3,7 @@ extends "res://Logic/LOGIC.gd"
 var valid_logics = ["Base"]
 
 var force_delay = 0.0
-var force_delay_max = 0.5
+var force_delay_max = 5.5
 
 var force_target = null
 
@@ -152,6 +152,7 @@ func inclusive_physics(_delta):
 
 func initiate():
 	force_delay = 0.0
+
 
 var prev_key
 func exclusive_physics(_delta):

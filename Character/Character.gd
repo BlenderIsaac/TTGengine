@@ -208,13 +208,9 @@ func _ready():
 
 
 func _process(_delta):
+	#DebugDraw3D.draw_arrow(position, position+velocity)
 	
 	get_node("Mesh/Armature/Skeleton3D").position = -get_root_pos()
-	
-	#print("h ", get_node("Mesh/Armature/Skeleton3D").transform)
-	
-	#if player_number == 0:
-	#	print(hit_points, "/", max_hit_points)
 	
 	#Engine.time_scale = 1.0#0.1
 	#$Label3D.text = movement_state#anim.current_animation
@@ -1324,7 +1320,6 @@ func update_hearts():
 	var Parent = get_hud()
 	if Parent != null and player_number != -1:
 		var HeartParent = Parent.get_node("InGame/HeartParent")
-		#printt(hit_points, max_hit_points)
 		HeartParent.per_row = hearts_per_row
 		HeartParent.offset_x = heart_x_offset
 		
@@ -1442,6 +1437,8 @@ func get_ai_direction(delta):
 		next_location = nav_agent.get_next_path_position()
 		
 		direction = f.to_vec2(global_position).direction_to(f.to_vec2(next_location))
+		#DebugDraw3D.draw_arrow(position, position+Vector3(direction.x, 0, direction.y), Color.RED)
+		#DebugDraw3D.draw_arrow(position, position+Vector3(direction.x, 0, direction.y))
 	
 	var dodge_left:Vector3 = velocity_compute_obstacle.rotated(Vector3(0, 1, 0), PI/2)
 	var dodge_right:Vector3 = velocity_compute_obstacle.rotated(Vector3(0, 1, 0), -PI/2)
@@ -1461,6 +1458,8 @@ func get_ai_direction(delta):
 	var target_pos2 = f.to_vec2(next_location)
 	var amount_moved_each_frame = 1
 	var dist_to_target = (global_pos2.distance_to(target_pos2)/delta)/amount_moved_each_frame
+	
+	#DebugDraw2D.set_text("Distance To Target", dist_to_target)
 	
 	if dist_to_target <= 1:
 		movement *= dist_to_target
@@ -1757,7 +1756,6 @@ func change_character(data, c_path, mod): # TODO: We don't need c_path here once
 					$AudioPlayer.add_sound(f.get_data_path({path_type : sound}, origin_mod), key, origin_mod)
 		
 		#for title in data.Sounds.keys():
-			#print(title, data.Sounds.get(title))
 			## issue here
 			#$AudioPlayer.add_sound(data.Sounds.get(title), title, origin_mod)
 			## add config and randomization of sounds
@@ -2104,7 +2102,6 @@ func attach_softbody(model_path, attach_no, bone, materials, indices, offsets):
 	# put the nodes together and attach it to the right bone
 	get_node("Mesh/Armature/Skeleton3D").add_child(attacher)
 	attacher.bone_idx = bone
-	#print(attach.r)
 	#get_node("Mesh/Armature/Skeleton3D").add_child(node)
 	
 	# Set the right name
@@ -2118,6 +2115,7 @@ func attach_softbody(model_path, attach_no, bone, materials, indices, offsets):
 	#node.name = "SoftBody"
 	
 	node.set_collision_mask_value(2, true)
+	node.set_collision_layer_value(1, false)
 	
 	#$Mesh/Armature.hide()
 	
@@ -2136,16 +2134,10 @@ func attach_softbody(model_path, attach_no, bone, materials, indices, offsets):
 	node.top_level = true
 	get_node("Mesh").add_child(node)
 	
-	#Skeleton3D.new()
-	#print(get_node("Mesh/Armature/Skeleton3D").get_bone_pose(bone
-	
 	var bone_transform = get_node("Mesh/Armature/Skeleton3D").get_bone_global_pose(bone)
 	node.position = bone_transform.origin + position
 	node.rotation = bone_transform.basis.get_euler() + $Mesh.rotation + Vector3(0, PI, 0)
 	node.add_collision_exception_with(self)
-	#print("yo")
-	
-	
 	
 	# Append it to bits (so that we drop it when we die)
 	#bits.append("Mesh/Armature/Skeleton3D/"+attacher.name+"/Mesh")

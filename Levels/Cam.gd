@@ -167,8 +167,8 @@ func _process(_delta):
 			#DebugDraw3D.draw_position(Transform3D(Basis(), position), Color.ORANGE)
 			#DebugDraw3D.draw_camera_frustum(self, Color.GREEN)
 		
-		DebugDraw2D.set_text("Distance 2D", dist2d)
-		DebugDraw2D.set_text("Move", "Stay")
+		#DebugDraw2D.set_text("Distance 2D", dist2d)
+		#DebugDraw2D.set_text("Move", "Stay")
 		
 		var follow_dist = 5.0
 		var back_off_dist = 3.0
@@ -177,11 +177,11 @@ func _process(_delta):
 		var velocity_to = Vector3()
 		
 		if dist2d > follow_dist:
-			DebugDraw2D.set_text("Move", "Follow!")
+			#DebugDraw2D.set_text("Move", "Follow!")
 			
 			velocity_to = -(position-target_agent.get_next_path_position()).normalized()*accel
 		elif dist2d < back_off_dist:
-			DebugDraw2D.set_text("Move", "Back Off, Tony!")
+			#DebugDraw2D.set_text("Move", "Back Off, Tony!")
 			
 			velocity_to = -(position-pull_back.get_next_path_position()).normalized()*accel
 		else:
@@ -211,7 +211,7 @@ func _physics_process(_delta):
 	collision.set_velocity((position-collision.position)/_delta)
 	var col:bool = collision.move_and_slide()
 	
-	DebugDraw2D.set_text("Collided", col)
+	#DebugDraw2D.set_text("Collided", col)
 	
 	if col:
 		position = collision.position
@@ -237,6 +237,7 @@ func snap():
 	var target_average = get_special_avg_pos()
 	
 	global_position = (target_agent.get_final_position() + Vector3(0, -0.3, 0))+Vector3(0.01, 0, 0)
+	collision.global_position = global_position
 	
 	if f.to_vec2(global_position-target_average) == Vector2():
 		rotation.x = -PI/2

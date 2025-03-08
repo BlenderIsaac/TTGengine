@@ -82,19 +82,19 @@ func _physics_process(delta):
 				box.velocity.y -= gravity * delta
 			
 			#box = CharacterBody3D.new()
-			for col_idx in box.get_slide_collision_count():
-				var col = box.get_slide_collision(col_idx)
-				var collider = col.get_collider()
-				if collider.is_in_group("Pushaway"):
-					if collider is CharacterBody3D:
-						
-						if snapped(col.get_angle(), 0.0001) == snapped(PI/2, 0.0001):
-							collider.generic_knockback(Vector3(0, 0, -1).rotated(Vector3.UP, col.get_angle()))
-						
-						elif col.get_angle() == 0:
-							#if not box.is_on_floor():
-							if collider.has_method("take_damage"):
-								collider.take_damage(f.Damage.new(10, self))
+			#for col_idx in box.get_slide_collision_count():
+				#var col = box.get_slide_collision(col_idx)
+				#var collider = col.get_collider()
+				#if collider and collider.is_in_group("Pushaway"):
+					#if collider is CharacterBody3D:
+						#
+						#if snapped(col.get_angle(), 0.0001) == snapped(PI/2, 0.0001):
+							#collider.generic_knockback(Vector3(0, 0, -1).rotated(Vector3.UP, col.get_angle()))
+						#
+						#elif col.get_angle() == 0:
+							##if not box.is_on_floor():
+							#if collider.has_method("take_damage"):
+								#collider.take_damage(f.Damage.new(10, self))
 			
 			
 			

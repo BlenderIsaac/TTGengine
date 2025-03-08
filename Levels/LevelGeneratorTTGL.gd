@@ -21,6 +21,7 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 	team_spawns = []
 	
 	var Nav = NavigationRegion3D.new()
+	Nav.name = "NAV"
 	add_child(Nav)
 	
 	var static_body = StaticBody3D.new()
@@ -50,6 +51,7 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 	var anim_idx = 0
 	var kill_area_idx = 0
 	var cam_idx = 0
+	var navoid_idx = 0
 	
 	while !text.eof_reached():
 		
@@ -99,6 +101,7 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 							if cam_node:
 								$GameCam.begin_transform_override = true
 								$GameCam.transform = cam_node.transform
+								$GameCam/Collision.position = cam_node.position
 					#elif obj_type == "CMR_CRV":
 						#var camera_curve_path = gltf_path.trim_suffix(".glb") + "Curve" + array[1] + ".obj"
 						#
@@ -354,6 +357,8 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 								obj.gltf = gltf
 							elif obj_type == "NAVOID":
 								var obstacle = NavigationObstacle3D.new()
+								obstacle.name = "Navoid_" + str(navoid_idx)
+								navoid_idx += 1
 								
 								if props.TYPE == "STATIC":
 									obstacle.avoidance_enabled = false
@@ -371,8 +376,10 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 									
 									obstacle.vertices = vertex_list
 								
-								
 								elif props.TYPE == "DYNAMIC":
+									var remote_transform = RemoteTransform3D.new()
+									obj.add_child(remote_transform)
+									remote_transform.remote_path = NodePath("/root/Levels/Level/NAV/"+str(obstacle.name))
 									obstacle.radius = obj.scale.x
 								
 								obj.hide()
@@ -400,7 +407,7 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 							$Environment.environment.background_color = value
 						"DeathY":
 							death_height = float(value)
-					
+	
 	
 	text.close()
 	
@@ -603,6 +610,7 @@ func generate_cam_nav(mesh):
 func generate_nav(mesh):
 	
 	var nav_mesh = NavigationMesh.new()
+	#nav_mesh.cell_size = 0.05
 	var n = NavigationRegion3D.new()
 	
 	var source_data = NavigationMeshSourceGeometryData3D.new()

@@ -186,6 +186,7 @@ offset_top = 14.0
 offset_right = 208.0
 offset_bottom = 56.0
 text = "Ahsoka Show"
+metadata/_edit_lock_ = true
 
 [node name="Level" type="LineEdit" parent="."]
 layout_mode = 0
@@ -193,7 +194,8 @@ offset_left = 14.0
 offset_top = 56.0
 offset_right = 208.0
 offset_bottom = 98.0
-text = "RescueTheWitch"
+text = "Debe"
+metadata/_edit_lock_ = true
 
 [node name="Section" type="LineEdit" parent="."]
 layout_mode = 0
@@ -201,6 +203,7 @@ offset_left = 14.0
 offset_top = 98.0
 offset_right = 208.0
 offset_bottom = 140.0
+metadata/_edit_lock_ = true
 
 [node name="FreePlayCheck" type="CheckBox" parent="."]
 layout_mode = 0

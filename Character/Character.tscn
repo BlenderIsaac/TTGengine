@@ -1,11 +1,9 @@
-[gd_scene load_steps=13 format=3 uid="uid://bxapwt6p41rba"]
+[gd_scene load_steps=11 format=3 uid="uid://bxapwt6p41rba"]
 
 [ext_resource type="Script" path="res://Character/Character.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://5boy2nmhka18" path="res://Textures/Point.png" id="4_mwcyx"]
 [ext_resource type="AnimationLibrary" uid="uid://b5aamplbxewy4" path="res://Animations/FlashAnims/FlashAnims.res" id="5_17ga1"]
 [ext_resource type="PackedScene" uid="uid://b1h60hmsedkrs" path="res://Scripts/AudioPlayer.tscn" id="5_gg81l"]
-[ext_resource type="Texture2D" uid="uid://88sjrwmx8pn0" path="res://Textures/Bars/StaminaBar.png" id="6_t3rtw"]
-[ext_resource type="Texture2D" uid="uid://bc7lee8ix4701" path="res://Textures/Bars/EmptyBar.png" id="6_vnrrh"]
 
 [sub_resource type="Animation" id="Animation_1ot5x"]
 resource_name = "DropIn"
@@ -104,6 +102,8 @@ target_position = Vector3(0, -20, 0)
 [node name="Agent" type="NavigationAgent3D" parent="."]
 navigation_layers = 0
 avoidance_enabled = true
+debug_enabled = true
+debug_use_custom = true
 
 [node name="AgentTimer" type="Timer" parent="."]
 wait_time = 0.1
@@ -120,21 +120,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.14289, 0)
 billboard = 2
 
 [node name="AudioPlayer" parent="." instance=ExtResource("5_gg81l")]
-
-[node name="Sprite3D" type="Sprite3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.98066, 0)
-visible = false
-billboard = 1
-texture = ExtResource("6_vnrrh")
-region_enabled = true
-region_rect = Rect2(0, 0, 512, 56)
-
-[node name="Sprite3D2" type="Sprite3D" parent="."]
-visible = false
-billboard = 1
-render_priority = 1
-texture = ExtResource("6_t3rtw")
-region_enabled = true
 
 [connection signal="link_reached" from="Agent" to="." method="_on_agent_link_reached"]
 [connection signal="velocity_computed" from="Agent" to="." method="velocity_computed"]
