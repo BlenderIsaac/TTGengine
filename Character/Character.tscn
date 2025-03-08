@@ -1,6 +1,6 @@
 [gd_scene load_steps=11 format=3 uid="uid://bxapwt6p41rba"]
 
-[ext_resource type="Script" path="res://Character/Character.gd" id="1"]
+[ext_resource type="Script" uid="uid://b601rb8nwwjbu" path="res://Character/Character.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://5boy2nmhka18" path="res://Textures/Point.png" id="4_mwcyx"]
 [ext_resource type="AnimationLibrary" uid="uid://b5aamplbxewy4" path="res://Animations/FlashAnims/FlashAnims.res" id="5_17ga1"]
 [ext_resource type="PackedScene" uid="uid://b1h60hmsedkrs" path="res://Scripts/AudioPlayer.tscn" id="5_gg81l"]
@@ -38,8 +38,8 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_hckq3"]
 _data = {
-"DropIn": SubResource("Animation_1ot5x"),
-"RESET": SubResource("Animation_pnov4")
+&"DropIn": SubResource("Animation_1ot5x"),
+&"RESET": SubResource("Animation_pnov4")
 }
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hrxsp"]
@@ -70,8 +70,8 @@ flash_value = Vector4(1, 0, 0, 0)
 
 [node name="Modulation" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_hckq3"),
-"FlashAnims": ExtResource("5_17ga1")
+&"": SubResource("AnimationLibrary_hckq3"),
+&"FlashAnims": ExtResource("5_17ga1")
 }
 autoplay = "RESET"
 

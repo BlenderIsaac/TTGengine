@@ -1,7 +1,7 @@
 [gd_scene load_steps=10 format=3 uid="uid://bq7wxnjypj24o"]
 
 [ext_resource type="ArrayMesh" uid="uid://d0mblli3cjcwb" path="res://Models/TTG Heart Model.obj" id="1_1oxfo"]
-[ext_resource type="Script" path="res://Objects/HeartPickup.gd" id="1_g3w0h"]
+[ext_resource type="Script" uid="uid://bs2xnxes3me1u" path="res://Objects/HeartPickup.gd" id="1_g3w0h"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_oovjt"]
 bounce = 0.6
@@ -49,8 +49,8 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_54s0k"]
 _data = {
-"Die": SubResource("Animation_qs3k3"),
-"RESET": SubResource("Animation_p3yic")
+&"Die": SubResource("Animation_qs3k3"),
+&"RESET": SubResource("Animation_p3yic")
 }
 
 [node name="Heart" type="RigidBody3D"]

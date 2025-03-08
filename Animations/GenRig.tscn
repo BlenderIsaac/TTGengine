@@ -405,7 +405,7 @@ tracks/0/keys = PackedFloat32Array(0, 1, 0, 0, 0)
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_adpho"]
 _data = {
-"BASE": SubResource("Animation_npgnt")
+&"BASE": SubResource("Animation_npgnt")
 }
 
 [node name="Mesh" type="Node3D"]

@@ -55,12 +55,12 @@ render_priority = 0
 shader = SubResource("Shader_hi3jk")
 shader_parameter/start_angle = 3.14159
 shader_parameter/flip = true
+shader_parameter/texture_albedo = ExtResource("1_nlmd3")
 shader_parameter/point_size = 1.0
 shader_parameter/uv1_scale = Vector3(1, 1, 1)
 shader_parameter/uv1_offset = Vector3(0, 0, 0)
 shader_parameter/uv2_scale = Vector3(1, 1, 1)
 shader_parameter/uv2_offset = Vector3(0, 0, 0)
-shader_parameter/texture_albedo = ExtResource("1_nlmd3")
 
 [sub_resource type="Animation" id="Animation_i0cuy"]
 resource_name = "ForceTurnOn"
@@ -214,8 +214,8 @@ tracks/5/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_utstc"]
 _data = {
-"ForceTurnOn": SubResource("Animation_i0cuy"),
-"RESET": SubResource("Animation_idaci")
+&"ForceTurnOn": SubResource("Animation_i0cuy"),
+&"RESET": SubResource("Animation_idaci")
 }
 
 [node name="ForceOutline" type="Node3D"]

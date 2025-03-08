@@ -1,6 +1,6 @@
 [gd_scene load_steps=11 format=3 uid="uid://c3yeberagi4xp"]
 
-[ext_resource type="Script" path="res://TEMP/NightSisterLift.gd" id="1_4jyg6"]
+[ext_resource type="Script" uid="uid://elqfssumb3tm" path="res://TEMP/NightSisterLift.gd" id="1_4jyg6"]
 [ext_resource type="Texture2D" uid="uid://cj4ebgv7jgolj" path="res://Textures/circle_05.png" id="1_qfx4y"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pkgjs"]
@@ -17,18 +17,17 @@ material = SubResource("StandardMaterial3D_pkgjs")
 size = Vector2(0.1, 1)
 
 [sub_resource type="Curve" id="Curve_a8p8m"]
-min_value = -10.0
-max_value = 10.0
+_limits = [-10.0, 10.0, 0.0, 1.0]
 _data = [Vector2(0, 0), 1291.03, 0.0, 0, 0, Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 10), 0.0, 0.0, 0, 0]
 point_count = 3
 
 [sub_resource type="Curve" id="Curve_nsoe7"]
-max_value = 6.0
+_limits = [0.0, 6.0, 0.0, 1.0]
 _data = [Vector2(0, 4.47179), 0.0, 0.0, 0, 0, Vector2(0.117424, 1.77596), -4.61083, -4.61083, 0, 0, Vector2(1, 0), -1.44828, 0.0, 0, 0]
 point_count = 3
 
 [sub_resource type="Curve" id="Curve_gnqlk"]
-max_value = 2.0
+_limits = [0.0, 2.0, 0.0, 1.0]
 _data = [Vector2(0, 0.534125), 0.0, -0.164673, 0, 0, Vector2(0.215909, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -1.05247, 0.0, 0, 0]
 point_count = 3
 
@@ -46,8 +45,7 @@ material = SubResource("StandardMaterial3D_ocbp1")
 size = Vector2(0.353, 0.608)
 
 [sub_resource type="Curve" id="Curve_s1kwi"]
-min_value = -10.0
-max_value = 10.0
+_limits = [-10.0, 10.0, 0.0, 1.0]
 _data = [Vector2(0, 0), 1291.03, 0.0, 0, 0, Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 10), 0.0, 0.0, 0, 0]
 point_count = 3
 

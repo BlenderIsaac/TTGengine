@@ -1,6 +1,6 @@
 [gd_scene load_steps=85 format=4 uid="uid://n88dwj1t7pg7"]
 
-[ext_resource type="Script" path="res://Objects/BreakableObject.gd" id="1_rr1fu"]
+[ext_resource type="Script" uid="uid://bc4gdrx6bqie" path="res://Objects/BreakableObject.gd" id="1_rr1fu"]
 [ext_resource type="PackedScene" uid="uid://b1h60hmsedkrs" path="res://Scripts/AudioPlayer.tscn" id="2_atygc"]
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_00y5g"]

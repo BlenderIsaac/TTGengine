@@ -372,10 +372,10 @@ tracks/1/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_wfyhb"]
 _data = {
-"Default": SubResource("Animation_774vd"),
-"Off": SubResource("Animation_64lom"),
-"On": SubResource("Animation_2odl1"),
-"RESET": SubResource("Animation_vy3no")
+&"Default": SubResource("Animation_774vd"),
+&"Off": SubResource("Animation_64lom"),
+&"On": SubResource("Animation_2odl1"),
+&"RESET": SubResource("Animation_vy3no")
 }
 
 [node name="GoldBrick" type="Node2D"]

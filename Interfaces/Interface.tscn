@@ -1,6 +1,6 @@
 [gd_scene load_steps=70 format=3 uid="uid://dvgy5vxoqaq41"]
 
-[ext_resource type="Script" path="res://Interfaces/Interface.gd" id="1_0holg"]
+[ext_resource type="Script" uid="uid://bettupl6exqyd" path="res://Interfaces/Interface.gd" id="1_0holg"]
 [ext_resource type="Texture2D" uid="uid://ditscyjxgo1jd" path="res://Textures/select.png" id="3_di25h"]
 [ext_resource type="Texture2D" uid="uid://dwws1m5vpiyiw" path="res://Textures/mainmenudouble.png" id="5_5swlt"]
 [ext_resource type="Texture2D" uid="uid://dtvojk1wjrc6c" path="res://Textures/fullpausemenuTCS.png" id="6_7t5wm"]
@@ -12,10 +12,10 @@
 [ext_resource type="Texture2D" uid="uid://bibr5ta32vo4d" path="res://Textures/RedBack.png" id="9_tobt1"]
 [ext_resource type="Texture2D" uid="uid://b3xk0gylgait3" path="res://Textures/BlueBack.png" id="10_87k3c"]
 [ext_resource type="Theme" uid="uid://bkv0oj6en23yc" path="res://Interfaces/ButtonsTheme.tres" id="10_u2xjo"]
-[ext_resource type="Script" path="res://Interfaces/GeneratedInterface.gd" id="11_as76g"]
+[ext_resource type="Script" uid="uid://dvrqntj4x8ykj" path="res://Interfaces/GeneratedInterface.gd" id="11_as76g"]
 [ext_resource type="Texture2D" uid="uid://badk5hii0xgof" path="res://Textures/GreenBack.png" id="11_c2hfv"]
 [ext_resource type="Texture2D" uid="uid://6ediol0mp3qp" path="res://Textures/BrownBack.png" id="12_d0w3d"]
-[ext_resource type="Script" path="res://Interfaces/HeartGroup.gd" id="12_mrkh6"]
+[ext_resource type="Script" uid="uid://bjf0t5tkr6ei6" path="res://Interfaces/HeartGroup.gd" id="12_mrkh6"]
 [ext_resource type="PackedScene" uid="uid://s3e7ydia17e" path="res://Interfaces/minikit_building.tscn" id="19_g3ydy"]
 [ext_resource type="SpriteFrames" uid="uid://dwmabmgh5v2ni" path="res://Textures/HiResMinikit/minikit.tres" id="19_go61m"]
 [ext_resource type="Texture2D" uid="uid://df53q310suwco" path="res://Textures/HiResMinikit/Screenshot_3.png" id="19_nnllw"]
@@ -203,8 +203,8 @@ tracks/4/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_h7vso"]
 _data = {
-"PercJuice": SubResource("Animation_dp745"),
-"RESET": SubResource("Animation_y8sgr")
+&"PercJuice": SubResource("Animation_dp745"),
+&"RESET": SubResource("Animation_y8sgr")
 }
 
 [sub_resource type="LabelSettings" id="LabelSettings_n34f1"]
@@ -694,16 +694,16 @@ tracks/3/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_n14lr"]
 _data = {
-"CharacterUpdate": SubResource("Animation_0uxjd"),
-"CharacterUpdateFade": SubResource("Animation_xuheu"),
-"CharacterUpdateLoop": SubResource("Animation_hl3l0"),
-"CharacterUpdateReset": SubResource("Animation_45t7m"),
-"ContinueIn": SubResource("Animation_dunhk"),
-"ModeUnlocks": ExtResource("77_nwkkc"),
-"RESET": SubResource("Animation_caosc"),
-"StudTotalStart": SubResource("Animation_l8xbf"),
-"TrueJediEnd": SubResource("Animation_16kbd"),
-"TrueJediStart": SubResource("Animation_xccne")
+&"CharacterUpdate": SubResource("Animation_0uxjd"),
+&"CharacterUpdateFade": SubResource("Animation_xuheu"),
+&"CharacterUpdateLoop": SubResource("Animation_hl3l0"),
+&"CharacterUpdateReset": SubResource("Animation_45t7m"),
+&"ContinueIn": SubResource("Animation_dunhk"),
+&"ModeUnlocks": ExtResource("77_nwkkc"),
+&"RESET": SubResource("Animation_caosc"),
+&"StudTotalStart": SubResource("Animation_l8xbf"),
+&"TrueJediEnd": SubResource("Animation_16kbd"),
+&"TrueJediStart": SubResource("Animation_xccne")
 }
 
 [sub_resource type="SystemFont" id="SystemFont_5rq0x"]
@@ -851,9 +851,9 @@ tracks/3/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_0dw70"]
 _data = {
-"ComeIn": SubResource("Animation_7lyip"),
-"Gain": SubResource("Animation_pffwb"),
-"RESET": SubResource("Animation_3qoow")
+&"ComeIn": SubResource("Animation_7lyip"),
+&"Gain": SubResource("Animation_pffwb"),
+&"RESET": SubResource("Animation_3qoow")
 }
 
 [sub_resource type="LabelSettings" id="LabelSettings_q0ixu"]
@@ -920,8 +920,8 @@ tracks/1/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_wndtb"]
 _data = {
-"DropIn": SubResource("Animation_qhmf2"),
-"RESET": SubResource("Animation_o22tm")
+&"DropIn": SubResource("Animation_qhmf2"),
+&"RESET": SubResource("Animation_o22tm")
 }
 
 [sub_resource type="Animation" id="Animation_xchji"]
@@ -958,8 +958,8 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_fuvmu"]
 _data = {
-"DropInPromptFlash": SubResource("Animation_xchji"),
-"RESET": SubResource("Animation_3gihs")
+&"DropInPromptFlash": SubResource("Animation_xchji"),
+&"RESET": SubResource("Animation_3gihs")
 }
 
 [sub_resource type="LabelSettings" id="LabelSettings_unepc"]
@@ -1002,8 +1002,8 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_dkble"]
 _data = {
-"Juice": SubResource("Animation_caxej"),
-"RESET": SubResource("Animation_aywl0")
+&"Juice": SubResource("Animation_caxej"),
+&"RESET": SubResource("Animation_aywl0")
 }
 
 [sub_resource type="SystemFont" id="SystemFont_2jegm"]
@@ -1069,8 +1069,8 @@ tracks/1/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_two08"]
 _data = {
-"RESET": SubResource("Animation_14e2j"),
-"flash_loop": SubResource("Animation_0obeb")
+&"RESET": SubResource("Animation_14e2j"),
+&"flash_loop": SubResource("Animation_0obeb")
 }
 
 [node name="Interface" type="Control"]
@@ -2017,7 +2017,7 @@ metadata/_edit_lock_ = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="LevelEnd/TrueJedi/HBoxContainer/VBoxContainer/Percentage/AnimPerc"]
 libraries = {
-"": SubResource("AnimationLibrary_h7vso")
+&"": SubResource("AnimationLibrary_h7vso")
 }
 
 [node name="StudTotal" type="Control" parent="LevelEnd"]
@@ -2162,7 +2162,7 @@ flat = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="LevelEnd"]
 libraries = {
-"": SubResource("AnimationLibrary_n14lr")
+&"": SubResource("AnimationLibrary_n14lr")
 }
 autoplay = "RESET"
 
@@ -2282,7 +2282,7 @@ vertical_alignment = 1
 [node name="MinikitAnim" type="AnimationPlayer" parent="Minikits/MiddlePos/BottomPos/Alignment/Scaler"]
 root_node = NodePath("../..")
 libraries = {
-"": SubResource("AnimationLibrary_0dw70")
+&"": SubResource("AnimationLibrary_0dw70")
 }
 autoplay = "RESET"
 
@@ -2343,7 +2343,7 @@ label_settings = SubResource("LabelSettings_q0ixu")
 [node name="NameAnim" type="AnimationPlayer" parent="Icons/Player0HUD/Control/Icon"]
 root_node = NodePath("../..")
 libraries = {
-"": SubResource("AnimationLibrary_wndtb")
+&"": SubResource("AnimationLibrary_wndtb")
 }
 
 [node name="InGame" type="Control" parent="Icons/Player0HUD/Control"]
@@ -2375,7 +2375,7 @@ metadata/_edit_use_anchors_ = true
 [node name="DropInPromptAnim" type="AnimationPlayer" parent="Icons/Player0HUD/Control/InGame/DropInPrompt"]
 root_node = NodePath("../../..")
 libraries = {
-"": SubResource("AnimationLibrary_fuvmu")
+&"": SubResource("AnimationLibrary_fuvmu")
 }
 autoplay = "DropInPromptFlash"
 
@@ -2399,7 +2399,7 @@ metadata/_edit_group_ = true
 
 [node name="Anim" type="AnimationPlayer" parent="Icons/Player0HUD/Control/InGame/MoneyParent"]
 libraries = {
-"": SubResource("AnimationLibrary_dkble")
+&"": SubResource("AnimationLibrary_dkble")
 }
 autoplay = "RESET"
 
@@ -2477,7 +2477,7 @@ metadata/_edit_use_anchors_ = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Icons/Player0HUD/Control/InSelect"]
 libraries = {
-"": SubResource("AnimationLibrary_two08")
+&"": SubResource("AnimationLibrary_two08")
 }
 autoplay = "flash_loop"
 
@@ -2530,7 +2530,7 @@ horizontal_alignment = 2
 [node name="NameAnim" type="AnimationPlayer" parent="Icons/Player1HUD/Control/Icon"]
 root_node = NodePath("../..")
 libraries = {
-"": SubResource("AnimationLibrary_wndtb")
+&"": SubResource("AnimationLibrary_wndtb")
 }
 
 [node name="InGame" type="Control" parent="Icons/Player1HUD/Control"]
@@ -2559,7 +2559,7 @@ metadata/_edit_use_anchors_ = true
 [node name="DropInPromptAnim" type="AnimationPlayer" parent="Icons/Player1HUD/Control/InGame/DropInPrompt"]
 root_node = NodePath("../../..")
 libraries = {
-"": SubResource("AnimationLibrary_fuvmu")
+&"": SubResource("AnimationLibrary_fuvmu")
 }
 autoplay = "DropInPromptFlash"
 
@@ -2586,7 +2586,7 @@ metadata/_edit_group_ = true
 
 [node name="Anim" type="AnimationPlayer" parent="Icons/Player1HUD/Control/InGame/MoneyParent"]
 libraries = {
-"": SubResource("AnimationLibrary_dkble")
+&"": SubResource("AnimationLibrary_dkble")
 }
 autoplay = "RESET"
 
@@ -2673,7 +2673,7 @@ metadata/_edit_use_anchors_ = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Icons/Player1HUD/Control/InSelect"]
 libraries = {
-"": SubResource("AnimationLibrary_two08")
+&"": SubResource("AnimationLibrary_two08")
 }
 autoplay = "flash_loop"
 
@@ -2721,7 +2721,7 @@ label_settings = SubResource("LabelSettings_q0ixu")
 [node name="NameAnim" type="AnimationPlayer" parent="Icons/Player2HUD/Control/Icon"]
 root_node = NodePath("../..")
 libraries = {
-"": SubResource("AnimationLibrary_wndtb")
+&"": SubResource("AnimationLibrary_wndtb")
 }
 
 [node name="InGame" type="Control" parent="Icons/Player2HUD/Control"]
@@ -2768,7 +2768,7 @@ metadata/_edit_use_anchors_ = true
 [node name="DropInPromptAnim" type="AnimationPlayer" parent="Icons/Player2HUD/Control/InGame/DropInPrompt"]
 root_node = NodePath("../../..")
 libraries = {
-"": SubResource("AnimationLibrary_fuvmu")
+&"": SubResource("AnimationLibrary_fuvmu")
 }
 autoplay = "DropInPromptFlash"
 
@@ -2792,7 +2792,7 @@ metadata/_edit_group_ = true
 
 [node name="Anim" type="AnimationPlayer" parent="Icons/Player2HUD/Control/InGame/MoneyParent"]
 libraries = {
-"": SubResource("AnimationLibrary_dkble")
+&"": SubResource("AnimationLibrary_dkble")
 }
 autoplay = "RESET"
 
@@ -2870,7 +2870,7 @@ metadata/_edit_use_anchors_ = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Icons/Player2HUD/Control/InSelect"]
 libraries = {
-"": SubResource("AnimationLibrary_two08")
+&"": SubResource("AnimationLibrary_two08")
 }
 autoplay = "flash_loop"
 
@@ -2922,7 +2922,7 @@ horizontal_alignment = 2
 [node name="NameAnim" type="AnimationPlayer" parent="Icons/Player3HUD/Control/Icon"]
 root_node = NodePath("../..")
 libraries = {
-"": SubResource("AnimationLibrary_wndtb")
+&"": SubResource("AnimationLibrary_wndtb")
 }
 
 [node name="InGame" type="Control" parent="Icons/Player3HUD/Control"]
@@ -2964,7 +2964,7 @@ metadata/_edit_use_anchors_ = true
 [node name="DropInPromptAnim" type="AnimationPlayer" parent="Icons/Player3HUD/Control/InGame/DropInPrompt"]
 root_node = NodePath("../../..")
 libraries = {
-"": SubResource("AnimationLibrary_fuvmu")
+&"": SubResource("AnimationLibrary_fuvmu")
 }
 autoplay = "DropInPromptFlash"
 
@@ -2991,7 +2991,7 @@ metadata/_edit_group_ = true
 
 [node name="Anim" type="AnimationPlayer" parent="Icons/Player3HUD/Control/InGame/MoneyParent"]
 libraries = {
-"": SubResource("AnimationLibrary_dkble")
+&"": SubResource("AnimationLibrary_dkble")
 }
 autoplay = "RESET"
 
@@ -3078,7 +3078,7 @@ metadata/_edit_use_anchors_ = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Icons/Player3HUD/Control/InSelect"]
 libraries = {
-"": SubResource("AnimationLibrary_two08")
+&"": SubResource("AnimationLibrary_two08")
 }
 autoplay = "flash_loop"
 

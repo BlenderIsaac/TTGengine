@@ -124,7 +124,7 @@ func _process(_delta):
 			advance_to_final(m, _delta)
 		
 		for n in bouncing.keys():
-			var m = get_node(n)
+			var m = get_node(str(n))
 			var details = bouncing.get(n)
 			
 			m.position.y = details.og_pos.y + ((sin(details.time*bounce_height)) + 1)*bounce_height

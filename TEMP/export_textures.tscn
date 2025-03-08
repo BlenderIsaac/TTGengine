@@ -1,12 +1,11 @@
 [gd_scene load_steps=7 format=3 uid="uid://blswmjtjl7n7v"]
 
 [ext_resource type="Texture2D" uid="uid://necge2n5omrh" path="res://TEMP/tex000.png" id="1_2h3ek"]
-[ext_resource type="Script" path="res://TEMP/export_textures.gd" id="1_ax1ll"]
+[ext_resource type="Script" uid="uid://bvgtq0135qxvf" path="res://TEMP/export_textures.gd" id="1_ax1ll"]
 [ext_resource type="Texture2D" uid="uid://ddwbqnfgp0u07" path="res://TEMP/otherdebug.png" id="4_do1j2"]
 [ext_resource type="Texture2D" uid="uid://ohlfhep84q1q" path="res://TEMP/SKIRT.png" id="5_sueoh"]
 [ext_resource type="Texture2D" uid="uid://b0wl8y1fj3a7t" path="res://Textures/Square.png" id="6_jsixw"]
 [ext_resource type="Texture2D" uid="uid://dndqf02un3dkw" path="res://TEMP/bodylayout.png" id="7_nfcll"]
-
 
 [node name="Control" type="Control"]
 layout_mode = 3

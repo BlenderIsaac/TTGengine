@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://itlubtsyltsh"]
 
-[ext_resource type="Script" path="res://Animations/export_anim_debug.gd" id="1_jol7a"]
+[ext_resource type="Script" uid="uid://bm24y05ba36gg" path="res://Animations/export_anim_debug.gd" id="1_jol7a"]
 
 [node name="export_anim" type="Node3D"]
 script = ExtResource("1_jol7a")

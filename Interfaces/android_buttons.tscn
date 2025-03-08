@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://cf8vhh57rpyam"]
 
-[ext_resource type="Script" path="res://Interfaces/android_buttons.gd" id="1_8on27"]
+[ext_resource type="Script" uid="uid://cokis05yj67ev" path="res://Interfaces/android_buttons.gd" id="1_8on27"]
 [ext_resource type="Texture2D" uid="uid://ikq82hy4e2qr" path="res://Textures/AndroidButtonNormal.png" id="1_lfx4k"]
 [ext_resource type="Texture2D" uid="uid://0jsnl5v2jmdx" path="res://Textures/AndroidButtonPressed.png" id="2_8254o"]
 [ext_resource type="BitMap" uid="uid://bv8vu6tokiqtw" path="res://Textures/AndroidButtonBitmask.png" id="3_rq01a"]

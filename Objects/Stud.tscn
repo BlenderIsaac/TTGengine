@@ -1,6 +1,6 @@
 [gd_scene load_steps=12 format=3 uid="uid://8318005bmn3t"]
 
-[ext_resource type="Script" path="res://Objects/Stud.gd" id="1_feqe2"]
+[ext_resource type="Script" uid="uid://c6c24yyeph5m" path="res://Objects/Stud.gd" id="1_feqe2"]
 [ext_resource type="SpriteFrames" uid="uid://d4lndggo86ea7" path="res://Objects/StudAnims.tres" id="2_aka8s"]
 [ext_resource type="Texture2D" uid="uid://5boy2nmhka18" path="res://Textures/Point.png" id="3_rflnj"]
 
@@ -48,8 +48,8 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_c3xdy"]
 _data = {
-"RESET": SubResource("Animation_p4ik4"),
-"die": SubResource("Animation_838yv")
+&"RESET": SubResource("Animation_p4ik4"),
+&"die": SubResource("Animation_838yv")
 }
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_snpvy"]

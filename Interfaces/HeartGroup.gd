@@ -15,7 +15,7 @@ var t = 0.0
 
 var per_row = -1
 
-@export var max_hearts = 4:
+@export var max_hearts:int = 4:
 	set(value):
 		max_hearts = value
 		
@@ -29,7 +29,7 @@ var per_row = -1
 		hearts = clamp(hearts, 0, max_hearts)
 		
 		update_heart_visuals()
-@export var hearts = 4:
+@export var hearts:int = 4:
 	set(value):
 		hearts = clamp(value, 0, max_hearts)
 		
@@ -52,7 +52,7 @@ func _process(_delta):
 		
 		t += _delta*4.0
 		
-		var BOBHEART = get_node("Heart"+str(hearts))
+		var BOBHEART = get_node("Heart"+str(int(hearts)))
 		
 		var s = 1.0+(abs(sin(t))*0.1)
 		

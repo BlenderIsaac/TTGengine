@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://bri3liueqtm27"]
 
 [ext_resource type="Texture2D" uid="uid://cmxmmx4y1o7j1" path="res://Textures/Star.png" id="1_meqit"]
-[ext_resource type="Script" path="res://Objects/BuiltParticleEffect.gd" id="2_d8se4"]
+[ext_resource type="Script" uid="uid://cejiwmr1iv7ga" path="res://Objects/BuiltParticleEffect.gd" id="2_d8se4"]
 [ext_resource type="PackedScene" uid="uid://b1h60hmsedkrs" path="res://Scripts/AudioPlayer.tscn" id="2_f5h1y"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jr6jo"]
@@ -25,7 +25,7 @@ offsets = PackedFloat32Array(0.117647, 0.332353, 0.505882, 0.667647, 0.855882, 0
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.486275, 1, 1, 1, 1, 1, 1, 1, 0.478431, 1, 1, 1, 1, 1, 1, 1, 0)
 
 [sub_resource type="Curve" id="Curve_0jw80"]
-min_value = -1.0
+_limits = [-1.0, 1.0, 0.0, 1.0]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
 point_count = 2
 

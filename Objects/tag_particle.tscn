@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://cj6fwwvs7rtf0"]
 
 [ext_resource type="Texture2D" uid="uid://drndlygkcwaww" path="res://Textures/Spot.png" id="1_r1dvg"]
-[ext_resource type="Script" path="res://Objects/tag_particle.gd" id="1_togpw"]
+[ext_resource type="Script" uid="uid://40oe73l0l8sj" path="res://Objects/tag_particle.gd" id="1_togpw"]
 [ext_resource type="Material" uid="uid://duape764mhx1t" path="res://Materials/TagParticle.tres" id="2_q2nes"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_6xkxd"]
