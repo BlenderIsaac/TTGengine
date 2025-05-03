@@ -13,12 +13,12 @@ enum CharacterState {LOCKED, UNLOCKED, BOUGHT}
 enum RedBrickState {NOT_BOUGHT, BOUGHT}
 
 var generic_level = {
-	"LevelState" : LevelState.UNLOCKED,#LOCKED,
-	"MinikitsFound" : "0000000000",
+	"LevelState" : LevelState.LOCKED,
 	"ModeState" : ModeState.NORMAL,
 	"StoryModeStudGoal" : false,
 	"FreeplayStudGoal" : false,
 	"RedBrickCollected" : false,
+	"MinikitsFound" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 	
 	"StoryModeTime" : -1,
 	"FreeplayTime" : -1,
@@ -31,7 +31,7 @@ var save_data = {
 			"LevelData" : {
 				"EscapeOnArcana" : {
 					"LevelState" : LevelState.UNLOCKED,
-					"MinikitsFound" : "0000000000",
+					"MinikitsFound" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 					"ModeState" : ModeState.UNLOCKED_FREEPLAY,
 					"StoryModeStudGoal" : false,
 					"FreeplayStudGoal" : false,
@@ -43,7 +43,7 @@ var save_data = {
 				},
 				"RescueTheWitch" : {
 					"LevelState" : LevelState.LOCKED,
-					"MinikitsFound" : "0000000000",
+					"MinikitsFound" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 					"ModeState" : ModeState.NORMAL,
 					"StoryModeStudGoal" : true,
 					"FreeplayStudGoal" : true,
@@ -58,7 +58,6 @@ var save_data = {
 	}
 }
 
-
 """
 What we need to save
 - Settings
@@ -70,6 +69,7 @@ What we need to save
 
 - Save Game data
 	- Last loaded Mod
+	- Last 2 played characters
 	- Mod data
 		- Time played
 		- Stud count
@@ -143,6 +143,42 @@ func save_game(save_name):
 	
 	save.close()
 
+func encode_level_data(level_data):
+	var encode_string = ""
+	encode_string += str(level_data.LevelState)
+	encode_string += str(level_data.ModeState)
+	encode_string += str(int(level_data.StoryModeStudGoal))
+	encode_string += str(int(level_data.FreeplayStudGoal))
+	encode_string += str(int(level_data.RedBrickCollected))
+	
+	for m in level_data.MinikitsFound:
+		encode_string += str(m)
+	
+	encode_string += str(level_data.StoryModeTime)+"T"
+	encode_string += str(level_data.FreeplayTime)+"T"
+	encode_string += str(level_data.SuperFreeplayTime)
+	
+	return encode_string
+
+func decode_level_data(encode_string:String):
+	var level_data = generic_level.duplicate(true)
+	
+	level_data.LevelState = int(encode_string[0])
+	level_data.ModeState = int(encode_string[1])
+	level_data.StoryModeStudGoal = bool(int(encode_string[2]))
+	level_data.FreeplayStudGoal = bool(int(encode_string[3]))
+	level_data.RedBrickCollected = bool(int(encode_string[4]))
+	
+	for i in range(0, 10):
+		level_data.MinikitsFound[i] = int(encode_string[5+i])
+	
+	var splits = encode_string.substr(15).split("T")
+	
+	level_data.StoryModeTime = int(splits[0])
+	level_data.FreeplayTime = int(splits[1])
+	level_data.SuperFreeplayTime = int(splits[2])
+	
+	return level_data
 
 func load_mod_game(save_name, mod):
 	pass

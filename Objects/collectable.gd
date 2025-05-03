@@ -1,6 +1,6 @@
 extends Area3D
 
-var mattes = {
+@export var mattes = {
 	0 : {
 		"Type" : "Preset",
 		"Preset" : "White",
@@ -26,6 +26,8 @@ var mattes = {
 		"Preset" : "Green", # Glowing
 	},
 }
+
+@export var type = "Minikit"
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -57,7 +59,7 @@ func _on_body_entered(body):
 			
 			proj_pos = cam.unproject_position(global_position)
 			
-			Interface.minikit_found(proj_pos)
+			Interface.collectable_found(proj_pos, type)
 			queue_free()
 
 

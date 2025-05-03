@@ -3,7 +3,8 @@ extends Control
 var last_level = null
 
 func _ready():
-	_on_load_level_pressed()
+	pass
+	#_on_load_level_pressed()
 
 #func _input(_event):
 	#if Input.is_action_just_pressed("unlock"):

@@ -347,7 +347,10 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 								obj.add_child(area)
 								obj.hide()
 							elif obj_type == "COLLECT":
-								f.make("res://Objects/collectable.tscn", Vector3(), obj)
+								if props.TYPE == "MINIKIT":
+									f.make("res://Objects/minikit.tscn", Vector3(), obj)
+								elif props.TYPE == "REDBRICK":
+									f.make("res://Objects/red_brick.tscn", Vector3(), obj)
 							elif obj_type == "LOGIC":
 								obj.set_script(l.get_load("res://Scripts/LogicLine.gd"))
 								obj.gltf = gltf

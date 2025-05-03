@@ -346,6 +346,7 @@ var minikit_displaying = false:
 		
 		minikit_displaying = value
 var traveling_minikits = []
+var redbrick_collected = false
 var minikits_collected = 0:
 	set(value):
 		minikits_collected = value
@@ -361,6 +362,9 @@ func minikit_found(projected_pos):
 	minikit_spawn.scale = Vector2(0.246, 0.246)
 	
 	minikit_displaying = true
+func collectable_found(projected_pos, type):
+	if type == "Minikit":
+		minikit_found(projected_pos)
 
 
 func minikit_tick(_delta):
