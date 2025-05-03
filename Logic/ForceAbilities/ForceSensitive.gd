@@ -532,7 +532,11 @@ func get_angle_to_angle_force(force):
 	if !force.global_position-C.global_position == Vector3(0, 0, 0):
 		rot_y = Basis.looking_at(force.global_position-C.global_position).get_euler().y
 	
-	var angle_to = f.angle_to_angle(rot_y, C.mesh_angle_to)/PI
+	var real_move_dir = base_state.last_move_dir
+	
+	var real_angle = Vector2(-real_move_dir.x, real_move_dir.z).angle()+deg_to_rad(90)
+	
+	var angle_to = f.angle_to_angle(rot_y, real_angle)/PI
 	
 	return abs(angle_to)
 

@@ -20,6 +20,7 @@ config/icon="res://icon.png"
 [autoload]
 
 SETTINGS="*res://Autoloads/settings.gd"
+SaveGame="*res://Autoloads/SaveGame.gd"
 l="*res://Autoloads/loads.gd"
 MATERIALS="*res://Autoloads/materials.gd"
 f="*res://Autoloads/Functions.gd"

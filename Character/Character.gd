@@ -319,7 +319,9 @@ func _process(_delta):
 				$SwitchParticles.emitting = true
 				
 				# use the change character function to switch into the new character
+				trigger_logics("pre_switch")
 				change_character_to_file(new_char_file, new_char_mod)
+				trigger_logics("post_switch")
 				
 				# Stop the modulation AnimationPlayer and play DropIn
 				# DropIn is also used when a character... drops in.
@@ -1993,8 +1995,9 @@ func change_character(data, c_path, mod): # TODO: We don't need c_path here once
 	anim_player.connect("animation_started", anim_started)
 	
 	get_base_movement_state().C = self
-	anim_player.play(get_base_movement_state().get_switch_anim(), 0.0)
-	anim_player.seek(0.0, true)
+	var switch_anim = get_base_movement_state().get_switch_anim()
+	anim_player.play(switch_anim[0], 0.0)
+	anim_player.seek(switch_anim[1], true)
 	
 	# show which character we are
 	current_path = c_path

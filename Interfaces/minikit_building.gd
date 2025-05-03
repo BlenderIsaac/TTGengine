@@ -82,7 +82,6 @@ func _process(delta):
 					animate(model.get_child(built))
 				else:
 					done = true
-	
 
 
 func animate(_obj):

@@ -3112,6 +3112,7 @@ offset_right = 40.0
 offset_bottom = 47.0
 scale = Vector2(0.999586, 0.99911)
 
+[connection signal="resized" from="." to="." method="_on_resized"]
 [connection signal="pressed" from="Pause/Center/Main Pause/DropOut" to="." method="Button_DropOut"]
 [connection signal="pressed" from="Pause/Center/Main Pause/Resume" to="." method="Button_Resume"]
 [connection signal="pressed" from="Pause/Center/Main Pause/ControlSetup" to="." method="Button_ControlSetup"]

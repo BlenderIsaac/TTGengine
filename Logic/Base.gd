@@ -113,6 +113,10 @@ func exclusive_physics(_delta):
 			if not anim.is_playing():
 				anim.play(prefix+"Idleloop", .04)
 	
+	if anim.current_animation.ends_with("Runloop"):
+		run_anim_pos = anim.current_animation_position/anim.current_animation_length
+	else:
+		run_anim_pos = -1.0
 	
 	if move_delay_timer > move_delay:# and moved_since_online:
 		C.mesh_angle_to = Vector2(-last_move_dir.x, last_move_dir.z).angle()+deg_to_rad(90)
@@ -179,8 +183,10 @@ func gen_gravity(_delta, animate=false):
 		# If we are not falling set char_vel.y to just slightly negative
 		C.char_vel.y = air_gravity*_delta*C.var_scale
 
+var run_anim_pos:float = -1
+
 # This is so we can copy some variables across switches
-var vars_copied_on_switch = ["move_dir_to", "move_dir"]
+var vars_copied_on_switch = ["move_dir_to", "move_dir", "run_anim_pos"]
 func get_switched_var():
 	var vars = {}
 	
@@ -200,11 +206,11 @@ func get_switch_anim():
 	
 	if C.is_on_floor():
 		if move_dir.length() > .1:
-			return "Runloop"
+			return ["Runloop", run_anim_pos]
 		else:
-			return "Idleloop"
+			return ["Idleloop", 0.0]
 	else:
-		return "Fallloop"
+		return ["Fallloop", 0.0]
 
 
 # This logic has pathfinding data so let it be found by character.gd

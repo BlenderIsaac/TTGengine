@@ -99,9 +99,6 @@ func _process(_delta):
 			if untrigger:
 				increment = clamp(increment-_delta, 0.0, 1.0)
 				anim_seek("UnTrigger", increment)
-		
-		
-		
 	
 	triggered = !playing and (triggering or (!triggering and delay > 0))
 	

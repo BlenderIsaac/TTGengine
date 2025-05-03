@@ -102,7 +102,6 @@ target_position = Vector3(0, -20, 0)
 [node name="Agent" type="NavigationAgent3D" parent="."]
 navigation_layers = 0
 avoidance_enabled = true
-debug_enabled = true
 debug_use_custom = true
 
 [node name="AgentTimer" type="Timer" parent="."]

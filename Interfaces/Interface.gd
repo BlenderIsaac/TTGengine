@@ -136,9 +136,9 @@ func _process(_delta):
 			freeplay_select_anim_timer = 0.0
 			freeplay_select_anim_stage = 1.0
 		
-		var select_index = 0
+		#var select_index = 0
 		for anim in freeplay_select_anim_data:
-			var node = $FreePlaySelect/SelectAnim.get_child(select_index)
+			var node = anim.IconNode#$FreePlaySelect/SelectAnim.get_child(select_index)
 			
 			if freeplay_select_anim_stage == 0:
 				
@@ -151,7 +151,7 @@ func _process(_delta):
 					freeplay_select_anim_data.erase(anim)
 					node.queue_free()
 			
-			select_index += 1
+			#select_index += 1
 		
 		if freeplay_select_anim_data.is_empty():
 			freeplay_select_anim = false
@@ -218,10 +218,10 @@ func Button_tick():
 						call(method_name)
 				
 				if key_just_pressed("Up", check_owner):
-					button.find_valid_focus_neighbor(SIDE_TOP).grab_focus()
+					button.find_prev_valid_focus().grab_focus()
 				
 				if key_just_pressed("Down", check_owner):
-					button.find_valid_focus_neighbor(SIDE_BOTTOM).grab_focus()
+					button.find_next_valid_focus().grab_focus()
 				
 				check_owner += 1
 
@@ -393,7 +393,7 @@ var finish_stage = "trueJedi"
 var finish_stages = [
 	#"characterUpdate",
 	#"trueJedi",
-	"studTotal",
+	#"studTotal",
 	"minikit",
 	#"goldBrickUpdate",
 	"continue",
@@ -521,6 +521,9 @@ func LevelFinish_tick(_delta):
 		pass
 	elif finish_stage == "minikit":
 		if minikits_count_up_to == minikits_collected:
+			finish_stage = "minikit_end_pause"
+			await get_tree().create_timer(1.0).timeout
+			finish_stage = "minikit"
 			advance_finish_stage()
 
 func advance_finish_stage():
@@ -1007,17 +1010,6 @@ func play_character_select_anim():
 			players_to_pos_id[player_idx] = pos
 			
 			pos += 1
-	#var player_team = get_player_team()
-	
-	#for i in selected_indexes.keys():
-		#var cell_index = int(selected_indexes.get(i))
-		#
-		#if team_indexes.get(current_mod_selecting).has(cell_index):
-			#
-			#final_team.get(current_mod_selecting).erase(cell_index)
-			#final_team.get(current_mod_selecting).insert(int(i), cell_index)
-		#else:
-			#final_team.get(current_mod_selecting).insert(int(i), cell_index)
 	
 	freeplay_select_anim_data.clear()
 	
@@ -1026,11 +1018,10 @@ func play_character_select_anim():
 	for team in final_team.values():
 		team_size += team.size()
 	
-	
 	for mod in final_team.keys():
 		
-		#var index = 0
 		var team = final_team.get(mod)
+		var claimed_player_indexes = []
 		
 		for team_index in team:
 			
@@ -1043,34 +1034,67 @@ func play_character_select_anim():
 			icon.get_node("Back").show()
 			
 			var override = -1
+			var pos_index = pos+0.5 - (float(team_size)/2.0)
+			var center_of_screen = get_viewport_rect().size/2
 			
 			# if a player has selected this team member in this mod
 			if selected_indexes.values().has(team_index) and mod == current_mod_selecting:
 				for player_index in selected_indexes.keys():
 					if Players.dropped_in[player_index].active:
 						if selected_indexes[player_index] == team_index:
-							icon.get_node("Back").texture = get_node(str("FreePlaySelect/PlayerSelects/Player", str(player_index), "/Back")).texture
-							override = players_to_pos_id[player_index]
+							
+							if not team_index in claimed_player_indexes:
+								claimed_player_indexes.append(team_index)
+								icon.get_node("Back").texture = get_node(str("FreePlaySelect/PlayerSelects/Player", str(player_index), "/Back")).texture
+								override = players_to_pos_id[player_index]
+								
+								pos_index = override+0.5 - (float(team_size)/2.0)
+								
+								freeplay_select_anim_data.append(
+									{
+										"IconNode" : icon,
+										"StartScale" : icon.get_node("Back").scale,
+										"EndScale" : Vector2(0.3, 0.3),
+										
+										"StartPosition" : icon.global_position,
+										"EndPosition" : center_of_screen + (Vector2(pos_index, 0)*80),
+									}
+								)
+							else:
+								var new_icon = icon.duplicate()
+								icon.get_parent().add_child(new_icon)
+								
+								new_icon.get_node("Back").texture = get_node(str("FreePlaySelect/PlayerSelects/Player", str(player_index), "/Back")).texture
+								override = players_to_pos_id[player_index]
+								
+								pos_index = override+0.5 - (float(team_size)/2.0)
+								
+								freeplay_select_anim_data.append(
+									{
+										"IconNode" : new_icon,
+										"StartScale" : new_icon.get_node("Back").scale,
+										"EndScale" : Vector2(0.3, 0.3),
+										
+										"StartPosition" : new_icon.global_position,
+										"EndPosition" : center_of_screen + (Vector2(pos_index, 0)*80),
+									}
+								)
 			
-			var pos_index = pos+0.5 - (float(team_size)/2.0)
-			if override != -1:
-				pos_index = override+0.5 - (float(team_size)/2.0)
 			
-			var center_of_screen = get_viewport_rect().size/2
-			freeplay_select_anim_data.append(
-					{
-						"StartScale" : icon.get_node("Back").scale,
-						"EndScale" : Vector2(0.3, 0.3),
-						
-						"StartPosition" : icon.global_position,
-						"EndPosition" : center_of_screen + (Vector2(pos_index, 0)*80),
-					}
-				)
-			
-			#index += 1
-			
+			#if override != -1:
+				#pos_index = override+0.5 - (float(team_size)/2.0)
 			if override == -1:
 				pos += 1
+				freeplay_select_anim_data.append(
+						{
+							"IconNode" : icon,
+							"StartScale" : icon.get_node("Back").scale,
+							"EndScale" : Vector2(0.3, 0.3),
+							
+							"StartPosition" : icon.global_position,
+							"EndPosition" : center_of_screen + (Vector2(pos_index, 0)*80),
+						}
+					)
 	
 	freeplay_select_anim = true
 
@@ -1081,14 +1105,29 @@ func play_character_select_anim():
 func load_mode_select(mod_name, level_name):
 	
 	set_icons_mode("info")
-	#for icon in Interface.get_node("Icons").get_children():
-		#icon.get_node("Control/InGame").hide()
-		#icon.get_node("Control/InSelect").show()
 	
 	get_tree().paused = true
 	
 	load_level_name = level_name
 	load_level_mod = mod_name
+	
+	var freeplay = get_node("ModeSelect").Buttons[1]
+	var super_freeplay = get_node("ModeSelect").Buttons[2]
+	var mode_state = SaveGame.save_data.ModData[mod_name].LevelData[level_name].ModeState
+	
+	if mode_state == SaveGame.ModeState.NORMAL:
+		disable_button(freeplay)
+		disable_button(super_freeplay)
+		super_freeplay.hide()
+	elif mode_state == SaveGame.ModeState.UNLOCKED_FREEPLAY:
+		enable_button(freeplay)
+		disable_button(super_freeplay)
+		super_freeplay.show()
+	elif mode_state == SaveGame.ModeState.UNLOCKED_SUPER_FREEPLAY:
+		enable_button(freeplay)
+		enable_button(super_freeplay)
+		super_freeplay.show()
+	
 	get_node("ModeSelect").show()
 	
 	pause_owner = null
@@ -1144,6 +1183,14 @@ func Button_SuperFreePlay():
 	setup_freeplay()
 	mode_selected = "SuperFreePlay"
 	update_freeplay_select_interface()
+
+func disable_button(button):
+	button.disabled = true
+	button.focus_mode = FOCUS_NONE
+
+func enable_button(button):
+	button.disabled = false
+	button.focus_mode = FOCUS_ALL
 
 func setup_freeplay():
 	
@@ -1324,6 +1371,7 @@ func transition_in():
 	
 	$Transition.texture = last_imagetexture
 	$Transition.region_rect.size.y = last_imagetexture.get_size().y
+	$Transition.scale = Vector2(1.0, 1.0)
 	transition_left = transition_speed
 	audio_player.play("SceneTransition")
 	frame_delay = 3
@@ -1349,3 +1397,17 @@ func _on_timer_timeout():
 	else:
 		$Pause.theme.set("Button/colors/font_focus_color", col_1)
 		$Pause.theme.set("Button/colors/font_hover_color", col_1)
+
+func _on_resized():
+	var transition:Sprite2D = $Transition
+	
+	var img_width = transition.texture.get_width()
+	var img_height = transition.texture.get_height()
+	
+	var screen_width = get_viewport_rect().size.x
+	var screen_height = get_viewport_rect().size.y
+	
+	var width_ratio = screen_width/img_width
+	var height_ratio = screen_height/img_height
+	
+	transition.scale = Vector2(width_ratio, height_ratio)
