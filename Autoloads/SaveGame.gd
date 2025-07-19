@@ -99,10 +99,12 @@ var mod_when_last_opened:String = ""
 
 func _ready():
 	load_game("test")
+	load_mod_game("test", "Ahsoka Show")
 
 func _notification(what):
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
 		save_game("test")
+		save_mod_game("test", "Ahsoka Show")
 
 func open_save_file(file_name, mode_flags:FileAccess.ModeFlags):
 	if !FileAccess.file_exists(saves_path+file_name) and mode_flags == FileAccess.READ: 
@@ -181,7 +183,39 @@ func decode_level_data(encode_string:String):
 	return level_data
 
 func load_mod_game(save_name, mod):
-	pass
+	var save:FileAccess = open_save_file(save_name+"_mod_"+mod+ext, FileAccess.READ)
+	if save:
+		var LevelData = {}
+		
+		while !save.eof_reached():
+			var n = save.get_line()
+			var d = save.get_line()
+			if n != "":
+				LevelData[n] = decode_level_data(d)
+		
+		save_data.ModData.get(mod).LevelData = LevelData
+		
+		save.close()
 
-func save_mod_game(save_name):
-	pass
+func save_mod_game(save_name, mod):
+	var save = open_save_file(save_name+"_mod_"+mod+ext, FileAccess.WRITE)
+	var LevelData = save_data.ModData.get(mod).LevelData
+	
+	for level_name in LevelData.keys():
+		var dictionary = LevelData[level_name]
+		
+		save.store_line(level_name)
+		save.store_line(encode_level_data(dictionary))
+	
+	save.close()
+
+func _process(_delta):
+	
+	if Input.is_action_just_pressed("ui_home"):
+		var capture = get_viewport().get_texture().get_image()
+		
+		var _time = Time.get_datetime_string_from_system()
+		
+		var filename = "user://Screenshot-{0}.png".format({"0":randi()})
+		
+		capture.save_png(filename)
