@@ -1,4 +1,4 @@
-[gd_scene load_steps=70 format=3 uid="uid://dvgy5vxoqaq41"]
+[gd_scene load_steps=71 format=3 uid="uid://dvgy5vxoqaq41"]
 
 [ext_resource type="Script" uid="uid://bettupl6exqyd" path="res://Interfaces/Interface.gd" id="1_0holg"]
 [ext_resource type="Texture2D" uid="uid://ditscyjxgo1jd" path="res://Textures/select.png" id="3_di25h"]
@@ -22,6 +22,7 @@
 [ext_resource type="Texture2D" uid="uid://tubcqx30qvos" path="res://Textures/HiResMinikit/Screenshot_4.png" id="20_j67og"]
 [ext_resource type="PackedScene" uid="uid://b1h60hmsedkrs" path="res://Scripts/AudioPlayer.tscn" id="22_eu0h4"]
 [ext_resource type="Texture2D" uid="uid://bgabdyttt6qgq" path="res://icon.png" id="22_n8sdc"]
+[ext_resource type="PackedScene" uid="uid://cf8vhh57rpyam" path="res://Interfaces/android_buttons.tscn" id="26_jhm8i"]
 [ext_resource type="Texture2D" uid="uid://dkwxubwe6jiik" path="res://Textures/TrueJediStuds/Black.png" id="75_wjcnw"]
 [ext_resource type="Texture2D" uid="uid://cs82sjgy57cit" path="res://Textures/TrueJediStuds/Yellow.png" id="76_eueun"]
 [ext_resource type="Animation" uid="uid://cvrn7xh4ersap" path="res://Animations/FadeInOut.res" id="77_nwkkc"]
@@ -3112,6 +3113,9 @@ offset_top = 24.0
 offset_right = 40.0
 offset_bottom = 47.0
 scale = Vector2(0.999586, 0.99911)
+
+[node name="Android Buttons" parent="." instance=ExtResource("26_jhm8i")]
+layout_mode = 1
 
 [connection signal="resized" from="." to="." method="_on_resized"]
 [connection signal="pressed" from="Pause/Center/Main Pause/DropOut" to="." method="Button_DropOut"]

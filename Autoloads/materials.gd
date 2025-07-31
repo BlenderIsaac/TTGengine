@@ -178,13 +178,13 @@ func load_texture(path):
 	
 	if not texture_loads.has(path):
 		
-		#if !SETTINGS.mobile:
+		if !SETTINGS.mobile:
 			var image = Image.new()
 			image.load(path)
 			
 			texture_loads[path] = ImageTexture.create_from_image(image)
-		#else:
-			#texture_loads[path] = load(path)
+		else:
+			texture_loads[path] = load(path)
 	
 	return texture_loads[path]
 

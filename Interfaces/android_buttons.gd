@@ -6,6 +6,9 @@ func _process(delta):
 	if !WHEEL.is_pressed():
 		point.position = Vector2()
 
+func get_joy_input():
+	return point.position / WHEEL.shape.radius*.8
+
 @onready var WHEEL = $HBoxContainer/VBoxContainer/BottomLeft/Sprite2D/Wheel
 @onready var point = $HBoxContainer/VBoxContainer/BottomLeft/Sprite2D/Point
 func _input(event):

@@ -702,8 +702,12 @@ func get_move_dir():
 	# A variable to hold the movement direction we are going to return
 	var new_move_dir = Vector3()
 	
+	if SETTINGS.mobile:
+		var input = get_tree().get_first_node_in_group("AndroidButtonParent").get_joy_input()
+		new_move_dir = Vector3(input.x, 0.0, input.y)
+	
 	# If we are keyboard player check through all the keys and add values to new_move_dir
-	if control_type == "keyboard":
+	elif control_type == "keyboard":
 		if key_press("Up"):
 			new_move_dir.z -= 1
 		if key_press("Down"):

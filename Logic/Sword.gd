@@ -233,14 +233,18 @@ func get_objs_hit():
 
 
 func generate_gltf(gltf, mod):
-	var gltf_document = GLTFDocument.new()
-	var gltf_state = GLTFState.new()
-	var snd_file = FileAccess.open(gltf, FileAccess.READ)
-	var fileBytes = PackedByteArray()
-	fileBytes = snd_file.get_buffer(snd_file.get_length())
-	
-	gltf_document.append_from_buffer(fileBytes, "base_path?", gltf_state)
-	var node = gltf_document.generate_scene(gltf_state)
+	var node
+	if !SETTINGS.mobile:
+		var gltf_document = GLTFDocument.new()
+		var gltf_state = GLTFState.new()
+		var snd_file = FileAccess.open(gltf, FileAccess.READ)
+		var fileBytes = PackedByteArray()
+		fileBytes = snd_file.get_buffer(snd_file.get_length())
+		
+		gltf_document.append_from_buffer(fileBytes, "base_path?", gltf_state)
+		node = gltf_document.generate_scene(gltf_state)
+	else:
+		node = load(gltf).instantiate()
 	
 	for child in f.get_all_children(node):
 		if child is MeshInstance3D:

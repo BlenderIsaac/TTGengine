@@ -270,14 +270,18 @@ func make(scene_path, pos, parent):
 	return scene
 
 func generate_gltf(path):
-	var gltf = GLTFDocument.new()
-	var gltf_state = GLTFState.new()
-	var snd_file = FileAccess.open(path, FileAccess.READ)
-	var fileBytes = PackedByteArray()
-	fileBytes = snd_file.get_buffer(snd_file.get_length())
-	
-	gltf.append_from_buffer(fileBytes, "base_path?", gltf_state)
-	var node = gltf.generate_scene(gltf_state)
+	var node
+	if !SETTINGS.mobile:
+		var gltf = GLTFDocument.new()
+		var gltf_state = GLTFState.new()
+		var snd_file = FileAccess.open(path, FileAccess.READ)
+		var fileBytes = PackedByteArray()
+		fileBytes = snd_file.get_buffer(snd_file.get_length())
+		
+		gltf.append_from_buffer(fileBytes, "base_path?", gltf_state)
+		node = gltf.generate_scene(gltf_state)
+	else:
+		node = load(path).instantiate()
 	
 	return node
 

@@ -1,6 +1,6 @@
 extends Node
 
-var mobile = false
+var mobile = true
 var volume_level = -20
 
 func _ready():
@@ -25,7 +25,7 @@ func _ready():
 				
 				set(setting, json.get(setting))
 	else:
-		mod_path = "res://mods/"
+		mod_path = "res://mods"
 
 
 func get_logic_base_dir(origin_mod):

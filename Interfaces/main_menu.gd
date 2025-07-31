@@ -4,7 +4,7 @@ var last_level = null
 
 func _ready():
 	pass
-	#_on_load_level_pressed()
+	_on_load_level_pressed()
 
 #func _input(_event):
 	#if Input.is_action_just_pressed("unlock"):
@@ -25,7 +25,7 @@ func _on_load_level_pressed():
 			var p_data = []#{"Char":"BaylanSkoll.json", "Mod":mod}, {"Char":"RD3.json", "Mod":mod}]
 			var p_team = []
 			
-			var mods_path = SETTINGS.mod_path+"/"+mod+"/characters/chars"
+			var mods_path = "res://mods/Ahsoka Show/characters/chars"#SETTINGS.mod_path+"/"+mod+"/characters/chars"
 			
 			var chars = DirAccess.get_files_at(mods_path)
 			
