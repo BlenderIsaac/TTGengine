@@ -2,12 +2,8 @@
 
 [ext_resource type="Script" uid="uid://bo1hp04hnxkmx" path="res://Interfaces/main_menu.gd" id="1_pdetj"]
 [ext_resource type="Texture2D" uid="uid://b41br10fohjag" path="res://Textures/ahsokamenu2.png" id="2_1hv1k"]
-
-[sub_resource type="SystemFont" id="SystemFont_uk88g"]
-font_names = PackedStringArray("Franklin Gothic")
-subpixel_positioning = 0
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_mkmf0"]
+[ext_resource type="SystemFont" uid="uid://pigph8jsdicg" path="res://Interfaces/InterfaceFont.tres" id="3_s0v5r"]
+[ext_resource type="StyleBox" uid="uid://r1b765vdq483" path="res://Interfaces/EmptyStyleBox.tres" id="4_km3uk"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -46,9 +42,9 @@ theme_override_colors/font_color = Color(0.0470588, 0.47451, 0.933333, 1)
 theme_override_colors/font_focus_color = Color(0.0470588, 0.47451, 0.933333, 1)
 theme_override_colors/font_pressed_color = Color(0.603922, 0.211765, 0.905882, 1)
 theme_override_constants/outline_size = 9
-theme_override_fonts/font = SubResource("SystemFont_uk88g")
+theme_override_fonts/font = ExtResource("3_s0v5r")
 theme_override_font_sizes/font_size = 39
-theme_override_styles/focus = SubResource("StyleBoxEmpty_mkmf0")
+theme_override_styles/focus = ExtResource("4_km3uk")
 text = "Load Hub"
 flat = true
 
@@ -61,9 +57,9 @@ theme_override_colors/font_color = Color(0.0470588, 0.47451, 0.933333, 1)
 theme_override_colors/font_focus_color = Color(0.0470588, 0.47451, 0.933333, 1)
 theme_override_colors/font_pressed_color = Color(0.603922, 0.211765, 0.905882, 1)
 theme_override_constants/outline_size = 9
-theme_override_fonts/font = SubResource("SystemFont_uk88g")
+theme_override_fonts/font = ExtResource("3_s0v5r")
 theme_override_font_sizes/font_size = 39
-theme_override_styles/focus = SubResource("StyleBoxEmpty_mkmf0")
+theme_override_styles/focus = ExtResource("4_km3uk")
 text = "Load Level"
 flat = true
 
@@ -77,9 +73,9 @@ theme_override_colors/font_color = Color(0.0470588, 0.47451, 0.933333, 1)
 theme_override_colors/font_focus_color = Color(0.0470588, 0.47451, 0.933333, 1)
 theme_override_colors/font_pressed_color = Color(0.603922, 0.211765, 0.905882, 1)
 theme_override_constants/outline_size = 9
-theme_override_fonts/font = SubResource("SystemFont_uk88g")
+theme_override_fonts/font = ExtResource("3_s0v5r")
 theme_override_font_sizes/font_size = 39
-theme_override_styles/focus = SubResource("StyleBoxEmpty_mkmf0")
+theme_override_styles/focus = ExtResource("4_km3uk")
 text = "New Game"
 flat = true
 
@@ -93,9 +89,9 @@ theme_override_colors/font_color = Color(0.0470588, 0.47451, 0.933333, 1)
 theme_override_colors/font_focus_color = Color(0.0470588, 0.47451, 0.933333, 1)
 theme_override_colors/font_pressed_color = Color(0.603922, 0.211765, 0.905882, 1)
 theme_override_constants/outline_size = 9
-theme_override_fonts/font = SubResource("SystemFont_uk88g")
+theme_override_fonts/font = ExtResource("3_s0v5r")
 theme_override_font_sizes/font_size = 39
-theme_override_styles/focus = SubResource("StyleBoxEmpty_mkmf0")
+theme_override_styles/focus = ExtResource("4_km3uk")
 text = "Load Game"
 flat = true
 
@@ -109,9 +105,9 @@ theme_override_colors/font_color = Color(0.0470588, 0.47451, 0.933333, 1)
 theme_override_colors/font_focus_color = Color(0.0470588, 0.47451, 0.933333, 1)
 theme_override_colors/font_pressed_color = Color(0.603922, 0.211765, 0.905882, 1)
 theme_override_constants/outline_size = 9
-theme_override_fonts/font = SubResource("SystemFont_uk88g")
+theme_override_fonts/font = ExtResource("3_s0v5r")
 theme_override_font_sizes/font_size = 39
-theme_override_styles/focus = SubResource("StyleBoxEmpty_mkmf0")
+theme_override_styles/focus = ExtResource("4_km3uk")
 text = "Options"
 flat = true
 
@@ -125,9 +121,9 @@ theme_override_colors/font_color = Color(0.0470588, 0.47451, 0.933333, 1)
 theme_override_colors/font_focus_color = Color(0.0470588, 0.47451, 0.933333, 1)
 theme_override_colors/font_pressed_color = Color(0.603922, 0.211765, 0.905882, 1)
 theme_override_constants/outline_size = 9
-theme_override_fonts/font = SubResource("SystemFont_uk88g")
+theme_override_fonts/font = ExtResource("3_s0v5r")
 theme_override_font_sizes/font_size = 39
-theme_override_styles/focus = SubResource("StyleBoxEmpty_mkmf0")
+theme_override_styles/focus = ExtResource("4_km3uk")
 text = "Control Setup"
 flat = true
 
@@ -141,9 +137,9 @@ theme_override_colors/font_color = Color(0.0470588, 0.47451, 0.933333, 1)
 theme_override_colors/font_focus_color = Color(0.0470588, 0.47451, 0.933333, 1)
 theme_override_colors/font_pressed_color = Color(0.603922, 0.211765, 0.905882, 1)
 theme_override_constants/outline_size = 9
-theme_override_fonts/font = SubResource("SystemFont_uk88g")
+theme_override_fonts/font = ExtResource("3_s0v5r")
 theme_override_font_sizes/font_size = 39
-theme_override_styles/focus = SubResource("StyleBoxEmpty_mkmf0")
+theme_override_styles/focus = ExtResource("4_km3uk")
 text = "Video Settings"
 flat = true
 
@@ -157,9 +153,9 @@ theme_override_colors/font_color = Color(0.0470588, 0.47451, 0.933333, 1)
 theme_override_colors/font_focus_color = Color(0.0470588, 0.47451, 0.933333, 1)
 theme_override_colors/font_pressed_color = Color(0.603922, 0.211765, 0.905882, 1)
 theme_override_constants/outline_size = 9
-theme_override_fonts/font = SubResource("SystemFont_uk88g")
+theme_override_fonts/font = ExtResource("3_s0v5r")
 theme_override_font_sizes/font_size = 39
-theme_override_styles/focus = SubResource("StyleBoxEmpty_mkmf0")
+theme_override_styles/focus = ExtResource("4_km3uk")
 text = "Effects Settings"
 flat = true
 
@@ -173,9 +169,9 @@ theme_override_colors/font_color = Color(0.0470588, 0.47451, 0.933333, 1)
 theme_override_colors/font_focus_color = Color(0.0470588, 0.47451, 0.933333, 1)
 theme_override_colors/font_pressed_color = Color(0.603922, 0.211765, 0.905882, 1)
 theme_override_constants/outline_size = 9
-theme_override_fonts/font = SubResource("SystemFont_uk88g")
+theme_override_fonts/font = ExtResource("3_s0v5r")
 theme_override_font_sizes/font_size = 39
-theme_override_styles/focus = SubResource("StyleBoxEmpty_mkmf0")
+theme_override_styles/focus = ExtResource("4_km3uk")
 text = "Quit"
 flat = true
 

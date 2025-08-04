@@ -1,0 +1,5 @@
+[gd_resource type="SystemFont" format=3 uid="uid://pigph8jsdicg"]
+
+[resource]
+font_names = PackedStringArray("Franklin Gothic")
+subpixel_positioning = 0

@@ -17,19 +17,6 @@ boot_splash/bg_color=Color(0, 0, 0, 1)
 boot_splash/image="res://Textures/TTGengineSplash.png"
 config/icon="res://icon.png"
 
-[autoload]
-
-SETTINGS="*res://Autoloads/settings.gd"
-SaveGame="*res://Autoloads/SaveGame.gd"
-l="*res://Autoloads/loads.gd"
-MATERIALS="*res://Autoloads/materials.gd"
-f="*res://Autoloads/Functions.gd"
-o="*res://Autoloads/ObjStorage.gd"
-a="*res://Autoloads/AudioStorage.gd"
-Levels="*res://Autoloads/LEVELS.gd"
-Interface="*res://Interfaces/Interface.tscn"
-Players="*res://Autoloads/Players.gd"
-
 [editor]
 
 movie_writer/movie_file="C:/Users/jonat/Desktop/Games/LSW Movie Maker/LSW.png"
@@ -212,8 +199,6 @@ common/enable_pause_aware_picking=true
 
 [rendering]
 
-renderer/rendering_method="gl_compatibility"
-renderer/rendering_method.mobile="gl_compatibility"
 textures/vram_compression/import_s3tc_bptc=true
 textures/vram_compression/import_etc2_astc=true
 anti_aliasing/screen_space_roughness_limiter/enabled=false
