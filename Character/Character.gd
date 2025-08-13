@@ -1,4 +1,5 @@
 extends CharacterBody3D
+class_name Character
 
 # decides whether or not we are being controlled
 @export var AI = false

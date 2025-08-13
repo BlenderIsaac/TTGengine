@@ -61,8 +61,8 @@ func _process(_delta):
 	# check if we have been collected
 	if collected == true:
 		
-		if infinite:
-			Levels.i_am_dead(self)
+		#if infinite:
+		#	Levels.i_am_dead(self)
 		
 		# stop the animation
 		$AnimationPlayer.stop()

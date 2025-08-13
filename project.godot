@@ -21,6 +21,7 @@ config/icon="res://icon.png"
 
 ResourceManager="*res://Application/ResourceManager.gd"
 SettingsManager="*res://Application/SettingsManager.gd"
+f="*res://Autoloads/Functions.gd"
 
 [editor]
 

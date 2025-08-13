@@ -9,7 +9,7 @@ func _process(delta):
 			var parent_name = str("Player", player_number, "HUD")
 			
 			# Get the parent of our hud and return it
-			var Parent = Interface.get_node("Icons/"+parent_name+"/Control")
+			var Parent = get_node("Icons/"+parent_name+"/Control")
 			
 			var coin_to_pos = get_parent().project_position(Parent.get_node("InGame/MoneyParent/CoinHUD").global_position, 5)
 			
@@ -45,4 +45,3 @@ func _process(delta):
 				player.get_stud(value, child.frame, type)
 				
 				child.queue_free()
-

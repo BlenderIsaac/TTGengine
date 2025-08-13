@@ -7,7 +7,7 @@ var active = true
 #var resetting_time = 1.0
 var reseting = false
 
-var audio
+var audio : AudioPlayer
 var pull_anim : AnimationPlayer
 var reset_anim : AnimationPlayer
 
@@ -23,10 +23,10 @@ func extends_ready():
 	
 	reset_anim = get_anim(props.RESET_ANIM)
 	
-	audio = l.generate("res://Scripts/AudioPlayer.tscn")
+	audio = AudioPlayer.new()
 	add_child(audio)
 	
-	audio.add_sound(paths, "PullLever", "Ahsoka Show") # TODO: Change once added to a mod
+	audio.set_sound("PullLever", [ResourceManager.SoundLoadDetails.new(ResourceManager.LevelsSharedFolderLoadDir.new(), paths[0])])
 
 
 func is_triggering():

@@ -23,10 +23,10 @@ func extends_ready():
 	
 	reset_anim = get_anim(props.RESET)
 	
-	audio = l.generate("res://Scripts/AudioPlayer.tscn")
+	audio = AudioPlayer.new()
 	add_child(audio)
 	
-	audio.add_sound(paths, "PullLever", "Ahsoka Show") # TODO: Change once added to a mod
+	audio.set_sound("ActivatePanel", [ResourceManager.SoundLoadDetails.new(ResourceManager.LevelsSharedFolderLoadDir.new(), paths[0])])
 
 
 func is_triggering():
@@ -52,5 +52,3 @@ func is_triggering():
 func activate():
 	get_anim(props.ACTIVATE).play(props.ACTIVATE)
 	active = true
-
-

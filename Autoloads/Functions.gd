@@ -63,65 +63,6 @@ func merge_arrays(array1, array2):
 	return ret
 
 
-func get_data_path(data, mod=null):
-	
-	if data.has("Mod"):
-		mod = data.Mod
-	
-	if mod == null:
-		mod = Levels.level_state.Mod
-	
-	#if data.has("Path") and other_path == null:
-		#return SETTINGS.mod_path+"/"+mod+"/characters/textures/"+data.Path
-	#elif data.has("Texture") and other_path == null:
-		#return SETTINGS.mod_path+"/"+mod+"/characters/textures/"+data.Texture
-	if data.has("CtexturesPath"):
-		return SETTINGS.mod_path+"/"+mod+"/characters/textures/"+data.CtexturesPath
-	elif data.has("CharacterTexturesPath"):
-		return SETTINGS.mod_path+"/"+mod+"/characters/textures/"+data.CharacterTexturesPath
-	elif data.has("cTexturesPath"):
-		return SETTINGS.mod_path+"/"+mod+"/characters/textures/"+data.cTexturesPath
-	elif data.has("cSoundsPath"):
-		return SETTINGS.mod_path+"/"+mod+"/characters/sounds/"+data.cSoundsPath
-	elif data.has("cModelsPath"):
-		return SETTINGS.mod_path+"/"+mod+"/characters/models/"+data.cModelsPath
-	elif data.has("cGltfsPath"):
-		return SETTINGS.mod_path+"/"+mod+"/characters/gltfs/"+data.cGltfsPath
-	elif data.has("cMaterialsPath"):
-		return SETTINGS.mod_path+"/"+mod+"/characters/materials/"+data.cMaterialsPath
-	elif data.has("cLogicsPath"):
-		return SETTINGS.mod_path+"/"+mod+"/characters/logics/"+data.cLogicsPath
-	elif data.has("cRigsPath"):
-		return SETTINGS.mod_path+"/"+mod+"/characters/rigs/"+data.cRigsPath
-	elif data.has("cIconsPath"):
-		return SETTINGS.mod_path+"/"+mod+"/characters/icons/"+data.cIconsPath
-	elif data.has("cAnimsPath"):
-		return SETTINGS.mod_path+"/"+mod+"/characters/anims/"+data.cAnimsPath
-	#elif data.has("CharTexture"):
-		#return SETTINGS.mod_path+"/"+mod+"/characters/textures/"+data.CharTexture
-	#elif data.has("Path") and !other_path == null:
-		#return other_path+"/"+data.Path
-	elif data.has("FullPath"):
-		return SETTINGS.mod_path+"/"+mod+"/"+data.FullPath
-	elif data.has("SystemPath"):
-		return data.SystemPath
-	elif data.has("ModPath"):
-		return SETTINGS.mod_path+"/"+data.ModPath
-	elif data.has("LevelDataPath"):
-		return SETTINGS.mod_path+"/"+mod+"/levels/leveldata/"+data.LevelDataPath
-	elif data.has("ldp"):
-		return SETTINGS.mod_path+"/"+mod+"/levels/leveldata/"+data.ldp
-	elif data.has("LevelSharedPath"):
-		return SETTINGS.mod_path+"/"+mod+"/levels/shared/"+data.LevelSharedPath
-	elif data.has("lSharedPath"):
-		return SETTINGS.mod_path+"/"+mod+"/levels/shared/"+data.lSharedPath
-	elif data.has("SharedPath"):
-		return SETTINGS.mod_path+"/"+mod+"/levels/shared/"+data.SharedPath
-	elif data.has("lShared"):
-		return SETTINGS.mod_path+"/"+mod+"/levels/shared/"+data.lShared
-	
-	return null
-
 ## Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(_delta):
 #	# make sure this is at the bottom of process.
@@ -260,30 +201,6 @@ func key_press(key, control_type, controller_number=0):
 	
 	return false
 
-func make(scene_path, pos, parent):
-	var scene = l.get_load(scene_path).instantiate()
-	
-	parent.add_child(scene)
-	
-	scene.position = pos
-	
-	return scene
-
-func generate_gltf(path):
-	var node
-	if !SETTINGS.mobile:
-		var gltf = GLTFDocument.new()
-		var gltf_state = GLTFState.new()
-		var snd_file = FileAccess.open(path, FileAccess.READ)
-		var fileBytes = PackedByteArray()
-		fileBytes = snd_file.get_buffer(snd_file.get_length())
-		
-		gltf.append_from_buffer(fileBytes, "base_path?", gltf_state)
-		node = gltf.generate_scene(gltf_state)
-	else:
-		node = load(path).instantiate()
-	
-	return node
 
 class Damage:
 	var amount = 1

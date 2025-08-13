@@ -1,4 +1,5 @@
 extends Node3D
+class_name AudioPlayer
 
 @export var universal = false
 
@@ -43,7 +44,7 @@ func play(title, config={}):
 				new_sfx = AudioStreamPlayer.new()
 			else:
 				new_sfx = AudioStreamPlayer3D.new()
-			var stream = a.get_stream(paths[sound_num])
+			var stream = ResourceManager.load_sound(paths[sound_num])
 			
 			new_sfx.pitch_scale = randf_range(0.95, 1.05)
 			
@@ -79,7 +80,7 @@ func start_loop(title, config={}):
 				new_sfx = AudioStreamPlayer.new()
 			else:
 				new_sfx = AudioStreamPlayer3D.new()
-			var stream = a.get_stream(paths[0])
+			var stream = ResourceManager.load_sound(paths[0])
 			
 			add_child(new_sfx)
 			
@@ -103,11 +104,13 @@ func end_loop(title, config={}):
 			currently_looping_sounds.erase(loop)
 			break
 
+
 func has_loop(title, config={}):
 	for loop in currently_looping_sounds:
 		if loop[0] == title and loop[1] == config:
 			return true
 	return false
+
 
 func clear_loops():
 	
@@ -115,27 +118,40 @@ func clear_loops():
 		
 		end_loop(loop[0], loop[1])
 
-func add_sound(path, title, _mod):
-	var full_paths = []
-	
-	for p in path:
-		full_paths.append(path)
-	
-	sound_effects[title] = full_paths
 
 func clear():
 	sound_effects = {}
 
 
-func add_library(library, origin_mod):
+func set_sound(sound_name, paths):
+	sound_effects[sound_name] = paths
+
+func add_library(library):
 	var all_sounds = library.duplicate()
 	
 	for key in all_sounds:
 		var value = all_sounds.get(key)
 		
+		var details_list = []
+		
 		for path_type in value.keys():
 			var sound_list = value.get(path_type)
 			
-			for sound in sound_list:
-				add_sound(f.get_data_path({path_type : sound}, origin_mod), key, origin_mod)
-	
+			for file in sound_list:
+				
+				var path = get_sound_path(path_type)
+				
+				var details = ResourceManager.SoundLoadDetails.new(path, file)
+				
+				details_list.append(details)
+		
+		set_sound(key, details_list)
+
+func get_sound_path(path_type):
+	match path_type:
+		"cSoundsPath":
+			return ResourceManager.CharactersSoundLoadDir.new()
+		"SharedPath":
+			return ResourceManager.LevelsSharedFolderLoadDir.new()
+		_:
+			assert(false, path_type + " not accounted for bro")

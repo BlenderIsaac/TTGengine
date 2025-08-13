@@ -27,6 +27,7 @@ func spawn_interface():
 	interface = Interface.new()
 	interface.connect("choose_level", level_manager.load_level)
 	interface.connect("choose_mod", set_mod)
+	interface.game_manager = self
 	add_child(interface)
 
 

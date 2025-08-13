@@ -2,6 +2,7 @@ extends Node
 class_name Interface
 
 var current_screen = null
+var game_manager : GameManager
 
 enum {
 	MAIN_MENU
@@ -14,6 +15,8 @@ signal choose_mod(mod)
 
 func _ready():
 	create_screens()
+	
+	game_manager.level_manager.connect("level_loading", reset_screen)
 	
 	name = "Interface"
 
@@ -38,6 +41,10 @@ func load_screen(screen_idx):
 	current_screen = screens[screen_idx]
 	current_screen.show()
 
+func reset_screen():
+	current_screen.hide()
+	current_screen = null
+
 class PauseScreen extends InterfaceScreen:
 	pass
 
@@ -55,8 +62,8 @@ class MainMenuScreen extends InterfaceScreen:
 					InterfaceImage.new("res://Textures/ahsokamenu2.png"),
 					InterfaceLineEdit.new("Mod", set_mod, "Ahsoka Show"),
 					InterfaceButton.new("Load Hub", button_load_hub),
-					InterfaceLineEdit.new("Level", set_level, "EscapeOnArcana"),
-					InterfaceLineEdit.new("Section", set_section, "Approach"),
+					InterfaceLineEdit.new("Level", set_level, "RescueTheWitch"),
+					InterfaceLineEdit.new("Section", set_section, "Bridge"),
 					InterfaceButton.new("Load Level", button_load_level),
 				])
 	
@@ -75,7 +82,7 @@ class MainMenuScreen extends InterfaceScreen:
 		
 		load_command.mod = mod
 		load_command.level = level
-		load_command.section = section
+		load_command.section_override = section
 		load_command.mode = LevelManager.LevelLoadCommand.STORY
 		
 		emit_signal("choose_mod", mod)

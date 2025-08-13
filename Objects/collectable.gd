@@ -45,21 +45,21 @@ func load_materials():
 	for idx in mattes.keys():
 		var matte_data = mattes[idx]
 		
-		var material = Materials.get_modless_matte(matte_data)
-		$Mesh.set_surface_override_material(idx, material)
+		##var material = Materials.get_modless_matte(matte_data)
+		##$Mesh.set_surface_override_material(idx, material)
 
 
 func _on_body_entered(body):
 	if body.is_in_group("Character"):
 		if !body.dead and body.player and !body.AI:
-			Levels.i_am_dead(self)
+			##Levels.i_am_dead(self)
 			
 			var proj_pos = Vector2()
 			var cam : Camera3D = get_tree().get_first_node_in_group("GAMECAM")
 			
 			proj_pos = cam.unproject_position(global_position)
 			
-			Interface.collectable_found(proj_pos, type)
+			##Interface.collectable_found(proj_pos, type)
 			queue_free()
 
 

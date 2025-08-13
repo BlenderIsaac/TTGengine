@@ -1,29 +1,31 @@
-extends LevelGenerator
-class_name LevelGeneratorTTGL
+extends SectionGenerator
+class_name SectionGeneratorTTGL
 
 
-func generate(data : LevelManager.LevelLoadCommand) -> Level:
+
+func generate(data : Level.SectionLoadCommand) -> Section:
 	
-	var level := Level.new()
+	var section := Section.new()
 	
 	var level_name = data.level
 	var level_section = data.section if data.section else "WorldBetweenWorlds"
 	
-	var gltf = ResourceManager.load_gltf(ResourceManager.GltfLoadDetails.new(level_name, level_section))
-	var ttgl = ResourceManager.load_ttgl(ResourceManager.TtglLoadDetails.new(level_name, level_section))
+	var gltf = ResourceManager.LevelGltfLoadDetails.new(level_name, level_section).gen()
+	var ttgl = ResourceManager.TtglLoadDetails.new(level_name, level_section).gen()
+	gltf.name = "LEVEL_GLTF"
 	
 	var mode = ""
 	var modes = ["OBJECTS", "SCENE"]
 	
 	var Nav = NavigationRegion3D.new()
 	Nav.name = "NAV"
-	level.add_child(Nav)
+	section.add_child(Nav)
 	
 	var static_body = StaticBody3D.new()
 	static_body.hide()
 	#static_body.add_to_group("respawnable")
 	static_body.name = "LEVEL_COLLISION"
-	level.add_child(static_body)
+	section.add_child(static_body)
 	
 	# name indexes
 	var stud_idx = 0
@@ -41,7 +43,9 @@ func generate(data : LevelManager.LevelLoadCommand) -> Level:
 	var is_default_env = true
 	var is_default_sun = true
 	
-	for line in ttgl:
+	for line : String in ttgl:
+		
+		line = line.strip_escapes()
 		
 		if line in modes:
 			mode = line
@@ -69,7 +73,7 @@ func generate(data : LevelManager.LevelLoadCommand) -> Level:
 							spawn.Char = props.CHARACTER
 							spawn.Pos = props.POSITION
 							
-							##player_spawns.append(spawn)
+							section.player_starting_positions.append(spawn)
 						if attr.has("ENEMY_SPAWN"):
 							pass
 							##var dead = false
@@ -79,19 +83,20 @@ func generate(data : LevelManager.LevelLoadCommand) -> Level:
 									##dead = true
 							
 							##if !dead:
-								##var enemy = generate_char(props.CHARACTER, props.MOD, props.POSITION)
-								##enemy.hit_points = enemy.ai_hit_points
+							##var enemy = generate_char(props.CHARACTER, props.MOD, props.POSITION)
+							##enemy.hit_points = enemy.ai_hit_points
 							
 							##char_index += 1
 						if attr.has("STARTCAMERA"):
+							print("start cam")
 							var cam_node = gltf.get_node_or_null(props.NAME)
 							if cam_node:
-								level.camera = ResourceManager.create_scene("Level/GameCam", Vector3(), level)
-								level.camera.begin_transform_override = true
-								level.camera.transform = cam_node.transform
-								level.camera.get_node("Collision").position = cam_node.position
+								section.camera = ResourceManager.create_scene("Level/GameCam", Vector3(), section)
+								section.camera.begin_transform_override = true
+								section.camera.transform = cam_node.transform
+								section.camera.get_node("Collision").position = cam_node.position
 					elif obj_type == "NAV_LNK":
-						level.add_child(create_navlink(Vector3(0, 0, 0), props.POSITION_FROM, props.POSITION_TO, props.LINKS, props.BIDI))
+						section.add_child(create_navlink(Vector3(0, 0, 0), props.POSITION_FROM, props.POSITION_TO, props.LINKS, props.BIDI))
 					elif obj_type == "STUD":
 						var new_stud = ResourceManager.load_scene("Objects/Stud").instantiate()
 						
@@ -103,7 +108,7 @@ func generate(data : LevelManager.LevelLoadCommand) -> Level:
 						new_stud.name = "Stud"+str(stud_idx)
 						stud_idx += 1
 						
-						level.add_child(new_stud)
+						section.add_child(new_stud)
 					elif obj_type == "SUN":
 						var point = DirectionalLight3D.new()
 						point.position = props.POSITION
@@ -118,7 +123,7 @@ func generate(data : LevelManager.LevelLoadCommand) -> Level:
 						point.name = "Sun"+str(sun_idx)
 						sun_idx += 1
 						
-						level.add_child(point)
+						section.add_child(point)
 					elif obj_type == "POINT":
 						var point = OmniLight3D.new()
 						
@@ -130,7 +135,7 @@ func generate(data : LevelManager.LevelLoadCommand) -> Level:
 						point.name = "Point"+str(point_idx)
 						point_idx += 1
 						
-						level.add_child(point)
+						section.add_child(point)
 					else:
 						# not ref
 						var obj = gltf.get_node_or_null(array[1])
@@ -158,7 +163,7 @@ func generate(data : LevelManager.LevelLoadCommand) -> Level:
 									obj.add_child(animated_body)
 								else:
 									var col = generate_col(obj.mesh)
-									##col.transform = f.transform_based_on_parent(gltf, obj)#obj.transform
+									col.transform = transform_based_on_parent(gltf, obj)
 									static_body.add_child(col)
 									
 									if not "NORESPAWN" in attr:
@@ -187,7 +192,7 @@ func generate(data : LevelManager.LevelLoadCommand) -> Level:
 									obj = obj.get_node(str(obj.name))
 								
 								var idx = 0
-								for matte in props.Materials:
+								for matte in props.MATERIALS:
 									
 									if !obj.get_surface_override_material_count() <= idx:
 										
@@ -198,7 +203,7 @@ func generate(data : LevelManager.LevelLoadCommand) -> Level:
 								if true:
 									# add materials to the object
 									var idx = 0
-									for matte in props.Materials:
+									for matte in props.MATERIALS:
 										
 										obj.set_surface_override_material(idx, matte)
 										
@@ -239,7 +244,7 @@ func generate(data : LevelManager.LevelLoadCommand) -> Level:
 									nav.add_to_group("CamCurve")
 									
 									cam_idx += 1
-									level.add_child(nav)
+									section.add_child(nav)
 									
 									obj.hide()
 							elif obj_type == "ANIM":
@@ -388,34 +393,33 @@ func generate(data : LevelManager.LevelLoadCommand) -> Level:
 						"DefaultSun":
 							is_default_sun = pyth_bool(value)
 						"WorldColour":
-							if level.environment:
-								level.environment = ResourceManager.load_tres("res://Levels/ClearColorEnv.tres")
-								level.environment.background_color = value
+							if section.environment:
+								section.environment = ResourceManager.load_tres("res://Levels/ClearColorEnv.tres")
+								section.environment.background_color = value
 						"DeathY":
-							level.death_height = float(value)
+							section.death_height = float(value)
 	
 	
 	if is_default_env:
 		var env = WorldEnvironment.new()
 		env.environment = ResourceManager.load_tres("Levels/SkyEnv")
-		level.environment = env
-		level.add_child(env)
+		section.environment = env
+		section.add_child(env)
 	
 	if is_default_sun:
 		var sun = DirectionalLight3D.new()
 		sun.shadow_enabled = true
 		sun.rotation_degrees = Vector3(-68.6, -134.4, -32.0)
-		level.sun = sun
-		level.add_child(sun)
+		section.sun = sun
+		section.add_child(sun)
 	
-	level.add_child(gltf)
-	
+	section.add_child(gltf)
 	
 	Nav.navigation_mesh = NavigationMesh.new()
 	
 	Nav.call_deferred("bake_navigation_mesh")
 	
-	return level
+	return section
 
 func get_properties(array):
 	var properties = {
@@ -437,7 +441,7 @@ func get_properties(array):
 				value = vector_to_godot(value)
 			elif key == "ROTATION":
 				value = rot_to_godot(value)
-			elif key == "Materials":
+			elif key == "MATERIALS":
 				value = material_to_godot(value)
 			
 			if typeof(value) == typeof(""):
@@ -482,9 +486,69 @@ func material_to_godot(material_string):
 	for matte_array in material_arrays:
 		var raw_array = matte_array.split("|")
 		
-		##materials.append(decode_material(raw_array))
+		var matte_details := TtglTranslatedMaterialLoadDetails.new(raw_array)
+		materials.append(matte_details.gen())
 	
 	return materials
+
+class TtglTranslatedMaterialLoadDetails extends ResourceManager.MaterialLoadDetails:
+	func _init(matte_array):
+		if matte_array.size() == 2 or matte_array.is_empty() or matte_array[0] == "":
+			return
+		
+		var matte_type = matte_array[2]
+		
+		if matte_type == "PART":
+			base_material = "add"
+		elif matte_type == "ROUGH":
+			base_material = "rough"
+		elif matte_type == "UNSHDD":
+			base_material = "unshaded"
+		elif matte_array.has("METALLIC"):
+			base_material = "metallic"
+		elif matte_type == "LOAD":
+			#assert(false, "Loading materials not implemented. The example is: " + str(matte_array[3]))
+			var path_data = matte_array[3].trim_prefix("LOADPATH")
+			var translation = translate_location_string(path_data)
+			
+			base_material = "load"
+			load_path = translation[0]
+			load_file = translation[1]
+		
+		for item in matte_array.slice(3):
+			if item.begins_with("ALBEDO"):
+				color = item.trim_prefix("ALBEDO")
+			if item.begins_with("PRESET"):
+				if matte_array.has("METALLIC"):
+					metallic_preset_color = item.trim_prefix("PRESET")
+				else:
+					preset_color = item.trim_prefix("PRESET")
+			if item.begins_with("TEXTURE"):
+				var texture_string = item.trim_prefix("TEXTURE")
+				var translation = translate_location_string(texture_string)
+				texture = ResourceManager.TextureLoadDetails.new(translation[0], translation[1])
+			if item.begins_with("NORMAL_TEXTURE"):
+				var texture_string = item.trim_prefix("NORMAL_TEXTURE")
+				var translation = translate_location_string(texture_string)
+				normal_texture = ResourceManager.TextureLoadDetails.new(translation[0], translation[1])
+	
+	func translate_location_string(string):
+		var dir : ResourceManager.LoadDir
+		var file : String
+		
+		var split = string.split("&")
+		
+		if split[0] in ["LevelDataPath", "ldp"]:
+			var path_split = split[1].split("/")
+			dir = ResourceManager.LevelFolderLoadDir.new(path_split[0])
+			file = path_split[1]
+		elif split[0] in ["SharedPath", "lSharedPath"]:
+			dir = ResourceManager.LevelsSharedFolderLoadDir.new()
+			file = split[1]
+		else:
+			assert(false, str(split) + " was not accounted for in translation")
+		
+		return [dir, file]
 
 
 func generate_col(mesh):
@@ -616,3 +680,19 @@ func create_navlink(pos, from, to, groups, bidi):
 	navlink_idx += 1
 	
 	return new_NavLink
+
+func transform_based_on_parent(parent, object):
+	var total_transform = object.transform
+	
+	var last_object = object.get_parent()
+	
+	while last_object != parent:
+		#Transform3D().origin
+		total_transform.origin += last_object.transform.origin
+		total_transform.basis = Basis.from_euler(last_object.transform.basis.get_euler() + total_transform.basis.get_euler())
+		
+		#total_transform += last_object.transform.scale
+		
+		last_object = last_object.get_parent()
+	
+	return total_transform

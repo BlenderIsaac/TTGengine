@@ -12,11 +12,11 @@ func get_stream(path):
 
 
 func load_stream(path):
-	if !SETTINGS.mobile:
+	#if !SETTINGS.mobile:
 		var audLoad = AudioLoader.new()
 		var stream = audLoad.loadfile(path)
 		
 		return stream
-	else:
-		var stream = load(path)
-		return stream
+	#else:
+	#	var stream = load(path)
+	#	return stream

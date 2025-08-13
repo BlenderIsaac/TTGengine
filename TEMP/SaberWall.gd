@@ -16,7 +16,7 @@ var gltf
 func _ready():
 	
 	var idx = 0
-	for matte in props.Materials:
+	for matte in props.MATERIALS:
 		
 		set_surface_override_material(idx, matte)
 		
@@ -48,4 +48,3 @@ func destroy():
 	destroyed = true
 	
 	remove_from_group("SaberWall")
-

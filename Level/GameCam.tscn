@@ -11,7 +11,6 @@ size = Vector3(0.12, 1.47, 0.08)
 radius = 0.186708
 
 [node name="GameCam" type="Camera3D" groups=["GAMECAM"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 cull_mask = 1
 current = true
 fov = 90.0

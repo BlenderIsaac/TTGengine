@@ -23,5 +23,5 @@ func SpawnGameManager():
 	add_child(currentGameManager)
 
 
-func SaveSaveSlot(index):
+func SaveSaveSlot(_index):
 	pass

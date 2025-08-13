@@ -8,11 +8,10 @@ var stud_value = 1000
 
 var audio = null
 
-var sound_mod = "Ahsoka Show"
 var sounds = {
-		"Destroy" : {
-			"SharedPath" : ["EXP_DEBRIS_04.WAV", "EXP_DEBRIS_05.WAV"]
-		},
+	"Destroy" : {
+		"SharedPath" : ["EXP_DEBRIS_04.WAV", "EXP_DEBRIS_05.WAV"]
+	},
 }
 
 func _ready():
@@ -20,8 +19,8 @@ func _ready():
 	add_to_group("AttackLockOn")
 	add_to_group("Attackable")
 	set_collision_layer_value(2, true)
-	audio = f.make("res://Scripts/AudioPlayer.tscn", position+aim_pos, self)
-	audio.add_library(sounds, sound_mod)
+	audio = ResourceManager.create_scene("Scripts/AudioPlayer", position+aim_pos, self)
+	audio.add_library(sounds)
 
 
 func take_knockback(amount, _who_from=null):
@@ -42,7 +41,7 @@ func die():
 	for stud in studs_dropped:
 		drop_stud(stud)
 	
-	Levels.i_am_dead(self)
+	###Levels.i_am_dead(self)
 	
 	queue_free()
 
@@ -52,12 +51,9 @@ var stud_max_height = 6.0
 var stud_min_height = 1.0
 
 func drop_stud(type):
-	var sTUD_pICKUP = l.get_load("res://Objects/Stud.tscn")
+	var stud = ResourceManager.create_scene("Objects/Stud", global_position+Vector3(0, 1, 0), get_parent())
 	
-	var stud = sTUD_pICKUP.instantiate()
-	get_parent().add_child(stud)
 	stud.set_type(type)
-	stud.global_position = global_position+Vector3(0, 1, 0)
 	
 	var rand_vel_up = randf_range(stud_min_height, stud_max_height)
 	var rand_vel_top = Vector2(randf_range(-1, 1), randf_range(-1, 1))
