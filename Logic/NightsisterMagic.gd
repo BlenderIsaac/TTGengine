@@ -308,7 +308,7 @@ func ensuremagicOutline_exists():
 	if get_node_or_null("MagicOutline") == null:
 		var magicOutline = l.get_load(SETTINGS.mod_path+"/"+C.origin_mod+"/characters/scenes/"+"forceoutline.tscn").instantiate()
 		var magicOutlineScript = l.get_load(SETTINGS.mod_path+"/"+C.origin_mod+"/characters/scripts/"+"forceoutline.gd")
-		var magicOutlineTexture = MATERIALS.load_texture(SETTINGS.mod_path+"/"+C.origin_mod+"/characters/textures/"+"magic.png")
+		var magicOutlineTexture = Materials.load_texture(SETTINGS.mod_path+"/"+C.origin_mod+"/characters/textures/"+"magic.png")
 		
 		magicOutline.set_script(magicOutlineScript)
 		

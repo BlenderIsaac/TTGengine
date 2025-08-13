@@ -797,7 +797,7 @@ func load_icons(mod):
 				
 				file.close()
 			
-			var icon = create_icon(MATERIALS.load_texture(SETTINGS.mod_path+"/"+mod+"/characters/icons/"+icon_path), char_name)
+			var icon = create_icon(Materials.load_texture(SETTINGS.mod_path+"/"+mod+"/characters/icons/"+icon_path), char_name)
 			
 			if !char_data.has(mod):
 				char_data[mod] = []

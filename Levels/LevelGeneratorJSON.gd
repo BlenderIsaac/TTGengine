@@ -33,7 +33,7 @@ func generate(leveldata, gen_level_name, gen_mod, gen_section):
 					
 					var matte_data = matte_datas.get(matte_id)
 					
-					var matte = MATERIALS.get_matte(matte_data, gen_mod)
+					var matte = Materials.get_matte(matte_data, gen_mod)
 					
 					mesh.set_surface_override_material(int(matte_id), matte)
 	
@@ -166,7 +166,7 @@ func generate_mesh(path, _config={}):
 	
 	m.mesh = mesh
 	
-	MATERIALS.set_materials(mesh, m, mod)
+	Materials.set_materials(mesh, m, mod)
 	
 	return m
 
@@ -201,7 +201,7 @@ func generate_gltf(path, _config={}):
 	
 	for child in f.get_all_children(node):
 		if child is MeshInstance3D:
-			MATERIALS.set_materials(child.mesh, child, mod)
+			Materials.set_materials(child.mesh, child, mod)
 	
 	return node
 

@@ -1,0 +1,65 @@
+[gd_scene load_steps=6 format=3 uid="uid://b55od2xqxr2h7"]
+
+[ext_resource type="Script" uid="uid://c3m24mivu4lni" path="res://Levels/Cam.gd" id="1_bopid"]
+[ext_resource type="Script" uid="uid://cw3hkpum73ixe" path="res://Interfaces/OnUI.gd" id="2_tywrn"]
+[ext_resource type="PackedScene" uid="uid://d2bsp27ml58jg" path="res://TEMP/debugsymbol.tscn" id="3_a15wj"]
+
+[sub_resource type="PrismMesh" id="PrismMesh_h1qod"]
+size = Vector3(0.12, 1.47, 0.08)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_q7nh5"]
+radius = 0.186708
+
+[node name="GameCam" type="Camera3D" groups=["GAMECAM"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+cull_mask = 1
+current = true
+fov = 90.0
+script = ExtResource("1_bopid")
+move_type = "Navigation"
+follow_path = true
+
+[node name="OnUI" type="Node3D" parent="."]
+top_level = true
+script = ExtResource("2_tywrn")
+
+[node name="Sprite3D" parent="." instance=ExtResource("3_a15wj")]
+top_level = true
+visible = false
+
+[node name="Sprite3D2" parent="." instance=ExtResource("3_a15wj")]
+top_level = true
+visible = false
+modulate = Color(1, 0.415686, 0.721569, 1)
+
+[node name="Debug" parent="." instance=ExtResource("3_a15wj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.09201, -4.14845, -5.60454)
+top_level = true
+visible = false
+
+[node name="Debug2" parent="." instance=ExtResource("3_a15wj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.09201, -4.14845, -5.60454)
+top_level = true
+visible = false
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -0.651805)
+visible = false
+mesh = SubResource("PrismMesh_h1qod")
+skeleton = NodePath("../..")
+
+[node name="MoveCloser" type="NavigationAgent3D" parent="."]
+navigation_layers = 128
+debug_use_custom = true
+debug_path_custom_color = Color(1, 0, 1, 1)
+
+[node name="PullBack" type="NavigationAgent3D" parent="."]
+navigation_layers = 128
+debug_use_custom = true
+debug_path_custom_color = Color(0, 1, 1, 1)
+
+[node name="Collision" type="CharacterBody3D" parent="."]
+top_level = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collision"]
+shape = SubResource("SphereShape3D_q7nh5")

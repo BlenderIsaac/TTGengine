@@ -59,7 +59,7 @@ func generate_gltf():
 	
 	#for child in f.get_all_children(node):
 		#if child is MeshInstance3D:
-			#MATERIALS.set_materials(child.mesh, child, door_path.Mod)
+			#Materials.set_materials(child.mesh, child, door_path.Mod)
 	
 	return node
 

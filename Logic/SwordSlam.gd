@@ -58,7 +58,7 @@ func exclusive_physics(_delta):
 			
 			C.get_parent().add_child(slam_particles)
 			
-			slam_particles.get_node("Particles").mesh.material = MATERIALS.get_tag_part_material(slam_colour)
+			slam_particles.get_node("Particles").mesh.material = Materials.get_tag_part_material(slam_colour)
 			slam_particles.get_node("Decal").modulate = Color(slam_colour)
 	
 	# Calculate gravity and respawn position

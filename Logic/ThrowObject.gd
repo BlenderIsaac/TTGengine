@@ -114,7 +114,7 @@ func throw_object():
 	
 	for matte in obj_materials.keys():
 		for m in [object.get_node("Normal"), object.get_node("Glow")]:
-			m.set_surface_override_material(int(matte), MATERIALS.get_matte(obj_materials.get(matte), C.origin_mod))
+			m.set_surface_override_material(int(matte), Materials.get_matte(obj_materials.get(matte), C.origin_mod))
 	
 	object.apply_torque(rot)
 	object.apply_central_impulse(obj_vel.rotated(Vector3.UP, angle))

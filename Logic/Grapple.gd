@@ -109,7 +109,7 @@ func ensure_zipup_exists():
 		var M = BoxMesh.new()
 		
 		M.size = Vector3(0.07, 0.1, 0.07)
-		var Matte = MATERIALS.get_loaded_material("ZipupChain.tres", C.origin_mod)
+		var Matte = Materials.get_loaded_material("ZipupChain.tres", C.origin_mod)
 		M.material = Matte
 		
 		MeshInstance.mesh = M

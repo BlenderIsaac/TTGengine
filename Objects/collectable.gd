@@ -45,7 +45,7 @@ func load_materials():
 	for idx in mattes.keys():
 		var matte_data = mattes[idx]
 		
-		var material = MATERIALS.get_modless_matte(matte_data)
+		var material = Materials.get_modless_matte(matte_data)
 		$Mesh.set_surface_override_material(idx, material)
 
 

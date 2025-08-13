@@ -175,12 +175,12 @@ func preload_char_from_file(filename, char_mod):
 		# preload textures
 		if loads.has("Textures"):
 			for texture in loads.Textures:
-				MATERIALS.load_texture(f.get_data_path(texture, char_mod))
+				Materials.load_texture(f.get_data_path(texture, char_mod))
 		
 		# preload materials
 		if loads.has("Materials"):
 			for matte in loads.Materials:
-				MATERIALS.get_matte(matte, char_mod)
+				Materials.get_matte(matte, char_mod)
 		
 		# preload objects
 		if loads.has("Obj"):
@@ -213,7 +213,7 @@ func preload_char_from_file(filename, char_mod):
 	if data.has("Materials"):
 		for body_part in data.Materials.values():
 			for matte in body_part.values():
-				MATERIALS.get_matte(matte, char_mod)
+				Materials.get_matte(matte, char_mod)
 	
 	# preload animations
 	if data.has("Animations"):

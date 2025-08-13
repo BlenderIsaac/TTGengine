@@ -138,7 +138,7 @@ func load_model(mod, level_name):
 						obj = obj.get_node(str(obj.name))
 					
 					var idx = 0
-					for matte in props.MATERIALS:
+					for matte in props.Materials:
 						
 						if !obj.get_surface_override_material_count() <= idx:
 							
@@ -187,7 +187,7 @@ func get_properties(array):
 				value = vector_to_godot(value)
 			elif key == "ROTATION":
 				value = rot_to_godot(value)
-			elif key == "MATERIALS":
+			elif key == "Materials":
 				value = material_to_godot(value)
 			
 			if typeof(value) == typeof(""):
@@ -238,23 +238,23 @@ func decode_material(matte_array):
 	#["1", "Material", "UNSHADED", "ALBEDO-ff4b32ff"]
 	# dealing with bad materials
 	if matte_array.size() == 2 or matte_array.is_empty() or matte_array[0] == "":
-		return MATERIALS.get_basic_material("ffffff", MATERIALS.BasicMatte)
+		return Materials.get_basic_material("ffffff", Materials.BasicMatte)
 	
 	var matte_type = matte_array[2]
-	var base_material = MATERIALS.BasicMatte
+	var base_material = Materials.BasicMatte
 	
 	if matte_type == "PART":
-		base_material = MATERIALS.AddMatte
+		base_material = Materials.AddMatte
 	elif matte_type == "ROUGH":
-		base_material = MATERIALS.RoughMatte
+		base_material = Materials.RoughMatte
 	elif matte_type == "UNSHDD":
-		base_material = MATERIALS.UnshadedMatte
+		base_material = Materials.UnshadedMatte
 	elif matte_array.has("METALLIC"):
-		base_material = MATERIALS.MetallicMatte
+		base_material = Materials.MetallicMatte
 	elif matte_type == "LOAD":
 		var path_data = (matte_array[3].trim_prefix("LOADPATH")).split("&")
 		var matte_path = f.get_data_path({path_data[0] : path_data[1], "Mod" : c_mod})
-		return MATERIALS.get_loaded_material(matte_path)
+		return Materials.get_loaded_material(matte_path)
 	
 	var colour="ffffff"
 	var texture
@@ -264,9 +264,9 @@ func decode_material(matte_array):
 			colour = item.trim_prefix("ALBEDO")
 		if item.begins_with("PRESET"):
 			if matte_array.has("METALLIC"):
-				colour = MATERIALS.metallic_material_data[item.trim_prefix("PRESET")]
+				colour = Materials.metallic_material_data[item.trim_prefix("PRESET")]
 			else:
-				colour = MATERIALS.material_data[item.trim_prefix("PRESET")]
+				colour = Materials.material_data[item.trim_prefix("PRESET")]
 		if item.begins_with("TEXTURE"):
 			var texture_string = item.trim_prefix("TEXTURE")
 			texture = decode_texture_string(texture_string.split("&"))
@@ -276,11 +276,11 @@ func decode_material(matte_array):
 	
 	if texture:
 		if normal_texture:
-			return MATERIALS.get_texture_normal_material(texture, normal_texture, base_material, colour)
+			return Materials.get_texture_normal_material(texture, normal_texture, base_material, colour)
 		else:
-			return MATERIALS.get_texture_material(texture, base_material, colour)
+			return Materials.get_texture_material(texture, base_material, colour)
 	else:
-		return MATERIALS.get_basic_material(colour, base_material)
+		return Materials.get_basic_material(colour, base_material)
 
 func decode_texture_string(array):
 	return f.get_data_path({array[0] : array[1], "Mod" : c_mod})

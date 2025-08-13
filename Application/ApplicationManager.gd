@@ -5,17 +5,14 @@ var savePath = "user://saves/"
 var currentSaveSlot = -1
 var currentGameManager = null
 
-
 func _ready():
 	print("Starting Application Manager")
 	LoadSaveSlot(0)
-
 
 func LoadSaveSlot(index):
 	print("Loading save slot " + str(index))
 	## Load here
 	SpawnGameManager()
-
 
 func SpawnGameManager():
 	if currentGameManager != null:

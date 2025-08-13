@@ -127,7 +127,7 @@ func spawn_objects():
 		
 		var mesh_instance = MeshInstance3D.new()
 		SwordExtras.add_child(mesh_instance)
-		mesh_instance.material_overlay = MATERIALS.FlashOverlay
+		mesh_instance.material_overlay = Materials.FlashOverlay
 		C.meshes_to_modulate.append(mesh_instance)
 		
 		var mesh_path = f.get_data_path(weapon_mesh_path, C.origin_mod)
@@ -137,7 +137,7 @@ func spawn_objects():
 		mesh_instance.mesh = weapon_mesh
 		
 		for matte in weapon_materials.keys():
-			mesh_instance.set_surface_override_material(int(matte), MATERIALS.get_matte(weapon_materials.get(matte), C.origin_mod))
+			mesh_instance.set_surface_override_material(int(matte), Materials.get_matte(weapon_materials.get(matte), C.origin_mod))
 	elif weapon_gltf_path != {}:
 		
 		var gltf_path = f.get_data_path(weapon_gltf_path, C.origin_mod)
@@ -149,7 +149,7 @@ func spawn_objects():
 			if m is MeshInstance3D:
 				
 				for matte in weapon_materials.keys():
-					m.set_surface_override_material(int(matte), MATERIALS.get_matte(weapon_materials.get(matte), C.origin_mod))
+					m.set_surface_override_material(int(matte), Materials.get_matte(weapon_materials.get(matte), C.origin_mod))
 				
 				break
 		
@@ -248,7 +248,7 @@ func generate_gltf(gltf, mod):
 	
 	for child in f.get_all_children(node):
 		if child is MeshInstance3D:
-			MATERIALS.set_char_materials(child.mesh, child, mod)
+			Materials.set_char_materials(child.mesh, child, mod)
 	
 	return node
 

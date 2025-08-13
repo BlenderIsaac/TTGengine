@@ -156,6 +156,7 @@ var metallic_material_data = {
 	"Milky White": "F4F4F4",
 }
 
+var resource_manager : ResourceManager
 
 var basic_loaded_materials = {}
 var texture_loaded_materials = {}
@@ -178,13 +179,13 @@ func load_texture(path):
 	
 	if not texture_loads.has(path):
 		
-		if !SETTINGS.mobile:
+		#if !SETTINGS.mobile:
 			var image = Image.new()
 			image.load(path)
 			
 			texture_loads[path] = ImageTexture.create_from_image(image)
-		else:
-			texture_loads[path] = load(path)
+		#else:
+			#texture_loads[path] = load(path)
 	
 	return texture_loads[path]
 
@@ -285,7 +286,7 @@ func get_matte(matte_data, origin_mod):
 		config = matte_data.Config
 	
 	
-	var matte_path = f.get_data_path(matte_data, origin_mod)
+	var matte_path = resource_manager.get_data_path(matte_data, origin_mod)
 	match matte_data.Type:
 		"Basic":
 			return get_basic_material(matte_data.Albedo, BasicMatte)
@@ -295,7 +296,7 @@ func get_matte(matte_data, origin_mod):
 		"Preset":
 			return get_preset_basic_material(matte_data.Preset, BasicMatte)
 		"TexturePreset":
-			return get_texture_material(matte_path, BasicMatte, MATERIALS.get_preset(matte_data.Preset))
+			return get_texture_material(matte_path, BasicMatte, Materials.get_preset(matte_data.Preset))
 		"TextureBasic":
 			return get_texture_material(matte_path, BasicMatte, matte_data.Albedo)
 		
@@ -313,7 +314,7 @@ func get_matte(matte_data, origin_mod):
 		"RoughPreset":
 			return get_preset_basic_material(matte_data.Preset, RoughMatte)
 		"RoughTexturePreset":
-			return get_texture_material(matte_path, RoughMatte, MATERIALS.get_preset(matte_data.Preset))
+			return get_texture_material(matte_path, RoughMatte, Materials.get_preset(matte_data.Preset))
 		
 		"MetallicBasic":
 			return get_basic_material(matte_data.Albedo, MetallicMatte)
@@ -322,7 +323,7 @@ func get_matte(matte_data, origin_mod):
 		"MetallicPreset":
 			return get_preset_basic_material(matte_data.Preset, MetallicMatte)
 		"TextureMetallicPreset":
-			return get_texture_material(matte_path, MetallicMatte, MATERIALS.get_preset(matte_data.Preset))
+			return get_texture_material(matte_path, MetallicMatte, Materials.get_preset(matte_data.Preset))
 		
 		"Load":
 			return get_loaded_material(matte_path, config)
@@ -413,7 +414,7 @@ func get_loaded_material(path, config={}):
 		return load_loaded_materials.get(path+str(config))
 	else:
 		
-		var new_matte = l.get_load(path).duplicate()
+		var new_matte = resource_manager.get_load(path).duplicate()
 		
 		for c in config:
 			new_matte.set(c, config.get(c))

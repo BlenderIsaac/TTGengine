@@ -16,7 +16,7 @@ var gltf
 func _ready():
 	
 	var idx = 0
-	for matte in props.MATERIALS:
+	for matte in props.Materials:
 		
 		set_surface_override_material(idx, matte)
 		

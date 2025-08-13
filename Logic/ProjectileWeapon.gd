@@ -79,14 +79,14 @@ func spawn_objects():
 		mesh_instance.mesh = weapon_mesh
 		
 		for matte in weapon_materials.keys():
-			mesh_instance.set_surface_override_material(int(matte), MATERIALS.get_matte(weapon_materials.get(matte), C.origin_mod))
+			mesh_instance.set_surface_override_material(int(matte), Materials.get_matte(weapon_materials.get(matte), C.origin_mod))
 	
 	Extras.add_child(GunTipNode)
 	GunTipNode.position = gun_tip_offset
 	
 	get_node("../../Mesh/Armature/Skeleton3D").add_child(Extras)
 	
-	mesh_instance.material_overlay = MATERIALS.FlashOverlay
+	mesh_instance.material_overlay = Materials.FlashOverlay
 	C.meshes_to_modulate.append(mesh_instance)
 	
 	Extras.hide()
@@ -158,7 +158,7 @@ func generate_bullet_scene():
 		bullet_parent.add_child(new_col)
 	
 	for material in bullet_materials.keys():
-		m.set_surface_override_material(int(material), MATERIALS.get_matte(bullet_materials.get(material), C.origin_mod))
+		m.set_surface_override_material(int(material), Materials.get_matte(bullet_materials.get(material), C.origin_mod))
 	
 	bullet_parent.add_to_group("projectile")
 	

@@ -44,7 +44,7 @@ func _ready():
 	
 	var texture_path = SETTINGS.mod_path+"/"+C.origin_mod+"/characters/textures/"+sword_slash_texture_path
 	
-	swipe_matte.albedo_texture = MATERIALS.load_texture(texture_path)
+	swipe_matte.albedo_texture = Materials.load_texture(texture_path)
 	
 	TrailParent.get_node("End").position = sword_slash_end
 	TrailParent.get_node("Start").position = sword_slash_start

@@ -11,11 +11,16 @@ config_version=5
 [application]
 
 config/name="TTGengine"
-run/main_scene="res://Interfaces/main_menu.tscn"
+run/main_scene="uid://dr6wftrtpymfj"
 config/features=PackedStringArray("4.4")
 boot_splash/bg_color=Color(0, 0, 0, 1)
 boot_splash/image="res://Textures/TTGengineSplash.png"
 config/icon="res://icon.png"
+
+[autoload]
+
+ResourceManager="*res://Application/ResourceManager.gd"
+SettingsManager="*res://Application/SettingsManager.gd"
 
 [editor]
 

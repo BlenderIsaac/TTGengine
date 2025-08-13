@@ -1547,7 +1547,7 @@ func create_particles(tag_from, tag_to):
 		var colour = SETTINGS.player_colours.get(str(tag_from.player_number))
 		
 		# Set the material override to the tag particle material - TODO: globalize later into a global particle material
-		tag_particle.get_node("Trail").material_override = MATERIALS.get_tag_part_material(colour)
+		tag_particle.get_node("Trail").material_override = Materials.get_tag_part_material(colour)
 		# Set the position to our position added to the aiming position and the random pos
 		tag_particle.position = aim_pos+tag_from.position+Vector3(tag_x, tag_y, tag_z)
 		# Tell the tag_particle where it originated - so it can go to that same position on the tagged character
@@ -1637,7 +1637,7 @@ func reset_modulation():
 	# and append them to meshes_to_modulate
 	for mesh in $Mesh/Armature/Skeleton3D.get_children():
 		if mesh is MeshInstance3D:
-			mesh.material_overlay = MATERIALS.FlashOverlay
+			mesh.material_overlay = Materials.FlashOverlay
 			meshes_to_modulate.append(mesh)
 
 # This function gets data from a character file
@@ -1768,9 +1768,9 @@ func change_character(data, c_path, mod): # TODO: We don't need c_path here once
 		#for sound in initial_sounds.keys():
 			#$AudioPlayer.add_sound(initial_sounds.get(sound), sound, origin_mod)
 	
-	# Setup the Icon using the MATERIALS autoload
+	# Setup the Icon using the Materials autoload
 	if data.has("Icon"):
-		icon = MATERIALS.load_texture(SETTINGS.mod_path+"/"+origin_mod+"/characters/icons/"+data.Icon)
+		icon = Materials.load_texture(SETTINGS.mod_path+"/"+origin_mod+"/characters/icons/"+data.Icon)
 	else:
 		icon = null
 	
@@ -1948,7 +1948,7 @@ func change_character(data, c_path, mod): # TODO: We don't need c_path here once
 	for part_matt_name in data.Materials.keys():
 		var part_matte_data = data.Materials.get(part_matt_name)
 		for matte_id in part_matte_data:
-			set_material(part_matt_name, int(matte_id), MATERIALS.get_matte(part_matte_data.get(matte_id), origin_mod))
+			set_material(part_matt_name, int(matte_id), Materials.get_matte(part_matte_data.get(matte_id), origin_mod))
 	
 	# get the parent of the logics
 	var LogicParent = get_node("Logic")
@@ -2089,10 +2089,10 @@ func attach_model(model_path, attach_no, bone, materials):
 	
 	# Loop through the materials and set the material on the mesh
 	for matte_no in materials.keys():
-		node.set_surface_override_material(int(matte_no), MATERIALS.get_matte(materials.get(matte_no), origin_mod))
+		node.set_surface_override_material(int(matte_no), Materials.get_matte(materials.get(matte_no), origin_mod))
 	
 	# Give it the flash material as an overlay
-	node.material_overlay = MATERIALS.FlashOverlay
+	node.material_overlay = Materials.FlashOverlay
 	
 	# Make so it will change colour when flash_value is changed
 	meshes_to_modulate.append(node)
@@ -2151,10 +2151,10 @@ func attach_softbody(model_path, attach_no, bone, materials, indices, offsets):
 	
 	# Loop through the materials and set the material on the mesh
 	for matte_no in materials.keys():
-		node.set_surface_override_material(int(matte_no), MATERIALS.get_matte(materials.get(matte_no), origin_mod))
+		node.set_surface_override_material(int(matte_no), Materials.get_matte(materials.get(matte_no), origin_mod))
 	
 	# Give it the flash material as an overlay
-	node.material_overlay = MATERIALS.FlashOverlay
+	node.material_overlay = Materials.FlashOverlay
 	
 	# Make so it will change colour when flash_value is changed
 	meshes_to_modulate.append(node)

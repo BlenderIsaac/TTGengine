@@ -2,7 +2,6 @@ extends Node
 class_name Interface
 
 var current_screen = null
-var game_manager = null
 
 enum {
 	MAIN_MENU
@@ -10,6 +9,8 @@ enum {
 
 var screens = []
 
+signal choose_level(load_command : LevelManager.LevelLoadCommand)
+signal choose_mod(mod)
 
 func _ready():
 	create_screens()
@@ -19,8 +20,8 @@ func _ready():
 func create_screens():
 	## main menu
 	var main_menu = create_screen(MainMenuScreen)
-	main_menu.connect("load_hub", on_load_hub)
-	main_menu.connect("load_level", on_load_level)
+	main_menu.connect("choose_level", func(load_command): emit_signal("choose_level", load_command))
+	main_menu.connect("choose_mod", func(mod): emit_signal("choose_mod", mod))
 
 func create_screen(screen_class):
 	var screen = screen_class.new()
@@ -37,15 +38,13 @@ func load_screen(screen_idx):
 	current_screen = screens[screen_idx]
 	current_screen.show()
 
-
-
 class PauseScreen extends InterfaceScreen:
 	pass
 
 class MainMenuScreen extends InterfaceScreen:
 	
-	signal load_hub(mod)
-	signal load_level(mod, level, section)
+	signal choose_level(load_command)
+	signal choose_mod(mod)
 	
 	var mod : String
 	var level : String
@@ -54,18 +53,33 @@ class MainMenuScreen extends InterfaceScreen:
 	func _init():
 		super([
 					InterfaceImage.new("res://Textures/ahsokamenu2.png"),
-					InterfaceLineEdit.new("Mod", set_mod),
+					InterfaceLineEdit.new("Mod", set_mod, "Ahsoka Show"),
 					InterfaceButton.new("Load Hub", button_load_hub),
-					InterfaceLineEdit.new("Level", set_level),
-					InterfaceLineEdit.new("Section", set_section),
+					InterfaceLineEdit.new("Level", set_level, "EscapeOnArcana"),
+					InterfaceLineEdit.new("Section", set_section, "Approach"),
 					InterfaceButton.new("Load Level", button_load_level),
 				])
 	
 	func button_load_hub():
-		emit_signal("load_hub", mod)
+		var load_command = LevelManager.LevelLoadCommand.new()
+		
+		load_command.mod = mod
+		load_command.level = "HUB"
+		load_command.mode = LevelManager.LevelLoadCommand.HUB
+		
+		emit_signal("choose_mod", mod)
+		emit_signal("choose_level", load_command)
 	
 	func button_load_level():
-		emit_signal("load_level", mod, level, section)
+		var load_command = LevelManager.LevelLoadCommand.new()
+		
+		load_command.mod = mod
+		load_command.level = level
+		load_command.section = section
+		load_command.mode = LevelManager.LevelLoadCommand.STORY
+		
+		emit_signal("choose_mod", mod)
+		emit_signal("choose_level", load_command)
 	
 	func set_mod(new_mod):
 		mod = new_mod
@@ -75,25 +89,6 @@ class MainMenuScreen extends InterfaceScreen:
 	
 	func set_section(new_section):
 		section = new_section
-
-func on_load_hub(mod):
-	var load_command = LevelManager.LevelLoadCommand.new()
-	
-	load_command.mod = mod
-	load_command.level = "HUB"
-	load_command.mode = LevelManager.LevelLoadCommand.HUB
-	
-	game_manager.levelManager.load_level(load_command)
-
-func on_load_level(mod, level, section):
-	var load_command = LevelManager.LevelLoadCommand.new()
-	
-	load_command.mod = mod
-	load_command.level = level
-	load_command.section = section
-	load_command.mode = LevelManager.LevelLoadCommand.STORY
-	
-	game_manager.levelManager.load_level(load_command)
 
 class InterfaceScreen extends CenterContainer:
 	
@@ -130,6 +125,8 @@ class InterfaceButton extends Button:
 		flat = true
 
 class InterfaceLineEdit extends LineEdit:
-	func _init(_text, callable):
+	func _init(_text, callable, default):
 		placeholder_text = _text
 		connect("text_changed", callable)
+		text = default
+		emit_signal("text_changed", default)

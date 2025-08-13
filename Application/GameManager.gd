@@ -1,37 +1,35 @@
 extends Node
 class_name GameManager
 
-var currentMod : String
-var currentParty : Array
-var levelManager : LevelManager
+var current_mod : String
+var current_party : Array
+var level_manager : LevelManager
 var interface : Interface
-var currentPlayers : Array
-var resourceManager : ResourceManager
+var current_players : Array
+
 
 func _ready():
 	print("Starting Game Manager")
 	name = "Game Manager"
 	
-	
-	SpawnLevelManager()
-	SpawnInterface()
+	spawn_level_manager()
+	spawn_interface()
 	
 	interface.load_screen(Interface.MAIN_MENU)
 
-func SpawnInterface():
-	print("Spawning Interface")
-	if interface != null:
-		interface.queue_free()
-		interface = null
-	
+
+func spawn_level_manager():
+	level_manager = LevelManager.new()
+	add_child(level_manager)
+
+
+func spawn_interface():
 	interface = Interface.new()
-	interface.game_manager = self
+	interface.connect("choose_level", level_manager.load_level)
+	interface.connect("choose_mod", set_mod)
 	add_child(interface)
 
-func SpawnLevelManager():
-	if levelManager != null:
-		levelManager.queue_free()
-		levelManager = null
-	
-	levelManager = LevelManager.new()
-	add_child(levelManager)
+
+func set_mod(new_mod):
+	current_mod = new_mod
+	ResourceManager.current_mod = current_mod

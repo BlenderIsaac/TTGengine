@@ -75,7 +75,7 @@ func drop_stud(type):
 	#
 	#for b in get_children():
 		#if b is MeshInstance3D:
-			#b.material_overlay = MATERIALS.FlashOverlay
+			#b.material_overlay = Materials.FlashOverlay
 			#bits.append(b.get_path())
 	#
 	#for bit_name in bits:

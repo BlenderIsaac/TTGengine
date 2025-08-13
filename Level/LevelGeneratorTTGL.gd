@@ -1,44 +1,29 @@
-extends "Level.gd"
+extends LevelGenerator
+class_name LevelGeneratorTTGL
 
-var level_created_mod
 
-@warning_ignore("unused_parameter")
-func CREATE_LEVEL(N_mod, N_level_name, N_section):
+func generate(data : LevelManager.LevelLoadCommand) -> Level:
 	
-	level_created_mod = N_mod
+	var level := Level.new()
 	
-	var gltf_path = SETTINGS.mod_path+"/"+N_mod+"/levels/leveldata/"+N_level_name+"/"+N_section+"/"+N_section+".glb"#+N_level_section+"/"+N_level_section+".json"
-	var ttgl_path = SETTINGS.mod_path+"/"+N_mod+"/levels/leveldata/"+N_level_name+"/"+N_section+"/"+N_section+".ttgl"
+	var level_name = data.level
+	var level_section = data.section if data.section else "WorldBetweenWorlds"
 	
-	var gltf = generate_gltf(gltf_path)
-	gltf.name = "LEVEL_GLTF"
-	
-	var text = FileAccess.open(ttgl_path, FileAccess.READ)
+	var gltf = ResourceManager.load_gltf(ResourceManager.GltfLoadDetails.new(level_name, level_section))
+	var ttgl = ResourceManager.load_ttgl(ResourceManager.TtglLoadDetails.new(level_name, level_section))
 	
 	var mode = ""
 	var modes = ["OBJECTS", "SCENE"]
-	player_spawns = []
-	team_spawns = []
 	
 	var Nav = NavigationRegion3D.new()
 	Nav.name = "NAV"
-	add_child(Nav)
+	level.add_child(Nav)
 	
 	var static_body = StaticBody3D.new()
 	static_body.hide()
 	#static_body.add_to_group("respawnable")
 	static_body.name = "LEVEL_COLLISION"
-	add_child(static_body)
-	
-	#var norespawn_body = StaticBody3D.new()
-	#norespawn_body.hide()
-	#norespawn_body.name = "LEVEL_COLLISION_NORESPAWN"
-	#add_child(norespawn_body)
-	#
-	#var slide_body = StaticBody3D.new()
-	#slide_body.hide()
-	#slide_body.name = "LEVEL_COLLISION_SLIPPERY"
-	#add_child(slide_body)
+	level.add_child(static_body)
 	
 	# name indexes
 	var stud_idx = 0
@@ -53,9 +38,10 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 	var cam_idx = 0
 	var navoid_idx = 0
 	
-	while !text.eof_reached():
-		
-		var line = text.get_line()
+	var is_default_env = true
+	var is_default_sun = true
+	
+	for line in ttgl:
 		
 		if line in modes:
 			mode = line
@@ -83,33 +69,31 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 							spawn.Char = props.CHARACTER
 							spawn.Pos = props.POSITION
 							
-							player_spawns.append(spawn)
+							##player_spawns.append(spawn)
 						if attr.has("ENEMY_SPAWN"):
-							var dead = false
+							pass
+							##var dead = false
 							
-							if Levels.char_spawn_dead.has(N_section):
-								if Levels.char_spawn_dead[N_section].has(char_index):
-									dead = true
+							##if Levels.char_spawn_dead.has(N_section):
+								##if Levels.char_spawn_dead[N_section].has(char_index):
+									##dead = true
 							
-							if !dead:
-								var enemy = generate_char(props.CHARACTER, props.MOD, props.POSITION)
-								enemy.hit_points = enemy.ai_hit_points
+							##if !dead:
+								##var enemy = generate_char(props.CHARACTER, props.MOD, props.POSITION)
+								##enemy.hit_points = enemy.ai_hit_points
 							
-							char_index += 1
+							##char_index += 1
 						if attr.has("STARTCAMERA"):
 							var cam_node = gltf.get_node_or_null(props.NAME)
 							if cam_node:
-								$GameCam.begin_transform_override = true
-								$GameCam.transform = cam_node.transform
-								$GameCam/Collision.position = cam_node.position
-					#elif obj_type == "CMR_CRV":
-						#var camera_curve_path = gltf_path.trim_suffix(".glb") + "Curve" + array[1] + ".obj"
-						#
-						#add_child(generate_curve(camera_curve_path))
+								level.camera = ResourceManager.create_scene("Level/GameCam", Vector3(), level)
+								level.camera.begin_transform_override = true
+								level.camera.transform = cam_node.transform
+								level.camera.get_node("Collision").position = cam_node.position
 					elif obj_type == "NAV_LNK":
-						add_child(create_navlink(Vector3(0, 0, 0), props.POSITION_FROM, props.POSITION_TO, props.LINKS, props.BIDI))
+						level.add_child(create_navlink(Vector3(0, 0, 0), props.POSITION_FROM, props.POSITION_TO, props.LINKS, props.BIDI))
 					elif obj_type == "STUD":
-						var new_stud = l.get_load("res://Objects/Stud.tscn").instantiate()
+						var new_stud = ResourceManager.load_scene("Objects/Stud").instantiate()
 						
 						new_stud.position = props.POSITION
 						new_stud.sleeping = true
@@ -119,7 +103,7 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 						new_stud.name = "Stud"+str(stud_idx)
 						stud_idx += 1
 						
-						add_child(new_stud)
+						level.add_child(new_stud)
 					elif obj_type == "SUN":
 						var point = DirectionalLight3D.new()
 						point.position = props.POSITION
@@ -134,7 +118,7 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 						point.name = "Sun"+str(sun_idx)
 						sun_idx += 1
 						
-						add_child(point)
+						level.add_child(point)
 					elif obj_type == "POINT":
 						var point = OmniLight3D.new()
 						
@@ -146,7 +130,7 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 						point.name = "Point"+str(point_idx)
 						point_idx += 1
 						
-						add_child(point)
+						level.add_child(point)
 					else:
 						# not ref
 						var obj = gltf.get_node_or_null(array[1])
@@ -174,7 +158,7 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 									obj.add_child(animated_body)
 								else:
 									var col = generate_col(obj.mesh)
-									col.transform = f.transform_based_on_parent(gltf, obj)#obj.transform
+									##col.transform = f.transform_based_on_parent(gltf, obj)#obj.transform
 									static_body.add_child(col)
 									
 									if not "NORESPAWN" in attr:
@@ -240,7 +224,7 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 									#col.transform = obj.transform
 									
 									# set the script and stud value
-									static_bod.set_script(l.get_load("res://Objects/BreakableObject.gd"))
+									static_bod.set_script(ResourceManager.load_script("Objects/BreakableObject"))
 									static_bod.stud_value = int(props.STUDS_DROPPED)
 									static_bod.aim_pos = Vector3(0, obj.get_aabb().size.y/2, 0)
 									
@@ -255,7 +239,7 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 									nav.add_to_group("CamCurve")
 									
 									cam_idx += 1
-									add_child(nav)
+									level.add_child(nav)
 									
 									obj.hide()
 							elif obj_type == "ANIM":
@@ -263,7 +247,7 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 								var area = generate_area(obj, "AnimArea"+str(anim_idx), "AnimCol"+str(anim_idx))
 								anim_idx += 1
 								
-								area.set_script(l.get_load("res://Objects/AreaAnim.gd"))
+								area.set_script(ResourceManager.load_script("Objects/AreaAnim"))
 								
 								area.props = props
 								area.attr = attr
@@ -274,7 +258,7 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 							elif obj_type == "DOOR":
 								var door = generate_area(obj, "Door"+str(door_idx), "DoorCol"+str(door_idx))
 								door.rotation = obj.rotation
-								door.set_script(l.get_load("res://Objects/Door.gd"))
+								door.set_script(ResourceManager.load_script("Objects/Door"))
 								
 								door.DoorId = int(props.ID)
 								var door_dest = {}
@@ -323,18 +307,18 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 								
 								match props.TYPE:
 									"gen_PUSH":
-										obj.set_script(l.get_load("res://TEMP/Box.gd"))
+										obj.set_script(ResourceManager.load_script("TEMP/Box"))
 									"lsw_JEDI_DOOR":
-										obj.set_script(l.get_load("res://TEMP/SaberWall.gd"))
+										obj.set_script(ResourceManager.load_script("TEMP/SaberWall"))
 									"gen_LEVER":
-										obj.set_script(l.get_load("res://Objects/Lever.gd"))
+										obj.set_script(ResourceManager.load_script("Objects/Lever"))
 									"gen_PANEL":
-										obj.set_script(l.get_load("res://Objects/Panel.gd"))
+										obj.set_script(ResourceManager.load_script("Objects/Panel"))
 									"gen_BUILD":
-										obj.set_script(l.get_load("res://Objects/Building.gd"))
-										obj.current_mod = N_mod
+										obj.set_script(ResourceManager.load_script("Objects/Building"))
+										##obj.current_mod = N_mod
 									"lsw_FORCE":
-										obj.set_script(l.get_load("res://Objects/ForceObject.gd"))
+										obj.set_script(ResourceManager.load_script("Objects/ForceObject"))
 								
 								if "props" in obj:
 									obj.props = props
@@ -343,16 +327,16 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 							elif obj_type == "DIE_AREA":
 								
 								var area = generate_area(obj, "KillArea"+str(kill_area_idx), "KillCol"+str(kill_area_idx))
-								area.set_script(l.get_load("res://Levels/DeathZone.gd"))
+								area.set_script(ResourceManager.load_script("Levels/DeathZone"))
 								obj.add_child(area)
 								obj.hide()
 							elif obj_type == "COLLECT":
 								if props.TYPE == "MINIKIT":
-									f.make("res://Objects/minikit.tscn", Vector3(), obj)
+									ResourceManager.create_scene("Objects/minikit", Vector3(), obj)
 								elif props.TYPE == "REDBRICK":
-									f.make("res://Objects/red_brick.tscn", Vector3(), obj)
+									ResourceManager.create_scene("Objects/red_brick", Vector3(), obj)
 							elif obj_type == "LOGIC":
-								obj.set_script(l.get_load("res://Scripts/LogicLine.gd"))
+								obj.set_script(ResourceManager.load_script("Scripts/LogicLine"))
 								obj.gltf = gltf
 								
 								obj.props = props
@@ -400,26 +384,38 @@ func CREATE_LEVEL(N_mod, N_level_name, N_section):
 						"DefaultMod":
 							pass
 						"DefaultEnv":
-							if pyth_bool(value) == false:
-								$Environment.environment = null
+							is_default_env = pyth_bool(value)
 						"DefaultSun":
-							if pyth_bool(value) == false:
-								$DefaultSun.queue_free()
+							is_default_sun = pyth_bool(value)
 						"WorldColour":
-							$Environment.environment = l.get_load("res://Levels/ClearColorEnv.tres")
-							$Environment.environment.background_color = value
+							if level.environment:
+								level.environment = ResourceManager.load_tres("res://Levels/ClearColorEnv.tres")
+								level.environment.background_color = value
 						"DeathY":
-							death_height = float(value)
+							level.death_height = float(value)
 	
 	
-	text.close()
+	if is_default_env:
+		var env = WorldEnvironment.new()
+		env.environment = ResourceManager.load_tres("Levels/SkyEnv")
+		level.environment = env
+		level.add_child(env)
 	
-	add_child(gltf)
+	if is_default_sun:
+		var sun = DirectionalLight3D.new()
+		sun.shadow_enabled = true
+		sun.rotation_degrees = Vector3(-68.6, -134.4, -32.0)
+		level.sun = sun
+		level.add_child(sun)
+	
+	level.add_child(gltf)
 	
 	
 	Nav.navigation_mesh = NavigationMesh.new()
 	
 	Nav.call_deferred("bake_navigation_mesh")
+	
+	return level
 
 func get_properties(array):
 	var properties = {
@@ -486,76 +482,10 @@ func material_to_godot(material_string):
 	for matte_array in material_arrays:
 		var raw_array = matte_array.split("|")
 		
-		materials.append(decode_material(raw_array))
+		##materials.append(decode_material(raw_array))
 	
 	return materials
 
-func decode_material(matte_array):
-	#["1", "Material", "UNSHADED", "ALBEDO-ff4b32ff"]
-	# dealing with bad materials
-	if matte_array.size() == 2 or matte_array.is_empty() or matte_array[0] == "":
-		return Materials.get_basic_material("ffffff", Materials.BasicMatte)
-	
-	var matte_type = matte_array[2]
-	var base_material = Materials.BasicMatte
-	
-	if matte_type == "PART":
-		base_material = Materials.AddMatte
-	elif matte_type == "ROUGH":
-		base_material = Materials.RoughMatte
-	elif matte_type == "UNSHDD":
-		base_material = Materials.UnshadedMatte
-	elif matte_array.has("METALLIC"):
-		base_material = Materials.MetallicMatte
-	elif matte_type == "LOAD":
-		var path_data = (matte_array[3].trim_prefix("LOADPATH")).split("&")
-		var matte_path = f.get_data_path({path_data[0] : path_data[1], "Mod" : level_created_mod})
-		return Materials.get_loaded_material(matte_path)
-	
-	var colour="ffffff"
-	var texture
-	var normal_texture
-	for item in matte_array.slice(3):
-		if item.begins_with("ALBEDO"):
-			colour = item.trim_prefix("ALBEDO")
-		if item.begins_with("PRESET"):
-			if matte_array.has("METALLIC"):
-				colour = Materials.metallic_material_data[item.trim_prefix("PRESET")]
-			else:
-				colour = Materials.material_data[item.trim_prefix("PRESET")]
-		if item.begins_with("TEXTURE"):
-			var texture_string = item.trim_prefix("TEXTURE")
-			texture = decode_texture_string(texture_string.split("&"))
-		if item.begins_with("NORMAL_TEXTURE"):
-			var texture_string = item.trim_prefix("NORMAL_TEXTURE")
-			normal_texture = decode_texture_string(texture_string.split("&"))
-	
-	if texture:
-		if normal_texture:
-			return Materials.get_texture_normal_material(texture, normal_texture, base_material, colour)
-		else:
-			return Materials.get_texture_material(texture, base_material, colour)
-	else:
-		return Materials.get_basic_material(colour, base_material)
-
-func decode_texture_string(array):
-	return f.get_data_path({array[0] : array[1], "Mod" : level_created_mod})
-
-func generate_gltf(path):
-	var node
-	if !SETTINGS.mobile:
-		var gltf = GLTFDocument.new()
-		var gltf_state = GLTFState.new()
-		var snd_file = FileAccess.open(path, FileAccess.READ)
-		var fileBytes = PackedByteArray()
-		fileBytes = snd_file.get_buffer(snd_file.get_length())
-		
-		gltf.append_from_buffer(fileBytes, "base_path?", gltf_state)
-		node = gltf.generate_scene(gltf_state)
-	else:
-		node = load(path).instantiate()
-	
-	return node
 
 func generate_col(mesh):
 	
@@ -686,7 +616,3 @@ func create_navlink(pos, from, to, groups, bidi):
 	navlink_idx += 1
 	
 	return new_NavLink
-
-
-func _on_timer_2_timeout():
-	Levels.finish_level()

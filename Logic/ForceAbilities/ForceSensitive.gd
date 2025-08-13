@@ -130,7 +130,7 @@ func inclusive_physics(_delta):
 								var data = force_abilities.get(slot)
 								var slot_node = force_outline.get_node(slot)
 								
-								var image = MATERIALS.load_texture(SETTINGS.mod_path+"/"+C.origin_mod+"/characters/textures/"+data.Icon)
+								var image = Materials.load_texture(SETTINGS.mod_path+"/"+C.origin_mod+"/characters/textures/"+data.Icon)
 								
 								slot_node.modulate = slot_colour
 								slot_node.transparency = 0
@@ -545,7 +545,7 @@ func ensureForceOutline_exists():
 	if get_node_or_null("ForceOutline") == null:
 		var ForceOutline = l.get_load(SETTINGS.mod_path+"/"+C.origin_mod+"/characters/scenes/"+"forceoutline.tscn").instantiate()
 		var ForceOutlineScript = l.get_load(SETTINGS.mod_path+"/"+C.origin_mod+"/characters/scripts/"+"forceoutline.gd")
-		var ForceOutlineTexture = MATERIALS.load_texture(SETTINGS.mod_path+"/"+C.origin_mod+"/characters/textures/"+"force.png")
+		var ForceOutlineTexture = Materials.load_texture(SETTINGS.mod_path+"/"+C.origin_mod+"/characters/textures/"+"force.png")
 		
 		ForceOutline.set_script(ForceOutlineScript)
 		
