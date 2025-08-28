@@ -87,6 +87,14 @@ class CharactersGltfsFolderLoadDir extends CharactersFolderLoadDir:
 	func get_dir():
 		return super() + "gltfs/"
 
+class CharactersTexturesFolderLoadDir extends CharactersFolderLoadDir:
+	func get_dir():
+		return super() + "textures/"
+
+class CharactersIconsFolderLoadDir extends CharactersFolderLoadDir:
+	func get_dir():
+		return super() + "icons/"
+
 class CharactersAnimsFolderLoadDir extends CharactersFolderLoadDir:
 	func get_dir():
 		return super() + "anims/"
@@ -127,7 +135,6 @@ func load_obj(path : LoadDir, file : String):
 		obj_meshes[id] = new_obj
 	
 	return obj_meshes.get(id)
-
 
 #endregion
 #region Materials
@@ -244,25 +251,24 @@ func load_sound(details : SoundLoadDetails):
 
 class CharacterDetails:
 	
+	var name : String
+	
 	var identity# : Character.CharacterIdentity
 	var alignment# : Character.CharacterAlignment
 	
 	var health : int
 	var ai_health : int
 	
-	var sounds = {}# : SoundLibrary?
-	var animations = {}# : AnimationLibrary?
-	var model_attachments = []# : Character.ModelAttachment
+	var sounds = {}
+	var animations = {}
+	var attachments = []
 	
-	var materials = {}# Dictionary of ModelMaterial?
+	var materials = {}
 	var rig_class : String
 	var rig : CharacterRigLoadDetails
 	
-	var movement_logics = {}# : Dictionary of MovementLogics
-	var jump_logics = {}
-	var action_logics = {}
-	var attribute_logics = {}
-	var interaction_logics = {}
+	var logics = {}
+	var base_logic : String
 	
 	var weapons = {}# Dictionary of Character.Weapon
 	
@@ -291,16 +297,18 @@ class CharacterDetails:
 		return new_dict
 	
 	func gen_to(character : Character):
-		#character emits pre gen signal?
-		character.movement_logics = gen_dict(movement_logics)
-		character.jump_logics = gen_dict(jump_logics)
-		character.action_logics = gen_dict(action_logics)
-		character.attribute_logics = gen_dict(attribute_logics)
-		character.interaction_logics = gen_dict(interaction_logics)
+		character.emit_signal("pre_switch")
+		
+		character.details = self
+		
+		#character.identity = identity
+		#character.alignment = alignment
+		
+		character.logics = gen_dict(logics)
+		character.base_logic = logics[base_logic]
 		
 		character.weapons = gen_dict(weapons)
 		character.sounds = sounds
-		character.animations = animations
 		
 		character.max_hit_points = health
 		character.ai_hit_points = ai_health
@@ -312,20 +320,50 @@ class CharacterDetails:
 		character.tailcast = character.get_node("TailCast")
 		
 		if icon_details:character.icon = icon_details.gen()
-		if rig:
-			var rig_gen = rig.gen()
-			character.add_child(rig_gen)
-			character.set_mesh(rig_gen)
-			character.rig_class = rig_class
 		
-		if collision:
-			var col_gen = collision.gen()
-			character.collision = col_gen
-			character.add_child(col_gen)
-			character.tailcast.shape = col_gen.shape
+		assert(rig != null, "There is no rig for this character")
+		character.meshes_to_modulate.clear()
+		character.bits.clear()
+		character.rig.queue_free()
+		var rig_gen = rig.gen()
+		character.add_child(rig_gen)
+		character.set_mesh(rig_gen)
+		character.rig_class = rig_class
+		
+		assert(collision != null, "There is no collision for this character")
+		character.collision.queue_free()
+		var col_gen = collision.gen()
+		character.collision = col_gen
+		character.add_child(col_gen)
+		character.tailcast.shape = col_gen.shape
+		
+		var p_col_gen = collision.gen_expanded()
+		character.get_node("Pushaway").add_child(p_col_gen)
+		
+		for key in materials.keys():
+			var part : MeshInstance3D = character.skeleton.get_node(key)
+			for i in range(len(materials[key])):
+				part.set_surface_override_material(i, materials[key][i].gen())
+		
+		character.anim.remove_animation_library("")
+		if animations:
+			var anim_library = AnimationLibrary.new()
+			for animation : AnimationLoadDetails in animations.values():
+				anim_library.add_animation(animation.name, animation.gen())
 			
-			var p_col_gen = collision.gen_expanded()
-			character.get_node("Pushaway").add_child(p_col_gen)
+			character.anim.add_animation_library("", anim_library)
+		
+		for attachment in character.model_attachments:
+			attachment.queue_free()
+		character.model_attachments.clear()
+		if attachments:
+			for attachment in attachments:
+				attachment.gen_on_character(character)
+		
+		character.current_weapon = null
+		character.reset_logic()
+		
+		character.emit_signal("post_switch")
 
 class CharacterLoadDetails extends CharacterDetails:
 	var path : LoadDir
@@ -354,6 +392,7 @@ class CharacterLoadDetails extends CharacterDetails:
 		BOX_COL,
 		CAPSULE_COL,
 		PATH,
+		ATTACHMENT
 	}
 	var var_ids = {
 		"d" : DICT,
@@ -376,6 +415,7 @@ class CharacterLoadDetails extends CharacterDetails:
 		"sound" : SOUND,
 		"sounds" : SOUNDS,
 		"tex" : TEXTURE,
+		"attachment" : ATTACHMENT
 	}
 	func id(split):
 		if split == null:
@@ -499,6 +539,8 @@ class CharacterLoadDetails extends CharacterDetails:
 				return TTGCTextureLoadDetails.new(split.slice(data_starts_at))
 			PATH:
 				return translate_path(split.slice(data_starts_at))
+			ATTACHMENT:
+				return TTGCBoneAttachmentLoadDetails.new(split.slice(data_starts_at))
 			_:
 				assert(false, "object " + str(split) + " is invalid")
 		
@@ -519,10 +561,21 @@ class CharacterLoadDetails extends CharacterDetails:
 	
 	func set_var_on_object(split, obj, parent_line, parent):
 		if id(split) in [ARRAY, CLASS_DICT, DICT]:
-			update_list(split, obj, parent)
+			update_list(split, obj, parent_line, parent)
 			return
 		
 		var parent_type = id(parent_line)
+		
+		if obj != null:
+			match parent_type:
+				ARRAY:
+					parent.append(obj)
+				CLASS_DICT:
+					parent[obj.name] = obj
+				_:
+					parent[split[1]] = obj
+			return
+		
 		var has_name = parent_type not in [ARRAY, CLASS_DICT]
 		var data_starts_at = 2 if has_name else 1
 		var value = get_value(split, data_starts_at)
@@ -531,21 +584,19 @@ class CharacterLoadDetails extends CharacterDetails:
 			if parent_type == ARRAY:
 				parent.append(value)
 			else:
-				print(split)
 				parent[split[1]] = value
 			return
+	
+	
+	func update_list(data, elements, parent_line, parent):
+		# generate list if none exist
+		if not data[1] in parent:
+			var has_name = id(parent_line) not in [ARRAY, CLASS_DICT]
+			var data_starts_at = 2 if has_name else 1
+			
+			parent[data[1]] = get_value(data, data_starts_at)
 		
-		match parent_type:
-			ARRAY:
-				parent.append(obj)
-			CLASS_DICT:
-				parent[obj.name] = obj
-			_:
-				parent[split[1]] = obj
-	
-	
-	func update_list(data, elements, obj):
-		var current = obj.get(data[1])
+		var current = parent[data[1]]
 		
 		if len(data) < 3 or data[2] == "=":
 			current.assign(elements)
@@ -589,7 +640,6 @@ class CharacterLoadDetails extends CharacterDetails:
 
 class TTGCAnimationLoadDetails extends AnimationLoadDetails:
 	func _init(data):
-		print("create anim with ", data)
 		name = data[0]
 		file = data[0]
 		path = CharactersAnimsFolderLoadDir.new()
@@ -622,7 +672,14 @@ class TTGCSoundsLoadDetails:
 
 class TTGCTextureLoadDetails extends TextureLoadDetails:
 	func _init(data):
-		pass
+		if len(data) > 1:
+			match data[1]:
+				"icon_folder":
+					dir = CharactersIconsFolderLoadDir.new()
+					file = data[0] + ".png"
+		else:
+			dir = CharactersTexturesFolderLoadDir.new()
+			file = data[0]
 
 class TTGCLogicLoadDetails extends LogicLoadDetails:
 	func _init(data):
@@ -633,6 +690,43 @@ class TTGCLogicLoadDetails extends LogicLoadDetails:
 			logic_name = data[1]
 		
 		super(sc_name, logic_name)
+
+class TTGCBoneAttachmentLoadDetails extends BoneAttachmentLoadDetails:
+	func _init(data):
+		dir = CharactersModelsFolderLoadDir.new()
+		file = data[0]
+
+class BoneAttachmentLoadDetails:
+	var dir : LoadDir
+	var file : String
+	#var format?
+	var bone_attach : int
+	var materials := []
+	
+	func gen() -> BoneAttachment3D:
+		var attachment = BoneAttachment3D.new()
+		var mesh = MeshInstance3D.new()
+		mesh.mesh = ResourceManager.load_obj(dir, file)
+		for i in range(len(materials)):
+			mesh.set_surface_override_material(i, materials[i].gen())
+		attachment.add_child(mesh)
+		
+		# Give it the flash material as an overlay
+		var flash_overlay_details = ResourceManager.MaterialLoadDetails.new()
+		flash_overlay_details.base_material = "flash overlay"
+		mesh.material_overlay = ResourceManager.load_material(flash_overlay_details)
+		
+		return attachment
+	
+	func gen_on_character(character : Character):
+		var genned = gen()
+		
+		character.model_attachments.append(genned)
+		character.skeleton.add_child(genned)
+		character.bits.append(genned)
+		character.meshes_to_modulate.append(genned.get_child(0))
+		
+		genned.bone_idx = bone_attach
 
 class LogicLoadDetails:
 	var name : String
@@ -656,7 +750,7 @@ class AnimationLoadDetails:
 	var name : String
 	
 	func gen():
-		pass
+		return load(path.get_dir() + file + ".res")
 
 class CharFolderCharacterLoadDetails extends CharacterLoadDetails:
 	func _init(character_name):

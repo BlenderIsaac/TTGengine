@@ -15,10 +15,9 @@ func _ready():
 	spawn_level_manager()
 	spawn_interface()
 	
-	set_mod("Ahsoka Show")
-	var c = ResourceManager.CharFolderCharacterLoadDetails.new("Bob")
-	c.load_details()
-	#print(c.animations.Idleloop.file)
+	#set_mod("Ahsoka Show")
+	#var c = ResourceManager.CharFolderCharacterLoadDetails.new("Stormtrooper")
+	#c.load_details()
 	#breakpoint
 	
 	interface.load_screen(Interface.MAIN_MENU)

@@ -1,17 +1,11 @@
-extends "res://Logic/LOGIC.gd"
+extends Logic
 
-# Logic Type: BASE MOVEMENT STATE
+# Logic Type: MOVEMENT
 # Contains: Running, Jumping, Double Jumping, Back Jumping
-
-# Gravity
-@export var air_gravity = -6.0
-
-# Jump variables
-var jump_2_speed = 1.2
 
 var walk_speed = 0.6
 var run_speed = 1.2
-var move_delay = 0.0#0.2
+var move_delay = 0.0
 
 # move delay time left
 var move_delay_timer = 0.0
@@ -22,16 +16,13 @@ var move_dir_to = Vector3()
 var move_dir = Vector3()
 var last_move_dir = Vector3()
 
-#var facing_move_dir = Vector3()
-
 var not_air_anims = ["Idleloop", "Runloop"]
 
-var footstep_at_times = [0.1, 0.4]
 var footsteps_played = 0
 
 # Set the correct navigational layer values
 func _ready():
-	last_move_dir = -mesh.transform.basis.z
+	last_move_dir = -rig.transform.basis.z
 	#facing_move_dir = mesh.transform.basis.z
 	
 	move_delay_timer = move_delay
@@ -55,19 +46,31 @@ var on_floor_last_frame = true
 	##DebugDraw3D.draw_arrow(C.position, C.position+move_dir_to, Color.YELLOW)
 	#DebugDraw3D.draw_arrow(C.position, C.position+move_dir, Color.BLUE)
 
+func _physics_process(delta):
+	if active:
+		exclusive_physics(delta)
 
-func exclusive_physics(_delta):
+
+func exclusive_physics(delta):
+	
+	var footsteps_times = C.details.animations[anim.current_animation].key_frames.footsteps
 	
 	# footsteps
 	if anim.current_animation.ends_with("Runloop"):
-		if footstep_at_times.size() > footsteps_played:
-			var next_footstep_time = footstep_at_times[footsteps_played]
+		if footsteps_times.size() > footsteps_played:
+			var next_footstep_time = footsteps_times[footsteps_played]
 			if anim.current_animation_position > next_footstep_time:
 				footsteps_played += 1
-				audio_player.play("Run")
+				audio.play("Run")
 	
-	gen_gravity(_delta, true)
-	
+	# If we are in the air and we are playing one of the animations in not_air_anims
+	# Then make us be falling instead
+	if not C.is_on_floor():
+		for an in not_air_anims:
+			if anim.current_animation.ends_with(an):
+				# Play fallloop with a blend of .5
+				anim.play(C.weapon_prefix+"Fallloop", .5)
+				break
 	
 	# reset our movement direction
 	#move_dir = Vector3()
@@ -80,7 +83,7 @@ func exclusive_physics(_delta):
 		C.char_vel.z = 0
 	
 	# Get move_dir and moved
-	move_dir = get_move_dir(_delta)
+	move_dir = Vector3(input_vector.x, 0.0, input_vector.y)
 	var moved = (move_dir != Vector3())
 	
 	# Animations and mesh_angle_to
@@ -122,7 +125,7 @@ func exclusive_physics(_delta):
 		C.mesh_angle_to = Vector2(-last_move_dir.x, last_move_dir.z).angle()+deg_to_rad(90)
 		#facing_move_dir = last_move_dir
 	else:
-		move_delay_timer += _delta
+		move_delay_timer += delta
 	
 	# If we are not on the floor, and nothing is playing, then play fallloop and queue land
 	# for when we hit the ground.
@@ -139,14 +142,14 @@ func exclusive_physics(_delta):
 			anim.play(prefix+"Land", .1)
 	
 	if C.is_on_floor() == true and on_floor_last_frame == false:
-		audio_player.play("Land")
+		audio.play("Land")
 	
 	on_floor_last_frame = C.is_on_floor()
 	
 	# smoothly transition our current movement direction to our desired movement direction
 	var weight = .15
-	move_dir_to.x = lerp(move_dir_to.x, move_dir.x, weight*_delta*60)
-	move_dir_to.z = lerp(move_dir_to.z, move_dir.z, weight*_delta*60)
+	move_dir_to.x = lerp(move_dir_to.x, move_dir.x, weight * delta * 60)
+	move_dir_to.z = lerp(move_dir_to.z, move_dir.z, weight * delta * 60)
 	
 	# Set the velocity to our current movement direction as well as a bunch of other factors
 	C.set_velocity(C.char_vel+move_dir_to+C.push_vel+C.knock_vel)
@@ -155,33 +158,18 @@ func exclusive_physics(_delta):
 	
 	#if move_delay_time_left > move_delay:
 	# Smoothly change our rotation to our desired rotation
-	C.mesh_angle_lerp(_delta, 0.2)
+	C.mesh_angle_lerp(delta, 0.2)
 
 func initiate():
 	#moved_since_online = false
 	move_delay_reset = true
-	last_move_dir = -mesh.transform.basis.z
+	last_move_dir = -rig.transform.basis.z
 	#last_move_dir = mesh.transform.basis.z#facing_move_dir
 	#move_delay_timer = move_delay + 0.1
 	#last_move_dir = facing_move_dir
 	#move_dir = facing_move_dir
 	#move_delay_timer = 0.0#move_delay+0.0
 
-func gen_gravity(_delta, animate=false):
-	if not C.is_on_floor():
-		C.char_vel.y += air_gravity*_delta*C.var_scale
-		
-		if animate:
-			# If we are in the air and we are playing one of the animations in not_air_anims
-			# Then make us be falling instead
-			for an in not_air_anims:
-				if anim.current_animation.ends_with(an):
-					# Play fallloop with a blend of .5
-					anim.play(C.weapon_prefix+"Fallloop", .5)
-					break
-	else:
-		# If we are not falling set char_vel.y to just slightly negative
-		C.char_vel.y = air_gravity*_delta*C.var_scale
 
 var run_anim_pos:float = -1
 
@@ -230,53 +218,4 @@ func freeze():
 	move_dir_to = Vector3()
 
 func revive(_args):
-	last_move_dir = -mesh.transform.basis.z
-
-func get_move_dir(_delta):
-	var new_move_dir = Vector3()
-	
-	if C.AI:
-		new_move_dir = ai(_delta)
-	else:
-		new_move_dir = C.get_move_dir()
-	
-	return new_move_dir*C.var_scale*run_speed
-
-
-func vector3to2(vector3):
-	return Vector2(vector3.x, vector3.z)
-
-
-var chilling = true
-
-
-
-func ai(_delta):
-	
-	var max_distance = C.AI_max_distance
-	
-	if chilling == false:
-		max_distance = C.AI_desired_distance
-	
-	if C.target != null:
-		var last_location = C.nav_agent.get_final_position()
-		var sqrd_dist = f.to_vec2(global_position).distance_squared_to(f.to_vec2(last_location))
-		
-		#DebugDraw2D.set_text("Squared Distance", sqrd_dist)
-		
-		if sqrd_dist > max_distance*max_distance:
-			
-			var movement = C.get_ai_direction(_delta)
-			
-			chilling = false
-			return movement
-		elif C.velocity_compute_obstacle != Vector3():
-			
-			var vec2_compute = f.to_vec2(C.velocity_compute_obstacle).normalized()
-			
-			return Vector3(vec2_compute.x, 0, vec2_compute.y)
-	else:
-		chilling = true
-	
-	
-	return Vector3()
+	last_move_dir = -rig.transform.basis.z

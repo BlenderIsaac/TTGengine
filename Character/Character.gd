@@ -21,6 +21,8 @@ var skeleton : Skeleton3D
 
 var input_vector := Vector2(0, 0)
 
+var gravity = -6.0
+
 # variable scaling
 @export var var_scale := 4.1
 
@@ -28,10 +30,10 @@ var input_vector := Vector2(0, 0)
 @export var flash_value := Color()
 var meshes_to_modulate = []
 
-var char_spawn = false
-var char_spawn_index = 0
+#var char_spawn = false
+#var char_spawn_index = 0
 
-var char_name = "NULL"
+var details : ResourceManager.CharacterDetails
 
 # variables for root vel
 var prev_pose = Vector3()
@@ -74,21 +76,28 @@ var push_strength = 20
 
 # our movement state
 # Probably change variable name
-var movement_state
+var current_logic : Logic :
+	set(value):
+		if current_logic:
+			current_logic.exit()
+		
+		current_logic = value
+		current_logic.enter()
+	get():
+		return current_logic
 
-var movement_logics = {}
-var jump_logics = {}
-var action_logics = {}
-var attribute_logics = {}
-var interaction_logics = {}
+var logics = {}
+var base_logic : Logic
 
-var animations = {}
 var sounds = {}
+
+var model_attachments = []
 
 var identity
 var alignment
 
 var weapons = {}
+var current_weapon# : Weapon
 
 # our current velocity, move direction, knockback velocity, and pushed velocity
 var char_vel = Vector3()
@@ -104,6 +113,8 @@ var logic_switched_vars = {}
 var aim_pos = Vector3(0, 0.9, 0)
 
 signal health_changed
+signal damaged(damage : f.Damage)
+signal revive
 signal death
 
 # health variables
@@ -160,28 +171,15 @@ func _process(_delta):
 		mesh.set("instance_shader_parameters/my_color", Vector4(
 			flash_value.r, flash_value.g, flash_value.b, flash_value.a))
 	
-	
 	# if we are dead work toward us undeadening
 	if dead:
 		respawn_left -= _delta
 		# if we are ready to respawn then do so
 		if respawn_left <= 0:
 			respawn()
-	else:
-		# if we aren't dead then run all the logics process, and the current movement_state's logic
-		for logic in $Logic.get_children():
-			if logic.has_method("inclusive_process"):
-				if logic.online:
-					logic.inclusive_process(_delta)
-			
-			if movement_state == logic.name:
-				
-				if logic.has_method("exclusive_process"):
-					if logic.online:
-						logic.exclusive_process(_delta)
 
 
-func _physics_process(_delta):
+func _physics_process(delta):
 	
 	# if we aren't dead, on the floor and our tail raycast is colliding...
 	# we are checking for respawns
@@ -212,21 +210,18 @@ func _physics_process(_delta):
 									respawn_point = position
 									respawn_history.append(position)
 		
-		
 		# set knock_vel, this is calculating the knockback
 		
 		# if the length is greater than .01 then lerp the knockback down
 		if knock_vel.length() > .01:
-			knock_vel.x = lerp(knock_vel.x, 0.0, 0.1*_delta*60)
-			knock_vel.z = lerp(knock_vel.z, 0.0, 0.1*_delta*60)
-			knock_vel.y = lerp(knock_vel.y, 0.0, 0.1*_delta*60)
+			knock_vel = knock_vel.lerp(Vector3.ZERO, 0.1*delta*60)
 		else:
 			# if the length is smaller than .01 reset knock_vel
-			knock_vel = Vector3()
+			knock_vel = Vector3.ZERO
 		
 		
 		# calculate push velocity, or push_vel for short
-		push_vel = Vector3() # reset push_vel
+		push_vel = Vector3.ZERO # reset push_vel
 		for pusher in bodys_pushing:
 			
 			# make sure the pusher isn't dead
@@ -251,17 +246,11 @@ func _physics_process(_delta):
 				# add vel to push_vel
 				push_vel += -Vector3(vel.x, 0, vel.y)
 		
+		# gravity
 		
-		# Let all the logics have their incluive physics, and one their exclusive physics
-		for logic in $Logic.get_children():
-			if logic.has_method("inclusive_physics"):
-				if logic.online:
-					logic.inclusive_physics(_delta)
-			
-			if movement_state == logic.name:
-				if logic.has_method("exclusive_physics"):
-					if logic.online:
-						logic.exclusive_physics(_delta)
+		char_vel.y += gravity * delta * var_scale
+		if is_on_floor():
+			char_vel.y -= gravity * delta * var_scale
 	
 	# setup this for the next frame
 	prev_pose = get_root_pos()
@@ -284,7 +273,7 @@ func _on_agent_link_reached(details):
 	
 	#if movement_state == base_state:
 	if logic:
-		set_movement_state(logic.logic_name())
+		current_logic = logic
 		
 		# Also we set all our logic variables to the new ones
 		ai_to = location_to
@@ -299,8 +288,8 @@ func _on_agent_link_reached(details):
 func add_animation(anim_name:String, new_anim:Animation):
 	# Add the animation to the generic animation library
 	
-	if anim.get_animation_library("").has_animation(anim_name):
-		anim.get_animation_library("").remove_animation(anim_name)
+	#if anim.get_animation_library("").has_animation(anim_name):
+	#	anim.get_animation_library("").remove_animation(anim_name)
 	
 	anim.get_animation_library("").add_animation(anim_name, new_anim)
 
@@ -330,8 +319,6 @@ func dispose_audio_player():
 	
 	audio = new_AudioPlayer
 	new_AudioPlayer.sound_effects = audio_player.sound_effects
-	for logic in get_logics():
-		logic.audio_player = new_AudioPlayer
 	
 	new_AudioPlayer.name = "AudioPlayer"
 
@@ -356,11 +343,16 @@ func standing_on(group):
 	return false
 
 func set_mesh(mesh):
-	print("set mesh")
 	rig = mesh
 	armature = mesh.get_node("Armature")
 	skeleton = mesh.get_node("Armature/Skeleton3D")
 	anim = mesh.get_node("AnimationPlayer")
+	
+	for child in skeleton.get_children():
+		if child is MeshInstance3D:
+			if child.visible:
+				meshes_to_modulate.append(child)
+				bits.append(child)
 
 func get_root_pos():
 	#var root = $Mesh/Armature/Skeleton3D/ROOT
@@ -445,38 +437,29 @@ func drop_bits():
 	var dropped_bits = []
 	
 	# Loop through all our bits
-	for bit_name in bits:
-		# Get the bit
-		var bit_node = get_node_or_null(bit_name)
+	for bit_node in bits:
 		
-		# If it exists, run the generate_bit() function to transform the bit_node to have physics
-		if bit_node:
-			var bit = generate_bit(bit_node)
-			
-			# Append that bit to the dropped_bits variable
-			dropped_bits.append(bit)
-			
-			# Put the bit on a different collision layer so it doesn't collide with anything except
-			# the enviroment
-			bit.set_collision_layer_value(1, false)
-			bit.set_collision_layer_value(4, true)
-			
-			# Add the bit to the scene again
-			get_parent().add_child(bit)
-			
-			# randomize rotational and positional velocity
-			var rand_torque = Vector3(randf_range(-3, 3), randf_range(-3, 3), randf_range(-3, 3))
-			var rand_vel = Vector3(randf_range(-3, 3), randf_range(-3, 3), randf_range(-3, 3))
-			
-			# apply the rotational and positional velocity, adding our current movement to the positional velocity as well
-			bit.apply_torque(rand_torque)
-			bit.apply_impulse(rand_vel + (knock_vel) + char_vel + push_vel)
-	
-	
-	# make so the bits don't collide with any other bits
-	for bit in dropped_bits:
-		for bit2 in dropped_bits:
-			bit.add_collision_exception_with(bit2)
+		var bit = generate_bit(bit_node)
+		
+		# Append that bit to the dropped_bits variable
+		dropped_bits.append(bit)
+		
+		# Put the bit on a different collision layer so it doesn't collide with anything except
+		# the enviroment
+		bit.set_collision_layer_value(1, false)
+		#bit.set_collision_mask_value(1, false)
+		#bit.set_collision_layer_value(4, true)
+		
+		# Add the bit to the scene again
+		section.add_child(bit)
+		
+		# randomize rotational and positional velocity
+		var rand_torque = Vector3(randf_range(-3, 3), randf_range(-3, 3), randf_range(-3, 3))
+		var rand_vel = Vector3(randf_range(-3, 3), randf_range(-3, 3), randf_range(-3, 3))
+		
+		# apply the rotational and positional velocity, adding our current movement to the positional velocity as well
+		bit.apply_torque(rand_torque)
+		bit.apply_impulse(rand_vel + (knock_vel) + char_vel + push_vel)
 
 
 func generate_bit(bit):
@@ -587,9 +570,6 @@ func die():
 			# Set our position back to the respawn point. The good thing about this
 			# is that we don't need to do anything with the camera targeting.
 			position = get_respawn_point()
-		
-		# Tell all our logics that want to hear that we have just died
-		trigger_logics("die")
 
 
 # A function that compiles all the things that happen when we respawn
@@ -615,8 +595,7 @@ func respawn(): # only for players really
 	# Set dead to false so we are able to die again
 	dead = false
 	
-	# Trigger any logics that want to listen that we just respawned
-	trigger_logics("revive")
+	emit_signal("revive")
 
 
 # A function to easily get the point at which we want to respawn
@@ -662,7 +641,7 @@ func un_death_freeze():
 func get_logic_for_nav(details):
 	
 	# Loop through the logics using get_logics()
-	for logic in get_logics():
+	for logic in logics.values():
 		# Check if the logic has the method nav - if it 
 		# doesn't then it isn't for navigation so we skip it
 		if logic.has_method("has_nav"):
@@ -678,62 +657,6 @@ func get_logic_for_nav(details):
 	#add here that there is an exception added for this navLink
 	return null
 
-# This function returns all our logics
-func get_logics():
-	return $Logic.get_children()
-
-# This function checks if you have a logic
-func has_logic(logic_name):
-	var list = get_logics_list()
-	
-	if list.has(logic_name):
-		return true
-	
-	return false
-
-# This function returns the logic name of all our logics
-func get_logics_list():
-	var list = []
-	for logic in get_logics():
-		list.append(logic.logic_name())
-	return list
-
-# This can get a movement state based off a name
-func get_logic(state):
-	return get_node_or_null("Logic/"+state)
-
-# This checks whether a movement state exists - if it doesn't it returns an error
-func logic_exists(state):
-	if state == null:
-		return false
-	
-	if get_node_or_null("Logic/"+state):
-		return true
-	print("invalid movement state: "+state)
-	return false
-
-# This returns the movement state node
-func get_movement_state():
-	return get_logic(movement_state)
-
-# This sets the movement state to a new state
-func set_movement_state(new_state):
-	
-	if logic_exists(movement_state):
-		if get_logic(movement_state).has_method("uninitiate"):
-			get_logic(movement_state).uninitiate()
-	
-	# first check if the movement state exists
-	if logic_exists(new_state):
-		## Then check if it is online - NOTE: online is not a used feature yet
-		#if get_logic(new_state).online:
-			# Set the movement state to this new state
-			movement_state = new_state
-			# If the movement state has the method initiate(), initiate the movement state
-			if get_logic(new_state).has_method("initiate"):
-				get_logic(new_state).initiate()
-
-
 func take_damage(damage:f.Damage):
 	
 	assert(damage.iframes is float)
@@ -741,69 +664,22 @@ func take_damage(damage:f.Damage):
 	# make sure we can actually take damage
 	if not is_invincible():
 		
-		for logic in $Logic.get_children():
-			# if a logic has the function inclusive damage we run that
-			if logic.has_method("inclusive_damage"):
-				logic.inclusive_damage(damage)
+		for logic in logics:
+			if logic.consume_damage(damage):
+				return
 		
-		# we need to check if we get overwritten by a logic
-		var overwritten = false
-		for logic in $Logic.get_children():
-			
-			# If our current logic have exclusive damage then we run that - and also 
-			# override the damage we should take
-			if movement_state == logic.name:
-				if logic.has_method("exclusive_damage"):
-					logic.exclusive_damage(damage)
-					overwritten = true
+		if damage.amount > 0:
+			# Play the flash animation and then queue reset
+			modulate_anim.stop()
+			modulate_anim.play("FlashAnims/Flash")
+			iframes_left = damage.iframes
+			modulate_anim.queue("FlashAnims/RESET")
 		
-		# if we didn't overwrite it then we run generic damage
-		if overwritten == false:
-			generic_damage(damage.amount, damage.iframes)
-
-
-# a function that runs the damage flash values and takes off health
-func generic_damage(amount, iframes=0.2):
-	# If the damage taken was more than nothing (negative values would be adding health, and
-	# we don't want to red flash for that)
-	if amount > 0:
-		# Play the flash animation and then queue reset
-		modulate_anim.stop()
-		modulate_anim.play("FlashAnims/Flash")
-		iframes_left = iframes
-		modulate_anim.queue("FlashAnims/RESET")
-	
-	# Change our healt by the amount of damage, just negative
-	change_health(-amount)
-
-
-func generic_knockback(amount):
-	# We can only take knockback if we are alive
-	if not dead:
-		knock_vel += amount
-
-# A function to add knockback
-func take_knockback(amount, _who_from=null):
-	
-	# if a logic has the function inclusive knockback we run that
-	for logic in $Logic.get_children():
-		if logic.has_method("inclusive_knockback"):
-			logic.inclusive_knockback(amount, _who_from)
-	
-	# we need to check if we get overwritten by a logic
-	var overwritten = false
-	for logic in $Logic.get_children():
+		# Change our health by the amount of damage, just negative
+		change_health(-damage.amount)
+		knock_vel += damage.knockback
 		
-		# If our current logic have exclusive knockback then we run that - and also 
-		# override the knockback we should take
-		if movement_state == logic.name:
-			if logic.has_method("exclusive_knockback"):
-				logic.exclusive_knockback(amount, _who_from)
-				overwritten = true
-	
-	# if we didn't overwrite it then we run generic knockback
-	if overwritten == false:
-		generic_knockback(amount)
+		emit_signal("damaged")
 
 
 # A function for changing health
@@ -840,17 +716,6 @@ func is_invincible():
 		return true
 	
 	return false
-
-
-# A function that will trigger a function in any logic that cares to listen
-# This is used for events that you want to pass along to a logic, ie Death or Respawning
-func trigger_logics(function_name, variables=[]):
-	# Loop through the logics using the get_logics() method
-	for logic in get_logics():
-		# Check if that logic has the method
-		if logic.has_method(function_name):
-			# If it does then call it
-			logic.call(function_name, variables)
 
 
 var velocity_compute_obstacle = Vector3()
@@ -953,106 +818,9 @@ func find_tag():
 	# If nothing else was returned then return nothing
 	return null
 
-# A function to reset the modulation of our character
-func reset_modulation():
-	# Remove all the meshes from meshes_to_modulate
-	meshes_to_modulate.clear()
-	
-	# Loop through all the MeshInstances under the Skeleton3D and set their overlay material to be the flash shader
-	# and append them to meshes_to_modulate
-	for mesh in skeleton.get_children():
-		if mesh is MeshInstance3D:
-			var flash_overlay_details = ResourceManager.MaterialLoadDetails.new()
-			flash_overlay_details.base_material = "flash overlay"
-			
-			mesh.material_overlay = ResourceManager.load_material(flash_overlay_details)
-			meshes_to_modulate.append(mesh)
 
-
-# A function to add a logic based off a path, a config, and some vars
-func add_logic(logic_path, config={}, switched_vars=[]):
-	# Create a new Node for the logic
-	var logic_node = Node3D.new()
-	# Load the script
-	var logic_script = ResourceManager.load_script(logic_path)
-	
-	# Set the node's script to be the loaded script
-	logic_node.set_script(logic_script)
-	logic_node.establish_connections(self)
-	# Set the name of the logic_node to the logic's name
-	logic_node.name = logic_node.logic_name()
-	
-	# If there is a var that was switched, give it to the logic_node if it wants it
-	if switched_vars.has(logic_node.logic_name()):
-		if logic_node.has_method("set_switched_var"):
-			logic_node.set_switched_var(switched_vars.get(logic_node.logic_name()))
-	
-	# loop through all the configurations
-	for config_name in config.keys():
-		# config is name of variable in the logic node
-		
-		# Figure out whether the variable we are looking for exists within the logic node
-		if config_name in logic_node:
-			
-			# Getting the default variable is currently unused - might remove
-			
-			# Get the default of the logic node
-			var default = logic_node.get(config_name)
-			# Record what the default was within the logic node
-			logic_node.defaults[config_name] = default
-			
-			# get the updated variable
-			var updated = config.get(config_name)
-			
-			# Set the variable in the logic node to the updated
-			logic_node.set(config_name, f.get_var_from_str(updated))
-	
-	# Add the logic to the character
-	var LogicParent = get_node("Logic")
-	LogicParent.add_child(logic_node)
-	
-
-
-# This function attaches a model based on a couple arguments
-# TODO: add a config so that we can do custom positions
-func attach_model(model_path : ResourceManager.LoadDir, model_file : String, attach_no, bone, materials):
-	
-	# Create a BoneAttachment3D and a mesh
-	var attacher = BoneAttachment3D.new()
-	var node = MeshInstance3D.new()
-	# Load the mesh
-	var mesh = ResourceManager.load_obj(model_path, model_file)
-	
-	# put the nodes together and attach it to the right bone
-	skeleton.add_child(attacher)
-	attacher.add_child(node)
-	attacher.bone_idx = bone
-	
-	# Set the right name
-	attacher.name = "MODELATTACHED_"+str(attach_no)
-	
-	# Set the mesh node's mesh, and it's name to Mesh
-	node.mesh = null
-	node.mesh = mesh
-	node.name = "Mesh"
-	
-	# Append it to bits (so that we drop it when we die)
-	bits.append("Mesh/Armature/Skeleton3D/"+attacher.name+"/Mesh")
-	
-	# Loop through the materials and set the material on the mesh
-	for matte_no in materials.keys():
-		var details = ResourceManager.MaterialLoadDetails.new()
-		
-		node.set_surface_override_material(int(matte_no), ResourceManager.load_material(details))###Materials.get_matte(materials.get(matte_no), origin_mod))
-	
-	# Give it the flash material as an overlay
-	var flash_overlay_details = ResourceManager.MaterialLoadDetails.new()
-	flash_overlay_details.base_material = "flash overlay"
-	
-	node.material_overlay = ResourceManager.load_material(flash_overlay_details)
-	
-	# Make so it will change colour when flash_value is changed
-	meshes_to_modulate.append(node)
+func reset_logic():
+	current_logic = base_logic
 
 
 func attach_softbody(model_path, model_file, attach_no, bone, materials, indices, offsets):
@@ -1121,17 +889,6 @@ func attach_softbody(model_path, model_file, attach_no, bone, materials, indices
 	# Make so it will change colour when flash_value is changed
 	meshes_to_modulate.append(node)
 
-func get_armature_bits():
-	var mesh_bits = []
-	for mesh in skeleton.get_children():
-		if mesh is MeshInstance3D:
-			if mesh.visible:
-				mesh_bits.append(self.get_path_to(mesh))
-	
-	return mesh_bits
-
-func anim_started(anim_name):
-	trigger_logics("anim_started", [anim_name])
 
 # This function is called when a body enters our personal space
 # It adds the body to a pushing list if it meets a couple criteria

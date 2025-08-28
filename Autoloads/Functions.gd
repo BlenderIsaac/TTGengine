@@ -206,6 +206,7 @@ class Damage:
 	var amount = 1
 	var from = null
 	var iframes = 0.2
+	var knockback = Vector3(0, 0, 0)
 	
 	func _init(Amount=1, From=null, IFrames=0.2):
 		amount = Amount

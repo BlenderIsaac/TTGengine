@@ -1,0 +1,2 @@
+extends Logic
+class_name InteractionLogic

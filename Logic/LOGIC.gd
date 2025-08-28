@@ -1,6 +1,6 @@
 extends Node3D
 
-var online:bool = true
+var online : bool = true
 var defaults = {}
 
 func logic_name():
@@ -11,15 +11,15 @@ func logic_name():
 	
 	return logic
 
-@onready var audio_player
-@onready var anim:AnimationPlayer
-@onready var C
-@onready var mesh
-@onready var nav_agent:NavigationAgent3D
-@onready var var_scale
-@onready var base_state
-@onready var tail
-@onready var tailcast
+var audio_player
+var anim:AnimationPlayer
+var C
+var mesh
+var nav_agent:NavigationAgent3D
+var var_scale
+var base_state
+var tail
+var tailcast
 
 func establish_connections(c):
 	C = c
