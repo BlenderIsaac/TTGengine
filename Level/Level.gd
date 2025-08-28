@@ -5,11 +5,13 @@ var section_generator : SectionGenerator
 var current_section : Section
 var load_data : LevelManager.LevelLoadCommand
 var level_data : Dictionary
+var player_money_data = {}
 
 func _init(_load_command : LevelManager.LevelLoadCommand):
 	load_data = _load_command
 
 func _ready():
+	Camera3D.new().get
 	section_generator = SectionGeneratorTTGL.new()
 	load_level_data()
 	

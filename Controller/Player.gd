@@ -1,0 +1,94 @@
+extends CharacterController
+class_name Player
+
+var up_key := "up"
+var down_key := "down"
+var left_key := "left"
+var right_key := "right"
+
+var fight_key := "J"
+var jump_key := "K"
+var special_key := "L"
+
+var tag_key := "I"
+
+var switch_left_key := "U"
+var switch_right_key := "O"
+
+var money := 0
+var player_color : Color
+
+func _process(_delta):
+	set_input_vector(Vector2(Input.get_axis(left_key, right_key), Input.get_axis(down_key, up_key)))
+
+func reset_control_of(old_controlling):
+	old_controlling.disconnect("death", player_death)
+
+func set_control_to(new_controlling):
+	if controlling:
+		reset_control_of(controlling)
+	
+	new_controlling.connect("death", player_death)
+	
+	controlling = new_controlling
+
+func player_death():
+	
+	# Drop studs
+	var level = get_tree().get_first_node_in_group("LEVELROOT")
+	var max_drop := 2000 # The amount of studs we will at max drop... in OG TCS it makes you drop half when you are below 2000 right?
+	
+	if money/2 < max_drop:
+		max_drop = snappedi(money/2, 10)
+	
+	var drop_types = f.get_stud_values_for_count(max_drop)
+	
+	var drop = 0
+	for stud in drop_types:
+		drop += f.stud_value[stud]
+		controlling.drop_stud(stud)
+	
+	money -= drop
+
+# A function that tags a character
+# The number of particles that spawn when tagging
+var tag_part_num = 3
+# The spread of the particles
+var tag_particle_spread = Vector3(.2, .5, .2)
+func create_particles(tag_from : Character, tag_to : Character):
+	for i in tag_part_num:
+		# Create a new particle
+		var tag_particle = ResourceManager.load_scene("Objects/tag_particle").instantiate()
+		
+		# Set the target of the tag particle
+		tag_particle.target = tag_to
+		
+		# Generate random coordinates for the particle to be placed at, based off tag_particle_spread
+		var tag_x = randf_range(-tag_from.tag_particle_spread.x, tag_from.tag_particle_spread.x)
+		var tag_y = randf_range(-tag_from.tag_particle_spread.y, tag_from.tag_particle_spread.y)
+		var tag_z = randf_range(-tag_from.tag_particle_spread.z, tag_from.tag_particle_spread.z)
+		
+		# Set the material override to the tag particle material - TODO: globalize later into a global particle material
+		var matte_details = ResourceManager.MaterialLoadDetails.new()
+		matte_details.base_material = "tag particle"
+		matte_details.color = player_color
+		tag_particle.get_node("Trail").material_override = ResourceManager.load_material(matte_details)
+		# Set the position to our position added to the aiming position and the random pos
+		tag_particle.position = controlling.aim_pos + tag_from.position+Vector3(tag_x, tag_y, tag_z)
+		# Tell the tag_particle where it originated - so it can go to that same position on the tagged character
+		# This is so they don't group up while following
+		tag_particle.randomization = Vector3(tag_x, tag_y, tag_z)
+		
+		# Add the tag particle to the scene
+		controlling.section.add_child(tag_particle)
+
+
+func tag_character(tag : Character):
+	
+	# loop for the number of particles
+	create_particles(controlling, tag)
+	#create_particles(tag, self)
+	
+	# Stop the anim on the tag's Modulation and play DropIn to show the player that they have switched
+	tag.get_node("Modulation").stop()
+	tag.get_node("Modulation").play("DropIn")

@@ -75,7 +75,12 @@ func generate(data : Level.SectionLoadCommand) -> Section:
 							
 							section.player_starting_positions.append(spawn)
 						if attr.has("ENEMY_SPAWN"):
-							pass
+							var details = ResourceManager.CharFolderCharacterLoadDetails.new("Stormtrooper")
+							details.load_details()
+							var c : Character = details.gen()
+							c.position = props.POSITION
+							c.section = section
+							gltf.add_child(c)
 							##var dead = false
 							
 							##if Levels.char_spawn_dead.has(N_section):

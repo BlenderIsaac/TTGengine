@@ -280,6 +280,47 @@ func _process(_delta):
 			#for v in sv:
 				#fv += stud_value[v]
 
+# This was ripped from online
+# from https://ask.godotengine.org/18559/how-to-add-commas-to-an-integer-or-float-in-gdscript
+func format_num(num):
+	var i : int = num.length() - 3
+	while i > 0:
+		num = num.insert(i, ",")
+		i = i - 3
+	return num
+
+
+var exceptions = ["vec3", "array"]
+func get_var_from_str(value):
+	
+	if typeof(value[1]) == typeof(""):
+		match value[0]:
+			"int":
+				return value[1].to_int()
+			"str":
+				return value[1]
+			"dict":
+				return value[1]
+			"float":
+				return float(value[1])
+			"bool":
+				return get_bool_from_string(value[1])
+			"color_hex":
+				return Color(value[1])
+			_:
+				if !exceptions.has(value[0]):
+					print(value[0] + " doesn't exist")
+				return str_to_var(value[1])
+	
+	return value[1]
+
+
+func get_bool_from_string(b):
+	if ["true", "t", "yes"].has(b.to_lower()):
+		return true
+	return false
+
+
 func transform_based_on_parent(parent, object):
 	var total_transform = object.transform
 	

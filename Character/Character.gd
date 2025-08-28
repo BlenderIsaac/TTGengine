@@ -1,51 +1,37 @@
 extends CharacterBody3D
 class_name Character
 
-# decides whether or not we are being controlled
-@export var AI = false
+var section : Section
+
+var will_respawn := false
 
 # Some references
-@onready var anim = $Mesh/AnimationPlayer
-@onready var nav_agent:NavigationAgent3D = $Agent
-@onready var modulate_anim = $Modulation
-@onready var audio = $AudioPlayer
-@onready var tail:RayCast3D = $Tail
-@onready var tailcast:ShapeCast3D = $TailCast
+var anim : AnimationPlayer
+var nav_agent : NavigationAgent3D# = $Agent
+var modulate_anim : AnimationPlayer# = $Modulation
+var audio : AudioPlayer# = $AudioPlayer
+var tail : RayCast3D# = $Tail
+var tailcast : ShapeCast3D# = $TailCast
+var collision
+var pushaway_collision
+var rig
+var rig_class := "NoRig"
+var armature
+var skeleton : Skeleton3D
 
-# player variables
-@export var player = false
-@export var player_number = -1
-@export var control_type = "keyboard"
-@export var controller_number = 0
-
-
-
-@export var base_state = ""
+var input_vector := Vector2(0, 0)
 
 # variable scaling
-@export var var_scale = 4.1
-
-var pausing_in_transition:
-	get():
-		return player and !Interface.transition_left < 0.15
+@export var var_scale := 4.1
 
 # flash value that character meshes borrows from
-@export var flash_value = Vector4()
+@export var flash_value := Color()
 var meshes_to_modulate = []
-
-var collision_scene = "CharacterCollision.tscn"
-
-var current_rig = "NoRig.tscn"
-var subrig = null
 
 var char_spawn = false
 var char_spawn_index = 0
 
-var origin_mod
-
 var char_name = "NULL"
-
-var delayed_keys = []
 
 # variables for root vel
 var prev_pose = Vector3()
@@ -75,30 +61,6 @@ var initial_sounds = {
 	}
 }
 
-# the keys pressed that control us
-var keys = {
-	'Up' : 'W',
-	'Down' : 'S',
-	'Left' : 'A',
-	'Right' : 'D',
-	'Special': 'H',
-	'Jump' : 'G',
-	'Fight' : 'F',
-	'Tag' : 'T',
-	'ChangeLeft' : 'R',
-	'ChangeRight' : 'Y',
-}
-
-# Our current binded controller buttons
-var controller_buttons = {
-	'Special' : 1,
-	'Jump' : 0,
-	'Fight' : 2,
-	'Tag' : 3,
-	'ChangeLeft' : 9,
-	'ChangeRight' : 10,
-}
-
 # variables to do with respawn wait
 var respawn_left = 3.0
 var respawn_wait = 3.0
@@ -114,9 +76,19 @@ var push_strength = 20
 # Probably change variable name
 var movement_state
 
-# the character we are currently
-var current_path = "" #TODO: Find a better way than using this
-var current_filename = ""
+var movement_logics = {}
+var jump_logics = {}
+var action_logics = {}
+var attribute_logics = {}
+var interaction_logics = {}
+
+var animations = {}
+var sounds = {}
+
+var identity
+var alignment
+
+var weapons = {}
 
 # our current velocity, move direction, knockback velocity, and pushed velocity
 var char_vel = Vector3()
@@ -131,16 +103,19 @@ var logic_switched_vars = {}
 # aim_pos - where projectiles aim
 var aim_pos = Vector3(0, 0.9, 0)
 
+signal health_changed
+signal death
+
 # health variables
 var max_hit_points = 4.0:
 	set(value):
 		max_hit_points = value
-		update_hearts()
+		emit_signal("health_changed")
 var hit_points = 4.0:
 	set(value):
 		hit_points = value
 		health_ratio_accurate = false
-		update_hearts()
+		emit_signal("health_changed")
 var ai_hit_points = 4.0
 var health_ratio = 0.0
 var health_ratio_accurate = false
@@ -150,41 +125,8 @@ var heart_x_offset = 30
 # the lerp angles for mesh turning
 var mesh_angle_to = 0.0
 
-# These things make so the functions key_just_pressed and key_just_unpressed work
-var keys_pressed_last_frame = []
-var buttons_pressed_last_frame = []
-
-var PHYSkeys_pressed_last_frame = []
-var PHYSbuttons_pressed_last_frame = []
-
-# keys that we have disabled until they are released and re-pressed
-var keys_unconscious = []
-
-# These are the keys that can be used with key_just_pressed and key_just_unpressed
-#var keys_pressed_checking = ["Fight", "Jump", "Pause", "ChangeLeft", "ChangeRight", "Tag", "Special"]
-
 # This is the history of where we can respawn
 var respawn_history = []
-
-# This is the weapon we currently are using
-var weapon_prefix = ""
-
-# These are some variables to do with AI distance - TODO: should be within an AI logic instead
-var AI_desired_distance = 4
-var AI_max_distance = 6
-
-# Test target variable
-var target = null
-
-# if we have just been tagged
-var just_tagged = false
-
-# if we have just been dropped in
-var just_dropped = false
-
-# alignment and faction
-var faction = []
-var alignment = 0
 
 # This function is called when this character is first added to the scene
 func _ready():
@@ -194,175 +136,30 @@ func _ready():
 	set_floor_stop_on_slope_enabled(true)
 	set_max_slides(4)
 	set_floor_max_angle(PI/3)
-	
-	# set the keys according to settings.gd
-	setup_keys()
-	
-	# Update the health Hud
-	if player:
-		update_HUD()
-		
-		update_camera_target()
-	
-	# reset our movement_state to the base movement state
-	reset_movement_state()
 
 
 func _process(_delta):
-	#DebugDraw3D.draw_arrow(position, position+velocity)
 	
-	get_node("Mesh/Armature/Skeleton3D").position = -get_root_pos()
-	
-	#Engine.time_scale = 1.0#0.1
-	#$Label3D.text = movement_state#anim.current_animation
+	skeleton.position = -get_root_pos()
 	
 	if iframes_left > 0.0:
 		iframes_left -= _delta
 	
 	# delete the oldest point in respawn_histroy if there are more than ten of them
 	if respawn_history.size() > 9:
-		respawn_history.reverse()
-		respawn_history.resize(10)
-		respawn_history.reverse()
+		respawn_history.remove_at(0)
 	
-	var level = get_tree().get_first_node_in_group("LEVELROOT")
-	if level:
-		if position.y <= level.death_height:
-			die()
+	if position.y <= section.death_height:
+		die()
 	
 	# every frame, loop through all the meshes we 
 	# want to change colour apon taking damage/respawn/switching character
 	for mesh in meshes_to_modulate:
 		# set their flash colour to the current flash_value,
 		# which is derived from the $Modulation AnimationPlayer
-		mesh.set("instance_shader_parameters/my_color", flash_value)
+		mesh.set("instance_shader_parameters/my_color", Vector4(
+			flash_value.r, flash_value.g, flash_value.b, flash_value.a))
 	
-	# Tagging and Switching code
-	# first make sure we are a player and currently being controlled
-	if player:
-		if not AI:
-			
-			# declare some variables for the outcome
-			var change = false # whether the player has decided to change their character
-			var reverse = false # whether the change is backwards or not
-			
-			# set these variables based off whether we press ChangeLeft or ChangeRight
-			if key_just_pressed("ChangeLeft"):
-				change = true
-				reverse = true # if we change left set reverse to true
-			if key_just_pressed("ChangeRight"):
-				change = true
-			
-			# check if our current logic doesn't want us to change
-			
-			if get_movement_state().has_method("can_switch"):
-				if get_movement_state().can_switch() == false:
-					change = false
-			
-			# later add a check here to see if the level is in freeplay
-			
-			#var char_can_change = false
-			#
-			#if Levels.level_state.Mode == "Freeplay":
-				#char_can_change = true
-			
-			# if the player has decided to change then do so
-			if change == true and Levels.level_state.Mode == "Freeplay":
-				
-				# This is a temporary bit of code that gets all the files in the mods/character folder
-				# Once freeplay is added this needs to be changed to an internal list of current freeplay
-				# characters
-				#var _chars = DirAccess.get_files_at(SETTINGS.mod_path+"/"+origin_mod+"/characters/chars")
-				
-				var chars = Levels.player_team.duplicate()
-				
-				# If reverse is true, flip the _chars 
-				if reverse:
-					chars.reverse()
-				
-				# Declare some variables to do with finding the character that is next
-				var found = false # whether we have been found within the dir yet
-				var new_char_file = null # The file path to the new character
-				var new_char_mod = null
-				
-				# loop through all the character paths
-				for char_data in chars:
-					
-					var char_file = char_data.Path
-					var char_mod = char_data.Mod
-					
-					# if we have found ourselves within the dir last iteration,
-					# that means that this iteration the next character is this one
-					if found:
-						# set new_char to the current iterated character path and break the loop
-						new_char_file = char_file
-						new_char_mod = char_mod
-						break
-					else:
-						# Just to make sure we switch to something,
-						# set this new_char to be this character as a backup
-						if new_char_file == null:
-							new_char_file = char_file
-							new_char_mod = char_mod
-						
-						# if the char_path plus the name of the charactor is the same as our
-						# current character filename, set found to true.
-						# Next round the iteration will read that found is true and set the next character
-						# to be the next character we possess.
-						if SETTINGS.mod_path+"/"+char_mod+"/characters/chars/"+char_file == current_path:
-							found = true
-				
-				# Play the character switch sound effect
-				$AudioPlayer.play("CharacterSwitch")
-				
-				# Restart the switch particles and play them again
-				$SwitchParticles.restart()
-				$SwitchParticles.emitting = true
-				
-				# use the change character function to switch into the new character
-				trigger_logics("pre_switch")
-				change_character_to_file(new_char_file, new_char_mod)
-				trigger_logics("post_switch")
-				
-				# Stop the modulation AnimationPlayer and play DropIn
-				# DropIn is also used when a character... drops in.
-				get_node("Modulation").stop()
-				get_node("Modulation").play("DropIn")
-				
-				var Parent = get_hud()
-				Parent.get_node("Icon/NameAnim").stop()
-				Parent.get_node("Icon/NameAnim").play("DropIn")
-			
-			
-			var can_tag = true
-			if get_movement_state().has_method("can_tag"):
-				if get_movement_state().can_tag() == false:
-					can_tag = false
-			
-			# If we have pressed Tag, use the find_tag() function
-			# The reason we aren't using the key_just_pressed() function
-			# is so that if you are slightly out of range of a character it keeps checking
-			# until you are in range.
-			# To prevent switching rapidly back and forth the just_tagged variable exists,
-			# which is set to true after successfully tagging and blocks anymore tags from
-			# taking place.
-			if key_press("Tag") and can_tag:
-				if not dead:
-					var tag = find_tag()
-					
-					# If the tag exists and we haven't just_tagged someone then tag that character
-					if tag != null and just_tagged == false:
-						var mutual = true
-						if tag.AI == false:
-							if !tag.key_press("Tag"):
-								mutual = false
-						
-						if mutual:
-							$AudioPlayer.play("CharacterTag")
-							tag_character(tag)
-			else:
-				# If we have stopped pressing the tag key reset just_tagged
-				just_tagged = false
 	
 	# if we are dead work toward us undeadening
 	if dead:
@@ -382,65 +179,38 @@ func _process(_delta):
 				if logic.has_method("exclusive_process"):
 					if logic.online:
 						logic.exclusive_process(_delta)
-	
-	
-	# make sure this is at the bottom of the _process(delta) function.
-	for key_checked in keys.keys():
-		
-		# KEYBOARD
-		var has_key = keys_pressed_last_frame.has(key_checked)
-		
-		if key_press(key_checked, "keyboard", true):
-			if not has_key:
-				keys_pressed_last_frame.append(key_checked)
-		else:
-			
-			if key_checked in keys_unconscious:
-				keys_unconscious.erase(key_checked)
-			
-			if has_key:
-				keys_pressed_last_frame.erase(key_checked)
-		
-		# CONTROLLER
-		var has_button = buttons_pressed_last_frame.has(key_checked)
-		
-		if key_press(key_checked, "controller"):
-			if not has_button:
-				buttons_pressed_last_frame.append(key_checked)
-		else:
-			if has_button:
-				buttons_pressed_last_frame.erase(key_checked)
-
 
 
 func _physics_process(_delta):
 	
 	# if we aren't dead, on the floor and our tail raycast is colliding...
+	# we are checking for respawns
 	if not dead:
-		if is_on_floor():
-			if tail.is_colliding():
-				# ...then check that the collision point distance to our position is less than 0.1...
-				if is_instance_valid(tail.get_collider()):
-					if tail.get_collision_point().distance_to(position) < 0.1:
-						# ...and if so check if the ground we are standing on is respawnable...
-						#RayCast3D.new().get_collider()
-						
-						if standing_on("respawnable"):
+		if will_respawn:
+			if is_on_floor():
+				if tail.is_colliding():
+					# ...then check that the collision point distance to our position is less than 0.1...
+					if is_instance_valid(tail.get_collider()):
+						if tail.get_collision_point().distance_to(position) < 0.1:
+							# ...and if so check if the ground we are standing on is respawnable...
+							#RayCast3D.new().get_collider()
 							
-							# ...and if all that is true set respawn point to our position
-							# respawn_point is backup respawn position
-							respawn_point = position
-							
-							# append our position to respawn history if respawn history is empty
-							if respawn_history.is_empty():
+							if standing_on("respawnable"):
+								
+								# ...and if all that is true set respawn point to our position
+								# respawn_point is backup respawn position
 								respawn_point = position
-								respawn_history.append(position)
-							
-							# if the latest respawn_history is far enough away from our position
-							# append the position onto the back of respawn_history
-							if respawn_history.back().distance_to(position) > 3:
-								respawn_point = position
-								respawn_history.append(position)
+								
+								# append our position to respawn history if respawn history is empty
+								if respawn_history.is_empty():
+									respawn_point = position
+									respawn_history.append(position)
+								
+								# if the latest respawn_history is far enough away from our position
+								# append the position onto the back of respawn_history
+								if respawn_history.back().distance_to(position) > 3:
+									respawn_point = position
+									respawn_history.append(position)
 		
 		
 		# set knock_vel, this is calculating the knockback
@@ -493,29 +263,6 @@ func _physics_process(_delta):
 					if logic.online:
 						logic.exclusive_physics(_delta)
 	
-	# The physics version of keys_just_pressed/unpressed
-	for key_checked in keys.keys():
-		
-		# KEYBOARD
-		var has_key = PHYSkeys_pressed_last_frame.has(key_checked)
-		
-		if key_press(key_checked, "keyboard"):
-			if not has_key:
-				PHYSkeys_pressed_last_frame.append(key_checked)
-		else:
-			if has_key:
-				PHYSkeys_pressed_last_frame.erase(key_checked)
-		
-		# CONTROLLER
-		var has_button = PHYSbuttons_pressed_last_frame.has(key_checked)
-		
-		if key_press(key_checked, "controller"):
-			if not has_button:
-				PHYSbuttons_pressed_last_frame.append(key_checked)
-		else:
-			if has_button:
-				PHYSbuttons_pressed_last_frame.erase(key_checked)
-	
 	# setup this for the next frame
 	prev_pose = get_root_pos()
 
@@ -535,108 +282,59 @@ func _on_agent_link_reached(details):
 	
 	# If we find that logic then we set our movement state to that logic
 	
-	if movement_state == base_state:
-		if logic:
-			set_movement_state(logic.logic_name())
-			
-			# Also we set all our logic variables to the new ones
-			ai_to = location_to
-			ai_from = location
-			current_link = link
-		else:
-			ai_to = global_position
-			ai_from = global_position
-			current_link = null
+	#if movement_state == base_state:
+	if logic:
+		set_movement_state(logic.logic_name())
+		
+		# Also we set all our logic variables to the new ones
+		ai_to = location_to
+		ai_from = location
+		current_link = link
+	else:
+		ai_to = global_position
+		ai_from = global_position
+		current_link = null
 
 
 func add_animation(anim_name:String, new_anim:Animation):
 	# Add the animation to the generic animation library
 	
-	if $Mesh/AnimationPlayer.get_animation_library("").has_animation(anim_name):
-		$Mesh/AnimationPlayer.get_animation_library("").remove_animation(anim_name)
+	if anim.get_animation_library("").has_animation(anim_name):
+		anim.get_animation_library("").remove_animation(anim_name)
 	
-	$Mesh/AnimationPlayer.get_animation_library("").add_animation(anim_name, new_anim)
+	anim.get_animation_library("").add_animation(anim_name, new_anim)
 
 
 # A function for setting the material of a particular piece
 func set_material(part_name, id, material):
 	# Declare a variable with a reference to the part we are changing the material of
-	var MESH = get_node_or_null("Mesh/Armature/Skeleton3D/"+part_name)
+	var MESH = skeleton.get_node_or_null(part_name)
 	
 	if MESH:
 		# Set the material based on the id
 		MESH.set_surface_override_material(id, material)
 
 
-# A function that should be called anytime the keys are changed
-func setup_keys():
-	# Retrieve the settings from SETTINGS and set your keys and controller_buttons
-	keys = SETTINGS.player_keys[player_number]
-	controller_buttons = SETTINGS.player_controller_buttons[player_number]
-	
-	# Update the HUD
-	update_HUD()
-
-func knock_out_key(key):
-	keys_unconscious.append(key)
-
 func dispose_audio_player():
-	var AudioPlayer = $AudioPlayer
+	var audio_player = $AudioPlayer
 	
-	AudioPlayer.name = str(self.name, "_DisposedAudio")
-	remove_child(AudioPlayer)
-	get_parent().add_child(AudioPlayer)
-	AudioPlayer.global_position = global_position
-	AudioPlayer.disposed = true
+	audio_player.name = str(self.name, "_DisposedAudio")
+	remove_child(audio_player)
+	get_parent().add_child(audio_player)
+	audio_player.global_position = global_position
+	audio_player.disposed = true
 	
 	
 	var new_AudioPlayer = load("res://Scripts/AudioPlayer.tscn").instantiate()
 	add_child(new_AudioPlayer)
 	
 	audio = new_AudioPlayer
-	new_AudioPlayer.sound_effects = AudioPlayer.sound_effects
+	new_AudioPlayer.sound_effects = audio_player.sound_effects
 	for logic in get_logics():
 		logic.audio_player = new_AudioPlayer
 	
 	new_AudioPlayer.name = "AudioPlayer"
 
-
-# A function to find the camera and add yourself to it's target list
-func update_camera_target():
-	# Get the camera
-	var cam = get_tree().get_first_node_in_group("GAMECAM")
-	
-	var invalid_cam = true
-	var index = 1
-	while invalid_cam:
-		if cam.is_queued_for_deletion():
-			cam = get_tree().get_nodes_in_group("GAMECAM")[index]
-			index += 1
-		else:
-			invalid_cam = false
-	
-	# Figure out whether we're currently on the list
-	var currently_targeted = cam.targets.has(self)
-	
-	# If we are on the list and we are AI then stop the camera targeting us
-	if currently_targeted:
-		if AI:
-			cam.targets.erase(self)
-	# If we are not on the target list and we are a player then add us to the list
-	else:
-		if not AI:
-			cam.targets.append(self)
-
-func generic_can_draw_weapon():
-	
-	if movement_state.begins_with("Force"):
-		return false
-	
-	return true
-
-func warn(type, from_list):
-	if AI:
-		trigger_logics(str("warning_"+type), from_list)
 
 func standing_on(group):
 	
@@ -657,10 +355,18 @@ func standing_on(group):
 	
 	return false
 
+func set_mesh(mesh):
+	print("set mesh")
+	rig = mesh
+	armature = mesh.get_node("Armature")
+	skeleton = mesh.get_node("Armature/Skeleton3D")
+	anim = mesh.get_node("AnimationPlayer")
+
 func get_root_pos():
 	#var root = $Mesh/Armature/Skeleton3D/ROOT
-	var pos = $"Mesh/Armature/Skeleton3D".get_bone_global_pose_no_override(0).origin
+	var pos = skeleton.get_bone_global_pose_no_override(0).origin
 	return pos
+
 
 func get_root_vel(start, end):
 	
@@ -671,81 +377,15 @@ func get_root_vel(start, end):
 	
 	if anim_progress >= start and anim_progress <= end:
 		
-		root_vel = bone_pos.rotated(Vector3.UP, $"Mesh".rotation.y)
+		root_vel = bone_pos.rotated(Vector3.UP, rig.rotation.y)
 	
 	return root_vel
 
 
-func controller_direction_pressed(key):
-	var joy_vector = get_joy_vector()
-	
-	match key:
-		"Up":
-			if joy_vector.z == -1:
-				return true
-		"Down":
-			if joy_vector.z == 1:
-				return true
-		"Left":
-			if joy_vector.x == -1:
-				return true
-		"Right":
-			if joy_vector.x == 1:
-				return true
-	
-	return false
-
-
-# A function to get the direction we are supposed to be moving based on key/controller inputs
-func get_move_dir():
-	
-	
-	# A variable to hold the movement direction we are going to return
-	var new_move_dir = Vector3()
-	
-	if SETTINGS.mobile:
-		var input = get_tree().get_first_node_in_group("AndroidButtonParent").get_joy_input()
-		new_move_dir = Vector3(input.x, 0.0, input.y)
-	
-	# If we are keyboard player check through all the keys and add values to new_move_dir
-	elif control_type == "keyboard":
-		if key_press("Up"):
-			new_move_dir.z -= 1
-		if key_press("Down"):
-			new_move_dir.z += 1
-		if key_press("Left"):
-			new_move_dir.x -= 1
-		if key_press("Right"):
-			new_move_dir.x += 1
-		
-		# Normalize new_move_dir to make sure we aren't moving faster than 1.0 in any direction
-		new_move_dir = new_move_dir.normalized()
-	# If we are a controller player then get the position of the joystick
-	elif control_type == "controller":
-		
-		new_move_dir = get_joy_vector()
-		
-		# Add a deadzone of .05
-		if new_move_dir.length() <= .05:
-			new_move_dir = Vector3()
-		
-		# limit the length of our travel to 1.0 to make sure we don't move faster than that
-		new_move_dir = new_move_dir.limit_length(1.0)
-	
-	# Rotate the move_dir to align with our camera
-	new_move_dir = new_move_dir.rotated(Vector3.UP, get_viewport().get_camera_3d().rotation.y)
-	
-	
-	if pausing_in_transition:new_move_dir = Vector3()
-	
-	# return new_move_dir
-	return new_move_dir
-
 # a function that holds a generic lerping to the facing of mesh_angle_to
 func mesh_angle_lerp(delta, weight):
-	
-	get_node("Mesh").rotation.y = lerp_angle(get_node("Mesh").rotation.y, mesh_angle_to, weight*delta*60)
-	get_node("Mesh").rotation.y -= deg_to_rad(int(rad_to_deg(get_node("Mesh").rotation.y)/360)*360)
+	rig.rotation.y = lerp_angle(rig.rotation.y, mesh_angle_to, weight*delta*60)
+	rig.rotation.y -= deg_to_rad(int(rad_to_deg(rig.rotation.y)/360)*360)
 
 
 # Variables to control how high and far studs fly out when we drop them
@@ -754,17 +394,10 @@ var stud_max_height = 6.0
 var stud_min_height = 1.0
 
 func drop_stud(type):
-	# Get a reference to the stud in memory
-	var sTUD_pICKUP = l.get_load("res://Objects/Stud.tscn")
-	
 	# Create a new stud
-	var stud = sTUD_pICKUP.instantiate()
-	# Add the stud to the scene
-	get_parent().add_child(stud)
+	var stud = ResourceManager.create_scene("Objects/Stud", global_position+Vector3(0, 1, 0), section)
 	# Set the type of the stud
 	stud.set_type(type)
-	# Set the global position of the stud to our position, just a little higher
-	stud.global_position = global_position+Vector3(0, 1, 0)
 	
 	# Randomize a y velocity value between the min and max stud velocity height
 	var rand_vel_up = randf_range(stud_min_height, stud_max_height)
@@ -786,15 +419,9 @@ var heart_max_height = 3.0
 var heart_min_height = 1.5
 
 func drop_heart():
-	# Get a reference for the heart in memory
-	var hEART_pICKUP = l.get_load("res://Objects/HeartPickup.tscn")
 	
 	# Create a new heart
-	var heart = hEART_pICKUP.instantiate()
-	# Add the heart to the scene
-	get_parent().add_child(heart)
-	# Position the heart at our position just a little higher
-	heart.global_position = global_position+Vector3(0, 1, 0)
+	var heart = ResourceManager.create_scene("Objects/Heart", global_position+Vector3(0, 1, 0), section)
 	
 	# Randomize a value between the min and max height for the heart velocity
 	var rand_vel_up = randf_range(heart_min_height, heart_max_height)
@@ -884,13 +511,13 @@ func generate_bit(bit):
 	rigid.rotation.y = bit.global_rotation.y
 	
 	# set the script of the rigid body - this script makes it flash and delete after a while
-	rigid.set_script(l.get_load("res://Scripts/VisualDeath.gd"))
+	rigid.set_script(ResourceManager.load_script("Scripts/VisualDeath"))
 	
 	# use the RigidBody function setup() to initiate the rigid body
 	rigid.setup()
 	
 	# Set the physics material override to make it bouncy
-	rigid.physics_material_override = l.get_load("res://Materials/BitsPhysicsMaterial.tres")
+	rigid.physics_material_override = ResourceManager.load_tres("Materials/BitsPhysicsMaterial")
 	
 	# reset the mesh_drop's flash_value - otherwise if we die while flashing the colour is carried over
 	if mesh_drop.get("instance_shader_parameters/my_color"):
@@ -902,10 +529,14 @@ func generate_bit(bit):
 
 # A variable to store whether or not we are currently dead
 var dead = false
+
 func die():
 	
 	# We only want to die once, so make sure we are currently alive
 	if not dead:
+		
+		# set our health to 0, just in case it wasn't already
+		hit_points = 0
 		
 		# Explode into a million pieces
 		drop_bits()
@@ -935,11 +566,10 @@ func die():
 			no_hearts -= 1
 		
 		# If we are not a player (IE an enemy) then delete
-		if not player:
-			if !Levels.char_spawn_dead.has(Levels.level_state.Section):
-				Levels.char_spawn_dead[Levels.level_state.Section] = []
+		if !will_respawn:
+			section.i_am_dead(self)
 			
-			Levels.char_spawn_dead[Levels.level_state.Section].append(char_spawn_index)
+			emit_signal("death")
 			
 			queue_free()
 		else:
@@ -952,70 +582,10 @@ func die():
 			# Run the freeze function which sets us to not be moving, and without collision
 			death_freeze()
 			
-			# Reset our movement state to base one
-			reset_movement_state()
-			
-			# Drop studs
-			var level = get_tree().get_first_node_in_group("LEVELROOT")
-			var current_money = level.get_money(player_number)
-			var max_drop = 2000 # The amount of studs we will at max drop... in OG TCS it makes you drop half when you are below 2000 right?
-			
-			if current_money/2 < max_drop:
-				max_drop = snappedi(current_money/2, 10)
-			
-			var drop_types = f.get_stud_values_for_count(max_drop)
-			#var has_dropped = 0
-			#
-			## loop until we have dropped enough money
-			#while has_dropped < max_drop and not current_money == 0:
-				## Variables for the type of stud we are dropping and the value of that stud
-				#var type_drop = null
-				#var amount_drop = 0
-				#
-				## Match the amount of money we have to the types of studs
-				#if current_money >= 100000 and max_drop > 100000:
-					#type_drop = "Pink"
-					#amount_drop = 100000
-				#elif current_money >= 10000 and max_drop > 10000: # remove when pink gets added
-					#type_drop = "Purple"
-					#amount_drop = 10000
-				#elif current_money >= 1000 and max_drop > 1000:
-					#type_drop = "Blue"
-					#amount_drop = 1000
-				#elif current_money >= 100 and max_drop > 100:
-					#type_drop = "Gold"
-					#amount_drop = 100
-				#elif current_money >= 10 and max_drop >= 10:
-					#type_drop = "Silver"
-					#amount_drop = 10
-				#
-				## If we have found a stud to drop
-				#if not type_drop == null:
-					## add the amount we just dropped to the sum of what we have dropped
-					#has_dropped += amount_drop
-					## drop the stud, based on what type the stud is
-					#drop_stud(type_drop)
-			
-			var drop = 0
-			for stud in drop_types:
-				drop += f.stud_value[stud]
-				drop_stud(stud)
-			
-			level.add_money(player_number, -drop)
-			
-			# Use our update money function which formats the current stud value nicely
-			update_money()
-			
-			# set our health to 0, just in case it wasn't already
-			hit_points = 0
-			
-			# Update the HUD
-			update_HUD()
+			emit_signal("death")
 			
 			# Set our position back to the respawn point. The good thing about this
-			# is that we don't need to do anything with the camera targeting. The
-			# bad thing is the death sound effects play at the place we respawn - 
-			# not the place we die.
+			# is that we don't need to do anything with the camera targeting.
 			position = get_respawn_point()
 		
 		# Tell all our logics that want to hear that we have just died
@@ -1031,12 +601,9 @@ func respawn(): # only for players really
 	# Reset our health to max
 	hit_points = max_hit_points
 	
-	# Update the HUD
-	update_HUD()
-	
 	# reset our animation
-	anim.play("Idleloop", 0)
-	weapon_prefix = ""
+	anim.play("Idleloop", 0.0)
+	###weapon_prefix = ""
 	
 	# Set our current velocity to nothing
 	char_vel = Vector3()
@@ -1077,9 +644,7 @@ func death_freeze():
 	$Col.call_deferred("set", "disabled", true)
 	# Reset the knockback
 	knock_vel = Vector3()
-	# Freeze the base movement state - It has a couple things it wants to do.
-	# Maybe change this to trigger logics later? Maybe other logics want to do things like that.
-	get_base_movement_state().freeze()
+	
 	# Make so the character is no longer visible
 	hide()
 
@@ -1092,20 +657,6 @@ func un_death_freeze():
 
 
 # Functions to do with movement states/logics
-
-# This function gets our base movement state
-func get_base_movement_state():
-	return get_logic(get_base_movement_state_name())
-
-# This gets the name of our base movement state
-func get_base_movement_state_name():
-	return base_state
-
-# This checks whether we are currently in our base movement state
-func is_in_base_movement_state():
-	if get_base_movement_state_name() == movement_state:
-		return true
-	return false
 
 # This is a function that finds the suitable logic for a particular NavLink
 func get_logic_for_nav(details):
@@ -1181,48 +732,6 @@ func set_movement_state(new_state):
 			# If the movement state has the method initiate(), initiate the movement state
 			if get_logic(new_state).has_method("initiate"):
 				get_logic(new_state).initiate()
-
-# This function sets us back to our base movement state
-func reset_movement_state():
-	
-	set_movement_state(get_base_movement_state_name())
-
-
-func get_stud(amount, frame, type):
-	gain_money(amount, type, frame)
-func gain_money(amount, type, frame):
-	get_tree().get_first_node_in_group("LEVELROOT").add_money(player_number, amount)
-	get_hud().get_node("InGame/MoneyParent/Anim").play("Juice")
-	get_hud().get_node("InGame/MoneyParent/CoinHUD").animation = type
-	get_hud().get_node("InGame/MoneyParent/CoinHUD").frame = frame
-	# add something here to change colour of thing
-	
-	update_money()
-
-# This function updates the money in the HUD and formats it with ,
-func update_money():
-	if get_hud():
-		get_hud().get_node("InGame/MoneyParent/Money").text = format_num(str(get_tree().get_first_node_in_group("LEVELROOT").get_money(player_number)))
-
-# This returns the HUD for the player
-func get_hud():
-	
-	# Get the name of the hud
-	
-	var parent_name = str("Player", player_number, "HUD")
-	
-	# Get the parent of our hud and return it
-	var Parent = Interface.get_node_or_null("Icons/"+parent_name+"/Control")
-	return Parent
-
-# This was ripped from online
-# from https://ask.godotengine.org/18559/how-to-add-commas-to-an-integer-or-float-in-gdscript
-func format_num(num):
-	var i : int = num.length() - 3
-	while i > 0:
-		num = num.insert(i, ",")
-		i = i - 3
-	return num
 
 
 func take_damage(damage:f.Damage):
@@ -1314,67 +823,10 @@ func change_health(amount):
 	# If we have more health than we should we cap our health to the max health
 	if hit_points > max_hit_points:
 		hit_points = max_hit_points
-	
-	# If we are being controlled we will update the HUD
-	if not AI:
-		update_HUD()
 
 
 # This is an unused variable for auto icons
 var current_auto_icon = null
-
-func update_hearts():
-	var Parent = get_hud()
-	if Parent != null and player_number != -1:
-		var HeartParent = Parent.get_node("InGame/HeartParent")
-		HeartParent.per_row = hearts_per_row
-		HeartParent.offset_x = heart_x_offset
-		
-		HeartParent.hearts = hit_points
-		HeartParent.max_hearts = max_hit_points
-
-# This is a function that finds and updates our current HUD
-func update_HUD():
-	
-	# get the pause keys for controllers and keyboards
-	var pause_key = keys.get("Pause")
-	#var cont_start = controller_buttons.get("Pause")
-	
-	# get the HUD using the get_hud() function
-	var Parent = get_hud()
-	
-	# if we have found our HUD and we exist as a player
-	if Parent != null and player_number != -1:
-		
-		Parent.get_node("Icon/Name").text = char_name
-		
-		# If we have an icon then set it as the sprite of the Control/Head on our HUD.
-		# If not, don't.
-		if icon != null:
-			Parent.get_node("Icon/Head").texture = icon
-		else:
-			Parent.get_node("Icon/Head").texture = null
-		
-		# Reference to the DropIn and HeartParent
-		var HeartParent = Parent.get_node("InGame/HeartParent")
-		var DropInPrompt = Parent.get_node("InGame/DropInPrompt")
-		
-		# Set the drop in prompt text to the correct key
-		DropInPrompt.text = str("Press (",pause_key,") or\n(Start) to start")
-		
-		update_hearts()
-		
-		# If we are AI now then we want to make the HUD transparent, hide the hearts, and show the drop in prompt
-		if AI:
-			DropInPrompt.show()
-			HeartParent.hide()
-			Parent.modulate.a = .5
-		# If we now being controlled then we do the opposite
-		else:
-			DropInPrompt.hide()
-			HeartParent.show()
-			Parent.modulate.a = 1
-
 
 # function to check if we are currently invincible
 func is_invincible():
@@ -1402,34 +854,9 @@ func trigger_logics(function_name, variables=[]):
 
 
 var velocity_compute_obstacle = Vector3()
-# AI function that gets the current position of our target
-# We don't do this every frame to save on lag
-func _on_target_update():
-	
-	# If we are an AI and we have a target
-	if AI and target: 
-		
-		# Get the position of the target, the y position snapped within 0.01 - why I do this I don't remember
-		var tar_pos = Vector3(target.x, snapped(target.y, 0.01), target.z)
-		# Store the current position we think that the target is at
-		var prev_tar_pos = nav_agent.target_position
-		
-		# Set the position where we are going to be the position of our target
-		nav_agent.target_position = (tar_pos)
-		
-		# Check if the target is currently reachable, if not, set the target 
-		if not nav_agent.is_target_reachable():
-			nav_agent.target_position = prev_tar_pos
-	
-	# ask the current general ai logic something maybe
-
 func velocity_computed(safe_velocity:Vector3):
 	velocity_compute_obstacle = safe_velocity
 
-# a function that simply returns the distance to the current target
-# It's so simple that I might remove it in future
-func get_distance_to_target():
-	return target.distance_to(global_position)
 
 var last_location = Vector3()
 var next_location = Vector3()
@@ -1472,6 +899,7 @@ func get_ai_direction(delta):
 		movement *= dist_to_target
 	
 	return Vector3(movement.x, 0, movement.y)
+
 
 # These variables are to do with tagging
 var tag_range = 2 # The distance from a character we must at least be in order to tag them
@@ -1525,110 +953,6 @@ func find_tag():
 	# If nothing else was returned then return nothing
 	return null
 
-
-# A function that tags a character
-# The number of particles that spawn when tagging
-var tag_part_num = 3
-# The spread of the particles
-var tag_particle_spread = Vector3(.2, .5, .2)
-func create_particles(tag_from, tag_to):
-	for i in tag_part_num:
-		# Create a new particle
-		var tag_particle = l.get_load("res://Objects/tag_particle.tscn").instantiate()
-		
-		# Set the target of the tag particle
-		tag_particle.target = tag_to
-		
-		# Generate random coordinates for the particle to be placed at, based off tag_particle_spread
-		var tag_x = randf_range(-tag_from.tag_particle_spread.x, tag_from.tag_particle_spread.x)
-		var tag_y = randf_range(-tag_from.tag_particle_spread.y, tag_from.tag_particle_spread.y)
-		var tag_z = randf_range(-tag_from.tag_particle_spread.z, tag_from.tag_particle_spread.z)
-		
-		# get the colour of the particle from SETTINGS
-		var colour = SETTINGS.player_colours.get(str(tag_from.player_number))
-		
-		# Set the material override to the tag particle material - TODO: globalize later into a global particle material
-		tag_particle.get_node("Trail").material_override = Materials.get_tag_part_material(colour)
-		# Set the position to our position added to the aiming position and the random pos
-		tag_particle.position = aim_pos+tag_from.position+Vector3(tag_x, tag_y, tag_z)
-		# Tell the tag_particle where it originated - so it can go to that same position on the tagged character
-		# This is so they don't group up while following
-		tag_particle.randomization = Vector3(tag_x, tag_y, tag_z)
-		
-		# Add the tag particle to the scene
-		get_parent().add_child(tag_particle)
-
-func tag_character(tag):
-	
-	# Spawn all the tag particles
-	
-	# loop for the number of particles
-	create_particles(self, tag)
-	if tag.AI == false:
-		create_particles(tag, self)
-	
-	# Store the current player numbers of us and the tagged character
-	var tag_new_number = player_number
-	var our_new_number = tag.player_number
-	
-	var tag_new_control = control_type
-	var our_new_control = tag.control_type
-	
-	var tag_cont_num = controller_number
-	var our_cont_num = tag.controller_number
-	
-	# Flip the numbers
-	tag.player_number = tag_new_number
-	player_number = our_new_number
-	
-	# Set the tagged character's just_tagged to true (so they don't loop tagging)
-	tag.just_tagged = true
-	
-	# If the character we are going to is not controlled then toggle AI on both of us
-	if tag.AI:
-		tag.AI = false
-		AI = true
-	# If we are both controlled characters then don't do anything but set our just_tagged characters
-	else:
-		just_tagged = true
-	
-	# Setup the keys for both of us
-	tag.setup_keys()
-	setup_keys()
-	
-	# update the HUD
-	tag.update_money()
-	update_money()
-	
-	# Update the camera target on both of us
-	tag.update_camera_target()
-	update_camera_target()
-	
-	# update the controller number
-	tag.controller_number = tag_cont_num
-	controller_number = our_cont_num
-	
-	# switch the control types
-	tag.control_type = tag_new_control
-	control_type = our_new_control
-	
-	# set the tags max health
-	
-	# Stop the anim on the tag's Modulation and play DropIn to show the player that they have switched
-	tag.get_node("Modulation").stop()
-	tag.get_node("Modulation").play("DropIn")
-	
-	var Parent = tag.get_hud()
-	Parent.get_node("Icon/NameAnim").stop()
-	Parent.get_node("Icon/NameAnim").play("DropIn")
-	
-	# set our target position
-	ai_to = position
-	target = position
-	
-	# TODO - make so that if we are both controlled it does all the particles and makes both of us play DropIn
-
-
 # A function to reset the modulation of our character
 func reset_modulation():
 	# Remove all the meshes from meshes_to_modulate
@@ -1636,386 +960,13 @@ func reset_modulation():
 	
 	# Loop through all the MeshInstances under the Skeleton3D and set their overlay material to be the flash shader
 	# and append them to meshes_to_modulate
-	for mesh in $Mesh/Armature/Skeleton3D.get_children():
+	for mesh in skeleton.get_children():
 		if mesh is MeshInstance3D:
-			mesh.material_overlay = Materials.FlashOverlay
+			var flash_overlay_details = ResourceManager.MaterialLoadDetails.new()
+			flash_overlay_details.base_material = "flash overlay"
+			
+			mesh.material_overlay = ResourceManager.load_material(flash_overlay_details)
 			meshes_to_modulate.append(mesh)
-
-# This function gets data from a character file
-func get_character_file_data(c_path):
-	# Read the file and get it as a dictionary
-	var file = FileAccess.open(c_path, FileAccess.READ)
-	var data = JSON.parse_string(file.get_as_text())
-	
-	# Close the file (important)
-	file.close()
-	
-	return data
-
-# This function takes a character file and runs it through the inherit chain
-func complete_character_file_data(data, mod):
-	
-	if data.has("Inherits"):
-		var char_path = SETTINGS.mod_path+"/"+mod+"/characters/chars/"+data.Inherits
-		
-		var inherited_data = complete_character_file_data(get_character_file_data(char_path), mod)
-		
-		for key in data.keys():
-			var value = data.get(key)
-			
-			if key.begins_with("#"):
-				
-				if typeof(value) == typeof({}):
-					
-					# dictionary editing
-					for sub_key in value.keys():
-						inherited_data[key.lstrip("#")][sub_key] = value.get(sub_key)
-				elif typeof(value) == typeof([]):
-					for element in value:
-						var replace_instead = false
-						
-						if key == "#Logics":
-							var idx = 0
-							
-							for d in inherited_data.Logics:
-								if d.cLogicsPath == element.cLogicsPath:
-									replace_instead = true
-									inherited_data[key.lstrip("#")][idx] = element
-								
-								idx += 1
-						elif key == "#Animations":
-							var idx = 0
-							
-							for d in inherited_data.Animations:
-								if d.Name == element.Name:
-									replace_instead = true
-									inherited_data[key.lstrip("#")][idx] = element
-								
-								idx += 1
-						
-						
-						if not replace_instead:
-							inherited_data[key.lstrip("#")].append(element)
-				
-			else:
-				inherited_data[key] = value
-		
-		return inherited_data
-	else:
-		return data
-
-# This function loads a character from a file and makes us that character
-func change_character_to_file(c_file, mod):
-	
-	var char_path = SETTINGS.mod_path+"/"+mod+"/characters/chars/"+c_file
-	
-	# Load the data
-	var data = complete_character_file_data(get_character_file_data(char_path), mod)
-	
-	# change us to that data
-	change_character(data, char_path, mod)
-	
-	current_filename = c_file
-
-
-# This function sets us to a particular character based off data
-func change_character(data, c_path, mod): # TODO: We don't need c_path here once we remove current_character_filename
-	
-	current_filename = ""
-	
-	$Agent.navigation_layers = 0
-	
-	origin_mod = mod
-	
-	# Clear all current audio loops
-	$AudioPlayer.clear_loops()
-	
-	if data.has("Faction"):
-		if typeof(data.Faction) == TYPE_ARRAY:
-			faction = data.Faction
-		else:
-			faction = [data.Faction]
-	alignment = data.get("Alignment", 0)
-	
-	
-	# change name
-	if data.has("Name"):
-		char_name = data.Name
-	
-	# add sounds
-	$AudioPlayer.clear()
-	if data.has("Sounds"):
-		
-		var all_sounds = initial_sounds.duplicate()
-		
-		for sound in data.Sounds.keys():
-			var value = data.Sounds.get(sound)
-			
-			all_sounds[sound] = value
-		
-		for key in all_sounds:
-			var value = all_sounds.get(key)
-			
-			for path_type in value.keys():
-				var sound_list = value.get(path_type)
-				
-				for sound in sound_list:
-					$AudioPlayer.add_sound(f.get_data_path({path_type : sound}, origin_mod), key, origin_mod)
-		
-		#for title in data.Sounds.keys():
-			## issue here
-			#$AudioPlayer.add_sound(data.Sounds.get(title), title, origin_mod)
-			## add config and randomization of sounds
-		#for sound in initial_sounds.keys():
-			#$AudioPlayer.add_sound(initial_sounds.get(sound), sound, origin_mod)
-	
-	# Setup the Icon using the Materials autoload
-	if data.has("Icon"):
-		icon = Materials.load_texture(SETTINGS.mod_path+"/"+origin_mod+"/characters/icons/"+data.Icon)
-	else:
-		icon = null
-	
-	var old_max = max_hit_points
-	var old_h = hit_points
-	var old_ratio = old_h/old_max
-	# If the data specifies health then set our new health to it
-	if data.has("Health"):
-		max_hit_points = data.Health
-	else:
-		max_hit_points = 4.0
-	
-	if data.has("AI_Health"):
-		ai_hit_points = data.AI_Health
-	else:
-		ai_hit_points = max_hit_points
-	
-	if data.has("HeartsPerRow"):
-		hearts_per_row = data.HeartsPerRow
-	else:
-		hearts_per_row = -1
-	
-	if data.has("HeartXOffset"):
-		heart_x_offset = data.HeartXOffset
-	else:
-		heart_x_offset = 30
-	
-	if !health_ratio_accurate:
-		health_ratio = old_ratio
-	
-	hit_points = ceil(health_ratio*max_hit_points)
-	health_ratio_accurate = true
-	#if old_max == old_h:
-	# find how many health we were off max
-	#if hit_points != 1:
-	#	
-	#	var diff = old_max - old_h
-	#	var new_health = max_hit_points - clamp(diff, 0, max_hit_points-1)
-	#	
-	#	hit_points = new_health
-	
-	update_hearts()
-	
-	
-	if data.has("Collision"):
-		collision_scene = data.Collision
-	else:
-		collision_scene = "CharacterCollision.tscn"
-	
-	var current_col = get_node_or_null("Col")
-	var current_push_col = get_node_or_null("Pushaway/Col")
-	var col_load = l.get_load(SETTINGS.mod_path+"/"+origin_mod+"/characters/collisions/"+collision_scene)
-	
-	if current_col:
-		#current_col.name = "ColDelete"
-		current_col.free()
-	if current_push_col:
-		#current_col.name = "ColPushDelete"
-		current_push_col.free()
-	
-	var new_col:CollisionShape3D = col_load.instantiate()
-	var new_push_col:CollisionShape3D = col_load.instantiate()
-	var new_cast_shape = new_col.shape.duplicate()
-	
-	add_child(new_col)
-	new_col.name = "Col"
-	
-	$Pushaway.add_child(new_push_col)
-	new_push_col.name = "Col"
-	
-	$TailCast.shape = new_cast_shape
-	$TailCast.position = new_col.position
-	
-	# delete current rig
-	var m = get_node_or_null("Mesh")
-	var m_rot = Vector3()
-	if m:
-		m_rot = m.rotation
-		
-		m.name = "DeletingMesh"
-		m.queue_free()
-	
-	# create rig/subrig
-	var rig_name = "GenRig.tscn"
-	var subrig_name = null
-	
-	if data.has("Rig"):
-		rig_name = data.Rig
-	
-	if data.has("SubRig"):
-		subrig_name = data.SubRig
-	
-	current_rig = rig_name
-	subrig = subrig_name
-	
-	if subrig_name != null:
-		rig_name = subrig_name
-	
-	
-	
-	var rig_path = SETTINGS.mod_path+"/"+origin_mod+"/characters/rigs/"+rig_name
-	#var rig# = 
-	var rig_instance# = l.get_load(rig_path).instantiate()
-	
-	if subrig_name.ends_with(".glb"):
-		rig_instance = f.generate_gltf(rig_path)
-		rig_instance.rotation_degrees.y += 90.0
-		#var rooot = BoneAttachment3D.new()
-		#m_rot.x = -PI/2
-		#rooot.bone_idx = 0
-		#rooot.name = "ROOT"
-		#rooot.override_pose = true
-		#rig_instance.get_node("Armature/Skeleton3D").add_child(rooot)
-	else:
-		m_rot.x = 0
-		rig_instance = l.get_load(rig_path).instantiate()
-	
-	add_child(rig_instance)
-	rig_instance.name = "Mesh"
-	rig_instance.rotation = m_rot
-	
-	
-	# replace parts
-	if data.has("ReplaceParts"):
-		for part_name in data.ReplaceParts:
-			var new_part_filename = data.ReplaceParts.get(part_name)
-			
-			var parts_path = SETTINGS.mod_path+"/"+origin_mod+"/characters/rigs/replacers/"+new_part_filename
-			var new_part = f.generate_gltf(parts_path)
-			var part_mesh = new_part.get_child(0).get_child(0).get_child(0)
-			new_part.get_child(0).get_child(0).remove_child(part_mesh)
-			new_part.free()
-			new_part = part_mesh
-			
-			var skeleton = rig_instance.get_node("Armature/Skeleton3D")
-			var current_part = skeleton.get_node(part_name)
-			
-			current_part.name = "DelMe"
-			current_part.free()
-			
-			new_part.name = part_name
-			skeleton.add_child(new_part)
-			#new_part.skeleton = NodePath("..")
-	
-	anim = $Mesh/AnimationPlayer
-	anim.playback_process_mode = 0
-	
-	# hide particular bits
-	if data.has("HideParts"):
-		for part in data.HideParts:
-			get_node("Mesh/Armature/Skeleton3D/"+part).hide()
-	
-	# Get the meshes and set bit to it
-	bits = get_armature_bits()
-	
-	# Reset the modulation and create a new list of meshes_to_modulate
-	reset_modulation()
-	
-	# generate models
-	if data.has("Models"):
-		var attach_no = 0
-		for model in data.Models:
-			if model.Type == "Model":
-				var p = f.get_data_path(model, mod)
-				attach_model(p, attach_no, int(model.Bone), model.Materials)
-				
-				attach_no += 1
-			elif model.Type == "SoftBody":
-				var p = f.get_data_path(model, mod)
-				attach_softbody(p, attach_no, int(model.Bone), model.Materials, model.Indices, model.Offsets)
-				
-				attach_no += 1
-	
-	# add materials
-	for part_matt_name in data.Materials.keys():
-		var part_matte_data = data.Materials.get(part_matt_name)
-		for matte_id in part_matte_data:
-			set_material(part_matt_name, int(matte_id), Materials.get_matte(part_matte_data.get(matte_id), origin_mod))
-	
-	# get the parent of the logics
-	var LogicParent = get_node("Logic")
-	
-	# create the base logic
-	base_state = data.BaseState
-	
-	# I don't know if logic_switched_vars is necessary
-	# delete all current logics
-	for logic in LogicParent.get_children():
-		if logic.has_method("get_switched_var"):
-			logic_switched_vars[logic.logic_name()] = logic.get_switched_var()
-		
-		if logic.has_method("reset"):
-			logic.reset()
-		
-		logic.free()
-	
-	# loop through all the logics and create them
-	for logic in data.Logics:
-		var config = {}
-		
-		if logic.has("Config"):
-			config = logic.Config
-		
-		var data_path = f.get_data_path(logic, mod)
-		
-		if SETTINGS.use_internal_logics == "true":
-			data_path = "res://Logic/" + logic.cLogicsPath
-		
-		add_logic(data_path, config, logic_switched_vars)
-	
-	# store current animation
-	var anim_player = $Mesh/AnimationPlayer
-	
-	# Remove a library if one exists and add a new blank one.
-	if anim_player.has_animation_library(""):
-		anim_player.remove_animation_library("")
-	anim_player.add_animation_library("", AnimationLibrary.new())
-	
-	# add the animations
-	if data.has("Animations"):
-		for anim_name in data.Animations:
-			var new_anim = l.get_load(f.get_data_path(anim_name, mod))
-			
-			add_animation(anim_name.Name, new_anim)
-	
-	anim_player.connect("animation_started", anim_started)
-	
-	get_base_movement_state().C = self
-	var switch_anim = get_base_movement_state().get_switch_anim()
-	anim_player.play(switch_anim[0], 0.0)
-	anim_player.seek(switch_anim[1], true)
-	
-	# show which character we are
-	current_path = c_path
-	
-	# remove our weapon
-	weapon_prefix = ""
-	
-	# set the movement state to our base state
-	reset_movement_state()
-	
-	# if we are inside the tree and have access to the hud update it
-	if is_inside_tree():
-		update_HUD()
 
 
 # A function to add a logic based off a path, a config, and some vars
@@ -2023,7 +974,7 @@ func add_logic(logic_path, config={}, switched_vars=[]):
 	# Create a new Node for the logic
 	var logic_node = Node3D.new()
 	# Load the script
-	var logic_script = l.get_load(logic_path)
+	var logic_script = ResourceManager.load_script(logic_path)
 	
 	# Set the node's script to be the loaded script
 	logic_node.set_script(logic_script)
@@ -2054,7 +1005,7 @@ func add_logic(logic_path, config={}, switched_vars=[]):
 			var updated = config.get(config_name)
 			
 			# Set the variable in the logic node to the updated
-			logic_node.set(config_name, l.get_var_from_str(updated))
+			logic_node.set(config_name, f.get_var_from_str(updated))
 	
 	# Add the logic to the character
 	var LogicParent = get_node("Logic")
@@ -2064,16 +1015,16 @@ func add_logic(logic_path, config={}, switched_vars=[]):
 
 # This function attaches a model based on a couple arguments
 # TODO: add a config so that we can do custom positions
-func attach_model(model_path, attach_no, bone, materials):
+func attach_model(model_path : ResourceManager.LoadDir, model_file : String, attach_no, bone, materials):
 	
 	# Create a BoneAttachment3D and a mesh
 	var attacher = BoneAttachment3D.new()
 	var node = MeshInstance3D.new()
 	# Load the mesh
-	var mesh = o.get_obj(model_path)
+	var mesh = ResourceManager.load_obj(model_path, model_file)
 	
 	# put the nodes together and attach it to the right bone
-	get_node("Mesh/Armature/Skeleton3D").add_child(attacher)
+	skeleton.add_child(attacher)
 	attacher.add_child(node)
 	attacher.bone_idx = bone
 	
@@ -2090,25 +1041,30 @@ func attach_model(model_path, attach_no, bone, materials):
 	
 	# Loop through the materials and set the material on the mesh
 	for matte_no in materials.keys():
-		node.set_surface_override_material(int(matte_no), Materials.get_matte(materials.get(matte_no), origin_mod))
+		var details = ResourceManager.MaterialLoadDetails.new()
+		
+		node.set_surface_override_material(int(matte_no), ResourceManager.load_material(details))###Materials.get_matte(materials.get(matte_no), origin_mod))
 	
 	# Give it the flash material as an overlay
-	node.material_overlay = Materials.FlashOverlay
+	var flash_overlay_details = ResourceManager.MaterialLoadDetails.new()
+	flash_overlay_details.base_material = "flash overlay"
+	
+	node.material_overlay = ResourceManager.load_material(flash_overlay_details)
 	
 	# Make so it will change colour when flash_value is changed
 	meshes_to_modulate.append(node)
 
 
-func attach_softbody(model_path, attach_no, bone, materials, indices, offsets):
+func attach_softbody(model_path, model_file, attach_no, bone, materials, indices, offsets):
 	
 	# Create a BoneAttachment3D and a mesh
 	var attacher = BoneAttachment3D.new()
 	var node = SoftBody3D.new()
 	# Load the mesh
-	var mesh = l.get_load(model_path)#"res://TEMP/testcloak.obj")
+	var mesh = ResourceManager.load_obj(ResourceManager.ResLoadDir.new(), model_file)#"res://TEMP/testcloak.obj")
 	
 	# put the nodes together and attach it to the right bone
-	get_node("Mesh/Armature/Skeleton3D").add_child(attacher)
+	skeleton.add_child(attacher)
 	attacher.bone_idx = bone
 	#get_node("Mesh/Armature/Skeleton3D").add_child(node)
 	
@@ -2140,11 +1096,11 @@ func attach_softbody(model_path, attach_no, bone, materials, indices, offsets):
 	node.drag_coefficient = 0.14
 	
 	node.top_level = true
-	get_node("Mesh").add_child(node)
+	rig.add_child(node)
 	
-	var bone_transform = get_node("Mesh/Armature/Skeleton3D").get_bone_global_pose(bone)
+	var bone_transform = skeleton.get_bone_global_pose(bone)
 	node.position = bone_transform.origin + position
-	node.rotation = bone_transform.basis.get_euler() + $Mesh.rotation + Vector3(0, PI, 0)
+	node.rotation = bone_transform.basis.get_euler() + rig.rotation + Vector3(0, PI, 0)
 	node.add_collision_exception_with(self)
 	
 	# Append it to bits (so that we drop it when we die)
@@ -2152,114 +1108,30 @@ func attach_softbody(model_path, attach_no, bone, materials, indices, offsets):
 	
 	# Loop through the materials and set the material on the mesh
 	for matte_no in materials.keys():
-		node.set_surface_override_material(int(matte_no), Materials.get_matte(materials.get(matte_no), origin_mod))
+		var details = ResourceManager.MaterialLoadDetails.new()
+		
+		node.set_surface_override_material(int(matte_no), ResourceManager.load_material(details))###Materials.get_matte(materials.get(matte_no), origin_mod))
 	
-	# Give it the flash material as an overlay
-	node.material_overlay = Materials.FlashOverlay
+	
+	var flash_overlay_details = ResourceManager.MaterialLoadDetails.new()
+	flash_overlay_details.base_material = "flash overlay"
+	
+	node.material_overlay = ResourceManager.load_material(flash_overlay_details)
 	
 	# Make so it will change colour when flash_value is changed
 	meshes_to_modulate.append(node)
 
-
 func get_armature_bits():
 	var mesh_bits = []
-	for mesh in $Mesh/Armature/Skeleton3D.get_children():
+	for mesh in skeleton.get_children():
 		if mesh is MeshInstance3D:
 			if mesh.visible:
 				mesh_bits.append(self.get_path_to(mesh))
 	
 	return mesh_bits
 
-func get_joy_vector():
-	var vector_x = Input.get_joy_axis(controller_number, JOY_AXIS_LEFT_X)
-	var vector_y = Input.get_joy_axis(controller_number, JOY_AXIS_LEFT_Y)
-	
-	var joy_vector = Vector3(vector_x, 0, vector_y)
-	
-	return joy_vector
-
-# Basic function for key being just pressed in the process function
-func key_just_pressed(key, override=null):
-	var key_currently_pressed = key_press(key, override)
-	
-	if key_currently_pressed:
-		if keys_pressed_last_frame.has(key) and control_type == "keyboard":
-			return false
-		elif buttons_pressed_last_frame.has(key) and control_type == "controller":
-			return false
-		else:
-			return true
-	
-	return false
-
-# Basic function for key being just unpressed in the process function
-func key_just_unpressed(key, override=null):
-	var key_currently_pressed = key_press(key, override)
-	
-	if not key_currently_pressed:
-		if keys_pressed_last_frame.has(key) and control_type == "keyboard":
-			return true
-		elif buttons_pressed_last_frame.has(key) and control_type == "controller":
-			return true
-	
-	return false
-
-# Basic function to just get when a key is pressed
-func key_press(key, override=null, override_unconscious=false):
-	
-	var local_control_type = control_type
-	if override != null:
-		local_control_type = override
-	
-	if local_control_type == "keyboard":
-		if not override_unconscious and keys_unconscious.has(key):
-			return false
-		
-		if Input.is_key_pressed(OS.find_keycode_from_string(keys.get(key))):
-			return true
-	elif local_control_type == "controller":
-		if Input.is_joy_button_pressed(controller_number, controller_buttons.get(key)):
-			return true
-	
-	if SETTINGS.mobile == true:
-		for b in get_tree().get_nodes_in_group("AndroidButtons"):
-			
-			if b.name == key and b.is_pressed():
-				return true
-	
-	return false
-
-
 func anim_started(anim_name):
 	trigger_logics("anim_started", [anim_name])
-
-
-# Basic function that checks whether a key was just pressed in the physics process function
-func PHYSkey_just_pressed(key, override=null):
-	var key_currently_pressed = key_press(key, override)
-	
-	if key_currently_pressed:
-		if PHYSkeys_pressed_last_frame.has(key) and control_type == "keyboard":
-			return false
-		elif PHYSbuttons_pressed_last_frame.has(key) and control_type == "controller":
-			return false
-		else:
-			return true
-	
-	return false
-
-# Basic function that checks whether a key was just unpressed in the physics process function
-func PHYSkey_just_unpressed(key, override=null):
-	var key_currently_pressed = key_press(key, override)
-	
-	if not key_currently_pressed:
-		if PHYSkeys_pressed_last_frame.has(key) and control_type == "keyboard":
-			return true
-		elif PHYSbuttons_pressed_last_frame.has(key) and control_type == "controller":
-			return true
-	
-	return false
-
 
 # This function is called when a body enters our personal space
 # It adds the body to a pushing list if it meets a couple criteria
@@ -2267,6 +1139,7 @@ func _on_pushaway_body_entered(body):
 	if body.is_in_group("Pushaway"):
 		if not body == self:
 			bodys_pushing.append(body)
+
 
 # This function is called when a body leaves our personal space (Phew!)
 # It is used in this case to remove that body from the pushing list

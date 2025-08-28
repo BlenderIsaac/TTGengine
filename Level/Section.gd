@@ -14,3 +14,12 @@ var sun : DirectionalLight3D
 var death_height : float
 
 var player_starting_positions = []
+
+var transition_pause = true
+
+func _ready():
+	await get_tree().create_timer(0.15).timeout
+	transition_pause = false
+
+func i_am_dead(object):
+	pass

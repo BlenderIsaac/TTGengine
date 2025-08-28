@@ -65,8 +65,6 @@ point_count = 2
 collision_layer = 2
 collision_mask = 17
 script = ExtResource("1")
-AI = true
-flash_value = Vector4(1, 0, 0, 0)
 
 [node name="Modulation" type="AnimationPlayer" parent="."]
 libraries = {

@@ -126,6 +126,7 @@ func clear():
 func set_sound(sound_name, paths):
 	sound_effects[sound_name] = paths
 
+
 func add_library(library):
 	var all_sounds = library.duplicate()
 	
@@ -146,6 +147,7 @@ func add_library(library):
 				details_list.append(details)
 		
 		set_sound(key, details_list)
+
 
 func get_sound_path(path_type):
 	match path_type:
