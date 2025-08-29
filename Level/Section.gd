@@ -21,5 +21,6 @@ func _ready():
 	await get_tree().create_timer(0.15).timeout
 	transition_pause = false
 
+@warning_ignore("unused_parameter")
 func i_am_dead(object):
 	pass

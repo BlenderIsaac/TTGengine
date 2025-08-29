@@ -4,9 +4,11 @@ class_name CharacterController
 var controlling : Character
 #var team
 
+@warning_ignore("unused_parameter")
 func trigger_action(logic):# : Logic):
 	pass
 
+@warning_ignore("unused_parameter")
 func press_button(button : String):
 	pass
 

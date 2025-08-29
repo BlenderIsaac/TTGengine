@@ -19,7 +19,7 @@ var money := 0
 var player_color : Color
 
 func _process(_delta):
-	set_input_vector(Vector2(Input.get_axis(left_key, right_key), Input.get_axis(down_key, up_key)))
+	set_input_vector(Vector2(Input.get_axis(right_key, left_key), Input.get_axis(down_key, up_key)))
 
 func reset_control_of(old_controlling):
 	old_controlling.disconnect("death", player_death)
@@ -32,14 +32,18 @@ func set_control_to(new_controlling):
 	
 	controlling = new_controlling
 
+func delete():
+	if controlling:
+		reset_control_of(controlling)
+	queue_free()
+
 func player_death():
 	
 	# Drop studs
-	var level = get_tree().get_first_node_in_group("LEVELROOT")
 	var max_drop := 2000 # The amount of studs we will at max drop... in OG TCS it makes you drop half when you are below 2000 right?
 	
-	if money/2 < max_drop:
-		max_drop = snappedi(money/2, 10)
+	if int(float(money)/2.0) < max_drop:
+		max_drop = snappedi(int(float(money)/2.0), 10)
 	
 	var drop_types = f.get_stud_values_for_count(max_drop)
 	

@@ -73,14 +73,10 @@ func generate(data : Level.SectionLoadCommand) -> Section:
 							spawn.Char = props.CHARACTER
 							spawn.Pos = props.POSITION
 							
-							section.player_starting_positions.append(spawn)
+							section.player_starting_positions.append(props.POSITION)
 						if attr.has("ENEMY_SPAWN"):
-							var details = ResourceManager.CharFolderCharacterLoadDetails.new("Stormtrooper")
-							details.load_details()
-							var c : Character = details.gen()
-							c.position = props.POSITION
-							c.section = section
-							gltf.add_child(c)
+							
+							gltf.add_child(generate_char(props.POSITION, section))
 							##var dead = false
 							
 							##if Levels.char_spawn_dead.has(N_section):
@@ -652,6 +648,14 @@ func generate_box_col(obj, col_name):
 	
 	return col
 
+func generate_char(position, section):
+	var details = ResourceManager.CharFolderCharacterLoadDetails.new("Stormtrooper")
+	details.load_details()
+	var c : Character = details.gen()
+	c.position = position
+	c.section = section
+	
+	return c
 
 var group_nav_layers = {
 	"Jump" : 1,

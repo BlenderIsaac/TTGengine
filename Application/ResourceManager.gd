@@ -103,6 +103,10 @@ class CharactersMaterialsFolderLoadDir extends CharactersFolderLoadDir:
 	func get_dir():
 		return super() + "materials/"
 
+class CharactersLogicsFolderLoadDir extends CharactersFolderLoadDir:
+	func get_dir():
+		return super() + "logics/"
+
 #endregion
 #region Textures
 
@@ -185,8 +189,10 @@ class MaterialLoadDetails:
 	func gen():
 		if base_material == "load":
 			return load(load_path.get_dir() + load_file)
+		if base_material == "flash overlay":
+			return ResourceManager.material_types[base_material].duplicate()
 		
-		var matte : StandardMaterial3D = ResourceManager.material_types[base_material].duplicate()
+		var matte = ResourceManager.material_types[base_material].duplicate()
 		matte.albedo_color = get_color()
 		
 		if texture:
@@ -304,11 +310,17 @@ class CharacterDetails:
 		#character.identity = identity
 		#character.alignment = alignment
 		
-		character.logics = gen_dict(logics)
-		character.base_logic = logics[base_logic]
+		character.logics.clear()
+		for child in character.get_node("Logics").get_children():
+			child.queue_free()
+		for logic_name in logics.keys():
+			var char_logic = logics[logic_name].duplicate()
+			character.logics[logic_name] = char_logic
+			char_logic.C = character
+			character.get_node("Logics").add_child(char_logic)
+		character.base_logic = character.logics[base_logic]
 		
 		character.weapons = gen_dict(weapons)
-		character.sounds = sounds
 		
 		character.max_hit_points = health
 		character.ai_hit_points = ai_health
@@ -318,20 +330,33 @@ class CharacterDetails:
 		character.audio = character.get_node("AudioPlayer")
 		character.tail = character.get_node("Tail")
 		character.tailcast = character.get_node("TailCast")
+		character.pushaway_collision = character.get_node("Pushaway")
+		
+		var library = {}
+		for sound_name in sounds.keys():
+			library[sound_name] = sounds[sound_name].gen()
+		
+		character.audio.clear()
+		character.audio.add_library(library)
+		
+		# Give it the flash material as an overlay
+		var flash_overlay_details = ResourceManager.MaterialLoadDetails.new()
+		flash_overlay_details.base_material = "flash overlay"
+		character.flash_material = ResourceManager.load_material(flash_overlay_details).duplicate()
 		
 		if icon_details:character.icon = icon_details.gen()
 		
 		assert(rig != null, "There is no rig for this character")
 		character.meshes_to_modulate.clear()
 		character.bits.clear()
-		character.rig.queue_free()
+		if character.rig:character.rig.queue_free()
 		var rig_gen = rig.gen()
 		character.add_child(rig_gen)
 		character.set_mesh(rig_gen)
 		character.rig_class = rig_class
 		
 		assert(collision != null, "There is no collision for this character")
-		character.collision.queue_free()
+		if character.collision:character.collision.queue_free()
 		var col_gen = collision.gen()
 		character.collision = col_gen
 		character.add_child(col_gen)
@@ -522,7 +547,7 @@ class CharacterLoadDetails extends CharacterDetails:
 			ARRAY:
 				return []
 			LOGIC:
-				return TTGCLogicLoadDetails.new(split.slice(data_starts_at))#script_name, logic_name)
+				return TTGCLogicLoadDetails.new(split.slice(data_starts_at)).gen()
 			ANIM:
 				return TTGCAnimationLoadDetails.new(split.slice(data_starts_at))
 			BOX_COL:
@@ -555,8 +580,8 @@ class CharacterLoadDetails extends CharacterDetails:
 	
 	
 	func translate_path(data):
-		var path = path_translated[data[0]].new()
-		return path
+		var p = path_translated[data[0]].new()
+		return p
 	
 	
 	func set_var_on_object(split, obj, parent_line, parent):
@@ -646,6 +671,9 @@ class TTGCAnimationLoadDetails extends AnimationLoadDetails:
 
 class TTGCMaterialLoadDetails extends MaterialLoadDetails:
 	func _init(data):
+		if data.is_empty():
+			return
+		
 		match data[0]:
 			"preset":
 				preset_color = data[1]
@@ -657,18 +685,12 @@ class TTGCSoundLoadDetails extends SoundLoadDetails:
 		file = _file
 		path = CharactersSoundFolderLoadDir.new()
 
-class TTGCSoundsLoadDetails:
-	var sounds = []
-	var name : String
-	
+class TTGCSoundsLoadDetails extends SoundsLoadDetails:
 	func _init(data):
 		name = data[0]
 		
 		for sound in data.slice(1):
 			sounds.append(TTGCSoundLoadDetails.new(sound))
-	
-	func gen():
-		return sounds
 
 class TTGCTextureLoadDetails extends TextureLoadDetails:
 	func _init(data):
@@ -711,11 +733,6 @@ class BoneAttachmentLoadDetails:
 			mesh.set_surface_override_material(i, materials[i].gen())
 		attachment.add_child(mesh)
 		
-		# Give it the flash material as an overlay
-		var flash_overlay_details = ResourceManager.MaterialLoadDetails.new()
-		flash_overlay_details.base_material = "flash overlay"
-		mesh.material_overlay = ResourceManager.load_material(flash_overlay_details)
-		
 		return attachment
 	
 	func gen_on_character(character : Character):
@@ -725,8 +742,16 @@ class BoneAttachmentLoadDetails:
 		character.skeleton.add_child(genned)
 		character.bits.append(genned)
 		character.meshes_to_modulate.append(genned.get_child(0))
+		genned.get_child(0).material_overlay = character.flash_material
 		
 		genned.bone_idx = bone_attach
+
+class SoundsLoadDetails:
+	var sounds = []
+	var name : String
+	
+	func gen():
+		return sounds
 
 class LogicLoadDetails:
 	var name : String
@@ -740,7 +765,11 @@ class LogicLoadDetails:
 			name = script_name
 	
 	func gen():
-		pass
+		var dir = ResLoadDir.new()
+		var path = dir.get_dir() + "Logic/" + script_name + ".gd"
+		var l = load(path).new()
+		l.name = name
+		return l
 
 class AnimationLoadDetails:
 	var speed : float = 1.0

@@ -1,10 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://3ix1fp3sllsx"]
+[gd_scene load_steps=5 format=3 uid="uid://3ix1fp3sllsx"]
 
 [ext_resource type="Script" uid="uid://doustkpi2d8qf" path="res://Levels/LevelGeneratorTTGL.gd" id="1_qvxlj"]
 [ext_resource type="PackedScene" uid="uid://b55od2xqxr2h7" path="res://Level/GameCam.tscn" id="2_uhyyw"]
 [ext_resource type="Script" uid="uid://blu0kafrue5d5" path="res://Levels/AdvanceFrame.gd" id="8_di71q"]
 [ext_resource type="Environment" uid="uid://bxkijjqiqadqk" path="res://Levels/SkyEnv.tres" id="9_3smm1"]
-[ext_resource type="Script" uid="uid://ct4xb4bdji7n7" path="res://Levels/FreeLookCam.gd" id="13_2gvu3"]
 
 [node name="Level" type="Node3D" groups=["LEVELROOT"]]
 process_mode = 1
@@ -12,11 +11,6 @@ script = ExtResource("1_qvxlj")
 
 [node name="GameCam" parent="." instance=ExtResource("2_uhyyw")]
 transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, 6.99549, 5.14845, 15.0885)
-
-[node name="Camera3D" type="Camera3D" parent="."]
-process_mode = 3
-transform = Transform3D(1, 0, 0, 0, 0.258819, 0.965926, 0, -0.965926, 0.258819, 2.37689, 9.04958, 3.60411)
-script = ExtResource("13_2gvu3")
 
 [node name="Environment" type="WorldEnvironment" parent="."]
 environment = ExtResource("9_3smm1")

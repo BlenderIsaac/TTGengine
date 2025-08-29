@@ -128,32 +128,6 @@ func set_sound(sound_name, paths):
 
 
 func add_library(library):
-	var all_sounds = library.duplicate()
-	
-	for key in all_sounds:
-		var value = all_sounds.get(key)
-		
-		var details_list = []
-		
-		for path_type in value.keys():
-			var sound_list = value.get(path_type)
-			
-			for file in sound_list:
-				
-				var path = get_sound_path(path_type)
-				
-				var details = ResourceManager.SoundLoadDetails.new(path, file)
-				
-				details_list.append(details)
-		
-		set_sound(key, details_list)
-
-
-func get_sound_path(path_type):
-	match path_type:
-		"cSoundsPath":
-			return ResourceManager.CharactersSoundLoadDir.new()
-		"SharedPath":
-			return ResourceManager.LevelsSharedFolderLoadDir.new()
-		_:
-			assert(false, path_type + " not accounted for bro")
+	var dupe = library.duplicate()
+	for sound_name in dupe.keys():
+		set_sound(sound_name, dupe.get(sound_name))

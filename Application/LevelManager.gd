@@ -4,10 +4,15 @@ class_name LevelManager
 var current_level : Level
 var level_generator : SectionGenerator
 
+var game_manager : GameManager
+
 signal level_loading
 
 func _ready():
+	print("Level Manager created!")
 	name = "Level Manager"
+	print("Creating player characters to exist in memory")
+
 
 func load_level(load_command):
 	print("Loading level...")
@@ -19,6 +24,7 @@ func load_level(load_command):
 		current_level = null
 	
 	current_level = Level.new(load_command)
+	current_level.connect("party_created", game_manager.party_created)
 	add_child(current_level)
 
 

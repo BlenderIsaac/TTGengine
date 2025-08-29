@@ -10,7 +10,7 @@ var audio : AudioPlayer :
 	get(): return C.audio
 var anim : AnimationPlayer :
 	get(): return C.anim
-var rig : MeshInstance3D :
+var rig : Node3D :
 	get(): return C.rig
 var nav_agent : NavigationAgent3D :
 	get(): return C.nav_agent
@@ -37,3 +37,10 @@ func exit():
 
 func consume_damage(_damage):
 	return false
+
+func _physics_process(delta):
+	if active:
+		exclusive_physics(delta)
+
+func exclusive_physics(delta):
+	pass

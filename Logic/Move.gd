@@ -1,8 +1,5 @@
 extends Logic
 
-# Logic Type: MOVEMENT
-# Contains: Running, Jumping, Double Jumping, Back Jumping
-
 var walk_speed = 0.6
 var run_speed = 1.2
 var move_delay = 0.0
@@ -12,9 +9,8 @@ var move_delay_timer = 0.0
 var move_delay_reset = false
 #var moved_since_online = true
 
-var move_dir_to = Vector3()
-var move_dir = Vector3()
-var last_move_dir = Vector3()
+var move_dir = Vector2()
+var last_move_dir = Vector2()
 
 var not_air_anims = ["Idleloop", "Runloop"]
 
@@ -22,41 +18,24 @@ var footsteps_played = 0
 
 # Set the correct navigational layer values
 func _ready():
-	last_move_dir = -rig.transform.basis.z
-	#facing_move_dir = mesh.transform.basis.z
+	anim.connect("animation_started", anim_started)
+	C.connect("revive", revive)
 	
+	last_move_dir = f.to_vec2(-rig.transform.basis.z)
 	move_delay_timer = move_delay
 	nav_agent.set_navigation_layer_value(1, true)
 
-func anim_started(vars):
-	var anim_name = vars[0]
-	
-	#print(anim_name)
-	
+func anim_started(anim_name):
 	if anim_name.ends_with("Runloop"):
 		footsteps_played = 0
 
 var on_floor_last_frame = true
 
-#func inclusive_physics(_delta):
-	#DebugDraw3D.draw_arrow(C.position, C.position+last_move_dir, Color.RED)
-	#DebugDraw3D.draw_arrow(C.position, C.position-mesh.transform.basis.z, Color.GREEN)
-	##DebugDraw3D.draw_arrow(C.position, C.position-mesh.basis.z, Color.GREEN_YELLOW)
-	#
-	##DebugDraw3D.draw_arrow(C.position, C.position+move_dir_to, Color.YELLOW)
-	#DebugDraw3D.draw_arrow(C.position, C.position+move_dir, Color.BLUE)
-
-func _physics_process(delta):
-	if active:
-		exclusive_physics(delta)
-
-
 func exclusive_physics(delta):
-	
-	var footsteps_times = C.details.animations[anim.current_animation].key_frames.footsteps
 	
 	# footsteps
 	if anim.current_animation.ends_with("Runloop"):
+		var footsteps_times = C.details.animations[anim.current_animation].key_frames.footsteps
 		if footsteps_times.size() > footsteps_played:
 			var next_footstep_time = footsteps_times[footsteps_played]
 			if anim.current_animation_position > next_footstep_time:
@@ -72,22 +51,9 @@ func exclusive_physics(delta):
 				anim.play(C.weapon_prefix+"Fallloop", .5)
 				break
 	
-	# reset our movement direction
-	#move_dir = Vector3()
-	
-	# Reset movement
-	if C.is_on_ceiling():
-		C.char_vel.y = -1
-	if C.is_on_wall():
-		C.char_vel.x = 0
-		C.char_vel.z = 0
-	
 	# Get move_dir and moved
-	move_dir = Vector3(input_vector.x, 0.0, input_vector.y)
-	var moved = (move_dir != Vector3())
-	
-	# Animations and mesh_angle_to
-	var prefix = C.weapon_prefix
+	move_dir = input_vector * var_scale
+	var moved = (move_dir != Vector2())
 	
 	# If we did move, then set the mesh angle we want to go to
 	if moved:
@@ -103,18 +69,18 @@ func exclusive_physics(delta):
 		
 		# If we are on the floor and we have moved play the running animation
 		if C.is_on_floor():
-			anim.play(prefix+"Runloop", .2)
+			anim.play("Runloop", .2)
 	else:
 		move_delay_reset = true
 		# If we have not moved
 		# and we are running then go to idle.
 		if anim.current_animation.ends_with("Runloop"):
-			anim.play(prefix+"Idleloop", .4)
+			anim.play("Idleloop", .4)
 			#anim.play("NULL", .04) # solution for other things
 		# If we are on the floor and nothing is playing then play idle
 		if C.is_on_floor():
 			if not anim.is_playing():
-				anim.play(prefix+"Idleloop", .04)
+				anim.play("Idleloop", .04)
 	
 	if anim.current_animation.ends_with("Runloop"):
 		run_anim_pos = anim.current_animation_position/anim.current_animation_length
@@ -122,7 +88,7 @@ func exclusive_physics(delta):
 		run_anim_pos = -1.0
 	
 	if move_delay_timer > move_delay:# and moved_since_online:
-		C.mesh_angle_to = Vector2(-last_move_dir.x, last_move_dir.z).angle()+deg_to_rad(90)
+		C.mesh_angle_to = -last_move_dir.angle()-deg_to_rad(90)
 		#facing_move_dir = last_move_dir
 	else:
 		move_delay_timer += delta
@@ -131,15 +97,15 @@ func exclusive_physics(delta):
 	# for when we hit the ground.
 	if not C.is_on_floor():
 		if not anim.is_playing():
-			anim.play(prefix+"Fallloop", .1)
-			anim.queue(prefix+"Land")
+			anim.play("Fallloop", .1)
+			anim.queue("Land")
 	# If we are on the floor and we have just jumped or we are falling then play Land
 	else:
 		if anim.current_animation.ends_with("Fallloop"):
-			anim.play(prefix+"Land", 0)
+			anim.play("Land", 0)
 		
 		elif anim.current_animation.ends_with("Jump"):
-			anim.play(prefix+"Land", .1)
+			anim.play("Land", .1)
 	
 	if C.is_on_floor() == true and on_floor_last_frame == false:
 		audio.play("Land")
@@ -148,22 +114,24 @@ func exclusive_physics(delta):
 	
 	# smoothly transition our current movement direction to our desired movement direction
 	var weight = .15
-	move_dir_to.x = lerp(move_dir_to.x, move_dir.x, weight * delta * 60)
-	move_dir_to.z = lerp(move_dir_to.z, move_dir.z, weight * delta * 60)
+	C.char_vel.x = lerp(C.char_vel.x, move_dir.x, weight * delta * 60)
+	C.char_vel.z = lerp(C.char_vel.z, move_dir.y, weight * delta * 60)
 	
 	# Set the velocity to our current movement direction as well as a bunch of other factors
-	C.set_velocity(C.char_vel+move_dir_to+C.push_vel+C.knock_vel)
+	#C.set_velocity(C.char_vel + C.push_vel + C.knock_vel)
 	# Update our position based on CharacterBody physics using move_and_slide
-	C.move_and_slide()
+	#C.move_and_slide()
 	
 	#if move_delay_time_left > move_delay:
 	# Smoothly change our rotation to our desired rotation
-	C.mesh_angle_lerp(delta, 0.2)
+	#C.mesh_angle_lerp(delta, 0.2)
 
-func initiate():
+
+func enter():
+	super()
 	#moved_since_online = false
 	move_delay_reset = true
-	last_move_dir = -rig.transform.basis.z
+	last_move_dir = f.to_vec2(-rig.transform.basis.z)
 	#last_move_dir = mesh.transform.basis.z#facing_move_dir
 	#move_delay_timer = move_delay + 0.1
 	#last_move_dir = facing_move_dir
@@ -174,7 +142,7 @@ func initiate():
 var run_anim_pos:float = -1
 
 # This is so we can copy some variables across switches
-var vars_copied_on_switch = ["move_dir_to", "move_dir", "run_anim_pos"]
+var vars_copied_on_switch = ["run_anim_pos"]
 func get_switched_var():
 	var vars = {}
 	
@@ -212,10 +180,6 @@ func has_nav(details):
 	
 	return false
 
-# A function called apon death
-func freeze():
-	move_dir = Vector3()
-	move_dir_to = Vector3()
 
-func revive(_args):
-	last_move_dir = -rig.transform.basis.z
+func revive():
+	last_move_dir = f.to_vec2(-rig.transform.basis.z)

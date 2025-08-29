@@ -27,8 +27,9 @@ var gravity = -6.0
 @export var var_scale := 4.1
 
 # flash value that character meshes borrows from
-@export var flash_value := Color()
+@export var flash_value := Color(1.0, 1.0, 1.0, 0.0)
 var meshes_to_modulate = []
+var flash_material : Material
 
 #var char_spawn = false
 #var char_spawn_index = 0
@@ -41,26 +42,14 @@ var prev_pose = Vector3()
 # icon storage
 var icon = null
 
-# initial sounds for audio
-var initial_sounds = {
-	"FallApart" : {
-		"cSoundsPath" : ["FALLAPART01.WAV", "FALLAPART02.WAV", "FALLAPART03.WAV", "FALLAPART04.WAV"]
-	},
-	"CharacterSwitch" : {
-		"cSoundsPath" : ["TOGGLECHAR.WAV"]
-	},
-	"CharacterTag" : {
-		"cSoundsPath" : ["SWCHAR.WAV"]
-	},
-	"HeartCollect" : {
-		"cSoundsPath" : ["HEART.WAV"]
-	},
-	"CoinCollect" : {
-		"cSoundsPath" : ["COIN1.WAV", "COIN2.WAV"]
-	},
-	"BlueCoinCollect" : {
-		"cSoundsPath" : ["COINBLUE.WAV"]
-	}
+# character sounds for audio
+var character_sounds = {
+	"FallApart" : ["FALLAPART01.WAV", "FALLAPART02.WAV", "FALLAPART03.WAV", "FALLAPART04.WAV"],
+	"CharacterSwitch" : ["TOGGLECHAR.WAV"],
+	"CharacterTag" : ["SWCHAR.WAV"],
+	"HeartCollect" : ["HEART.WAV"],
+	"CoinCollect" : ["COIN1.WAV", "COIN2.WAV"],
+	"BlueCoinCollect" : ["COINBLUE.WAV"],
 }
 
 # variables to do with respawn wait
@@ -116,6 +105,10 @@ signal health_changed
 signal damaged(damage : f.Damage)
 signal revive
 signal death
+@warning_ignore("unused_signal")
+signal pre_switch
+@warning_ignore("unused_signal")
+signal post_switch
 
 # health variables
 var max_hit_points = 4.0:
@@ -165,11 +158,12 @@ func _process(_delta):
 	
 	# every frame, loop through all the meshes we 
 	# want to change colour apon taking damage/respawn/switching character
-	for mesh in meshes_to_modulate:
-		# set their flash colour to the current flash_value,
-		# which is derived from the $Modulation AnimationPlayer
-		mesh.set("instance_shader_parameters/my_color", Vector4(
-			flash_value.r, flash_value.g, flash_value.b, flash_value.a))
+	flash_material.set_shader_parameter("my_color", Vector4(
+		flash_value.r,
+		flash_value.g,
+		flash_value.b,
+		flash_value.a
+		))
 	
 	# if we are dead work toward us undeadening
 	if dead:
@@ -237,7 +231,7 @@ func _physics_process(delta):
 				var vel = diference.normalized()*push_strength
 				
 				# If we get the diameter of the collision shape then we can get how powerful to make the push
-				var diameter = $Pushaway/Col.shape.radius*2
+				var diameter = pushaway_collision.get_child(0).shape.radius*2
 				var strength = abs(diference.length()-diameter)/diameter
 				
 				# multiply vel by strength
@@ -250,7 +244,16 @@ func _physics_process(delta):
 		
 		char_vel.y += gravity * delta * var_scale
 		if is_on_floor():
-			char_vel.y -= gravity * delta * var_scale
+			char_vel.y = gravity * delta * var_scale
+		
+		# Reset movement
+		if is_on_ceiling():
+			char_vel.y = -1
+		
+		set_velocity(push_vel + knock_vel + char_vel)
+		
+		move_and_slide()
+		mesh_angle_lerp(delta, 0.2)
 	
 	# setup this for the next frame
 	prev_pose = get_root_pos()
@@ -259,15 +262,15 @@ func _physics_process(delta):
 var ai_to = Vector3()
 var ai_from = Vector3()
 var current_link = null
-func _on_agent_link_reached(details):
+func _on_agent_link_reached(link_deets):
 	
 	# some variables derived from details
-	var link = details.owner # the NavLink node that we are jumping across
-	var location = details.link_entry_position # The location of this side of the link
-	var location_to = details.link_exit_position # the location of the other side of the link
+	var link = link_deets.owner # the NavLink node that we are jumping across
+	var location = link_deets.link_entry_position # The location of this side of the link
+	var location_to = link_deets.link_exit_position # the location of the other side of the link
 	
 	# Using our function get_logic_for_nav() we find the best logic for this navigation link
-	var logic = get_logic_for_nav(details)
+	var logic = get_logic_for_nav(link_deets)
 	
 	# If we find that logic then we set our movement state to that logic
 	
@@ -283,15 +286,6 @@ func _on_agent_link_reached(details):
 		ai_to = global_position
 		ai_from = global_position
 		current_link = null
-
-
-func add_animation(anim_name:String, new_anim:Animation):
-	# Add the animation to the generic animation library
-	
-	#if anim.get_animation_library("").has_animation(anim_name):
-	#	anim.get_animation_library("").remove_animation(anim_name)
-	
-	anim.get_animation_library("").add_animation(anim_name, new_anim)
 
 
 # A function for setting the material of a particular piece
@@ -351,6 +345,7 @@ func set_mesh(mesh):
 	for child in skeleton.get_children():
 		if child is MeshInstance3D:
 			if child.visible:
+				child.material_overlay = flash_material
 				meshes_to_modulate.append(child)
 				bits.append(child)
 
@@ -638,7 +633,7 @@ func un_death_freeze():
 # Functions to do with movement states/logics
 
 # This is a function that finds the suitable logic for a particular NavLink
-func get_logic_for_nav(details):
+func get_logic_for_nav(nav_deets):
 	
 	# Loop through the logics using get_logics()
 	for logic in logics.values():
@@ -647,7 +642,7 @@ func get_logic_for_nav(details):
 		if logic.has_method("has_nav"):
 			# We give the details of the NavLink to the logic, 
 			# and the logic decides whether it can be used
-			if logic.has_nav(details):
+			if logic.has_nav(nav_deets):
 				
 				# if it can return it
 				return logic
@@ -822,7 +817,7 @@ func find_tag():
 func reset_logic():
 	current_logic = base_logic
 
-
+@warning_ignore("unused_parameter")
 func attach_softbody(model_path, model_file, attach_no, bone, materials, indices, offsets):
 	
 	# Create a BoneAttachment3D and a mesh
@@ -876,9 +871,9 @@ func attach_softbody(model_path, model_file, attach_no, bone, materials, indices
 	
 	# Loop through the materials and set the material on the mesh
 	for matte_no in materials.keys():
-		var details = ResourceManager.MaterialLoadDetails.new()
+		var deets = ResourceManager.MaterialLoadDetails.new()
 		
-		node.set_surface_override_material(int(matte_no), ResourceManager.load_material(details))###Materials.get_matte(materials.get(matte_no), origin_mod))
+		node.set_surface_override_material(int(matte_no), ResourceManager.load_material(deets))###Materials.get_matte(materials.get(matte_no), origin_mod))
 	
 	
 	var flash_overlay_details = ResourceManager.MaterialLoadDetails.new()

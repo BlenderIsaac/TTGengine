@@ -23,6 +23,10 @@ ResourceManager="*res://Application/ResourceManager.gd"
 SettingsManager="*res://Application/SettingsManager.gd"
 f="*res://Autoloads/Functions.gd"
 
+[display]
+
+window/vsync/vsync_mode=3
+
 [editor]
 
 movie_writer/movie_file="C:/Users/jonat/Desktop/Games/LSW Movie Maker/LSW.png"
