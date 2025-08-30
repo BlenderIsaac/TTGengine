@@ -10,7 +10,9 @@ func trigger_action(logic):# : Logic):
 
 @warning_ignore("unused_parameter")
 func press_button(button : String):
-	pass
+	for logic in controlling.logics.values():
+		if logic.player_input(button):
+			return
 
 func set_input_vector(vector : Vector2):
 	if controlling:

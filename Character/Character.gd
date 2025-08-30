@@ -34,7 +34,7 @@ var flash_material : Material
 #var char_spawn = false
 #var char_spawn_index = 0
 
-var details : ResourceManager.CharacterDetails
+var details : ResourceManager.CharacterLoadDetails
 
 # variables for root vel
 var prev_pose = Vector3()
@@ -242,13 +242,16 @@ func _physics_process(delta):
 		
 		# gravity
 		
-		char_vel.y += gravity * delta * var_scale
 		if is_on_floor():
-			char_vel.y = gravity * delta * var_scale
+			if char_vel.y < -0.1:
+				char_vel.y = -0.1
+		else:
+			char_vel.y += gravity * delta * var_scale
 		
 		# Reset movement
 		if is_on_ceiling():
-			char_vel.y = -1
+			if char_vel.y > 0.0:
+				char_vel.y = 0.0
 		
 		set_velocity(push_vel + knock_vel + char_vel)
 		
@@ -696,8 +699,71 @@ func change_health(amount):
 		hit_points = max_hit_points
 
 
-# This is an unused variable for auto icons
-var current_auto_icon = null
+func find_opponent(max_angle, max_range, dist_weight = 1, angle_weight = 2, _friend_penalty = 3):
+	# add raycast
+	
+	var possibilities = []
+	
+	for destroyable in get_tree().get_nodes_in_group("AttackLockOn"):
+		
+		var can_be_targeted = true
+		
+		if not destroyable == self and can_be_targeted:
+			var target_pos2 = destroyable.global_position
+			var self_pos2 = global_position
+			var dist = target_pos2.distance_squared_to(self_pos2)
+			
+			if dist <= max_range * max_range:
+				
+				var rot_dir = Basis.looking_at(target_pos2-self_pos2, Vector3.UP).get_euler().y
+				
+				var angle_to = abs(f.angle_to_angle(mesh_angle_to, rot_dir))
+				
+				if angle_to <= max_angle:
+					
+					possibilities.append(TargetData.new(destroyable, (angle_to/max_angle), dist/max_range))
+	
+	
+	var most_desirable = null
+	for opponent : TargetData in possibilities:
+		
+		#if opponent.d.is_in_group("Character"):
+			#
+			## if opponent is in the party
+			#if opponent.d.player:
+				#desirability *= friend_penalty
+		
+		if not most_desirable:
+			most_desirable = opponent
+		else:
+			# if there is something to compare to
+			var their_des = opponent.get_desirability(angle_weight, dist_weight)
+			var our_des = opponent.get_desirability(angle_weight, dist_weight)
+			
+			if our_des < their_des:
+				most_desirable = opponent
+	
+	return most_desirable
+
+
+class TargetData:
+	var object
+	var angle : float
+	var distance : float
+	var desirability : float
+	
+	
+	func _init(_object, _angle, _distance):
+		object = _object
+		angle = _angle
+		distance = _distance
+	
+	func get_desirability(angle_weight, distance_weight):
+		if not desirability:
+			desirability = (distance * distance_weight) + (angle * angle_weight)
+		
+		return desirability
+
 
 # function to check if we are currently invincible
 func is_invincible():

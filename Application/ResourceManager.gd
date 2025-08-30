@@ -255,7 +255,7 @@ func load_sound(details : SoundLoadDetails):
 #endregion
 #region Characters
 
-class CharacterDetails:
+class CharacterLoadDetails:
 	
 	var name : String
 	
@@ -361,6 +361,7 @@ class CharacterDetails:
 		character.collision = col_gen
 		character.add_child(col_gen)
 		character.tailcast.shape = col_gen.shape
+		character.tailcast.position = col_gen.position
 		
 		var p_col_gen = collision.gen_expanded()
 		character.get_node("Pushaway").add_child(p_col_gen)
@@ -390,7 +391,7 @@ class CharacterDetails:
 		
 		character.emit_signal("post_switch")
 
-class CharacterLoadDetails extends CharacterDetails:
+class TTGCCharacterLoadDetails extends CharacterLoadDetails:
 	var path : LoadDir
 	var file : String
 	
@@ -417,7 +418,10 @@ class CharacterLoadDetails extends CharacterDetails:
 		BOX_COL,
 		CAPSULE_COL,
 		PATH,
-		ATTACHMENT
+		ATTACHMENT,
+		WEAPON,
+		WEAPON_MESH,
+		CUSTOM,
 	}
 	var var_ids = {
 		"d" : DICT,
@@ -440,12 +444,20 @@ class CharacterLoadDetails extends CharacterDetails:
 		"sound" : SOUND,
 		"sounds" : SOUNDS,
 		"tex" : TEXTURE,
-		"attachment" : ATTACHMENT
+		"attachment" : ATTACHMENT,
+		"weapon" : WEAPON,
+		"weapon_mesh" : WEAPON_MESH,
 	}
 	func id(split):
 		if split == null:
 			return SELF
-		return var_ids[split[0]]
+		
+		var id = var_ids[split[0]]
+		
+		if not id:
+			return CUSTOM
+		
+		return id
 	
 	
 	func _init(_path : LoadDir, _file : String):
@@ -566,6 +578,12 @@ class CharacterLoadDetails extends CharacterDetails:
 				return translate_path(split.slice(data_starts_at))
 			ATTACHMENT:
 				return TTGCBoneAttachmentLoadDetails.new(split.slice(data_starts_at))
+			WEAPON:
+				return Weapon.LoadDetails.new()
+			WEAPON_MESH:
+				return WeaponMesh.LoadDetails.new()
+			CUSTOM:
+				return get_custom_class(split[0].split(".")).new()
 			_:
 				assert(false, "object " + str(split) + " is invalid")
 		
@@ -576,8 +594,16 @@ class CharacterLoadDetails extends CharacterDetails:
 		"m" : ModFolderLoadDir,
 		"s" : CharactersSoundFolderLoadDir,
 		"a" : CharactersAnimsFolderLoadDir,
+		"models" : CharactersModelsFolderLoadDir,
+		"gltfs" : CharactersGltfsFolderLoadDir,
 	}
 	
+	func get_custom_class(classes):
+		var current = self
+		for c in classes:
+			current = current.get(c)
+		
+		return current
 	
 	func translate_path(data):
 		var p = path_translated[data[0]].new()
@@ -781,7 +807,7 @@ class AnimationLoadDetails:
 	func gen():
 		return load(path.get_dir() + file + ".res")
 
-class CharFolderCharacterLoadDetails extends CharacterLoadDetails:
+class TTGCCharFolderCharacterLoadDetails extends TTGCCharacterLoadDetails:
 	func _init(character_name):
 		path = CharFolderLoadDir.new()
 		file = character_name
@@ -789,6 +815,17 @@ class CharFolderCharacterLoadDetails extends CharacterLoadDetails:
 
 #endregion
 #region GLTFs
+
+var gltf_meshes = {}
+
+func load_gltf(load_details : GltfLoadDetails):
+	var id = load_details.dir.get_dir() + load_details.file
+	if !gltf_meshes.has(id):
+		var new_gltf = load_details.gen()
+		
+		gltf_meshes[id] = new_gltf
+	
+	return gltf_meshes.get(id)
 
 class GltfLoadDetails:
 	var dir : LoadDir

@@ -1,25 +1,42 @@
 extends CharacterController
 class_name Player
 
-var up_key := "up"
-var down_key := "down"
-var left_key := "left"
-var right_key := "right"
+var up_key := KEY_UP
+var down_key := KEY_DOWN
+var left_key := KEY_LEFT
+var right_key := KEY_RIGHT
 
-var fight_key := "J"
-var jump_key := "K"
-var special_key := "L"
+var action_key := KEY_J
+var jump_key := KEY_K
+var special_key := KEY_L
 
-var tag_key := "I"
+var tag_key := KEY_I
 
-var switch_left_key := "U"
-var switch_right_key := "O"
+var switch_left_key := KEY_U
+var switch_right_key := KEY_O
 
 var money := 0
 var player_color : Color
 
 func _process(_delta):
-	set_input_vector(Vector2(Input.get_axis(right_key, left_key), Input.get_axis(down_key, up_key)))
+	set_input_vector(get_axis())
+	if Input.is_physical_key_pressed(jump_key):
+		press_button("Jump")
+	
+	if Input.is_physical_key_pressed(action_key):
+		press_button("Action")
+	
+	if Input.is_physical_key_pressed(special_key):
+		press_button("Special")
+
+func get_axis():
+	var vector = Vector2()
+	vector.x += int(Input.is_physical_key_pressed(left_key))
+	vector.x -= int(Input.is_physical_key_pressed(right_key))
+	vector.y += int(Input.is_physical_key_pressed(up_key))
+	vector.y -= int(Input.is_physical_key_pressed(down_key))
+	
+	return vector
 
 func reset_control_of(old_controlling):
 	old_controlling.disconnect("death", player_death)

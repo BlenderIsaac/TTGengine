@@ -10,17 +10,7 @@ var currently_playing_sounds = []
 var disposed = false
 
 func _process(_delta):
-	
-	for child in get_children():
-		if !child.playing:
-			
-			for sound in currently_playing_sounds:
-				if sound[2] == child:
-					currently_playing_sounds.erase(sound)
-			
-			child.queue_free()
-	
-	if !get_children().size() > 0 and disposed:
+	if disposed and len(currently_playing_sounds) == 0:
 		queue_free()
 
 
@@ -31,7 +21,7 @@ func dispose(parent_to):
 	disposed = true
 
 
-func play(title, config={}):
+func play(title):
 	
 	if sound_effects.has(title):
 		
@@ -39,7 +29,7 @@ func play(title, config={}):
 		
 		if paths.size() > 0:
 			var sound_num = randi_range(0, paths.size()-1)
-			var new_sfx
+			var new_sfx : Node
 			if universal:
 				new_sfx = AudioStreamPlayer.new()
 			else:
@@ -50,21 +40,25 @@ func play(title, config={}):
 			
 			add_child(new_sfx)
 			
-			for c in config.keys():
-				new_sfx.set(c, config.get(c))
-			
 			new_sfx.stream = stream
+			new_sfx.set_meta("stream_title", title)
 			
 			new_sfx.play()
 			
-			currently_playing_sounds.append([title, config, new_sfx])
+			new_sfx.connect("finished", Callable(sound_ended).bind(new_sfx))
+			currently_playing_sounds.append(new_sfx)
 	else:
 		print("Missing sound effect: ", title)
 
 
-func is_playing(title, config={}):
+func sound_ended(sfx):
+	currently_playing_sounds.erase(sfx)
+	sfx.queue_free()
+
+
+func is_playing(title):
 	for sound in currently_playing_sounds:
-		if sound[0] == title and sound[1] == config:
+		if sound.get_meta("stream_title") == title:
 			return true
 	return false
 
@@ -89,6 +83,7 @@ func start_loop(title, config={}):
 			
 			stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
 			new_sfx.stream = stream
+			new_sfx.set_meta("stream_title", title)
 			
 			new_sfx.play()
 			

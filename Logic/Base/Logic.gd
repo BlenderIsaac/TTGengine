@@ -38,6 +38,9 @@ func exit():
 func consume_damage(_damage):
 	return false
 
+func player_input(_button):
+	return false
+
 func _physics_process(delta):
 	if active:
 		exclusive_physics(delta)

@@ -649,7 +649,7 @@ func generate_box_col(obj, col_name):
 	return col
 
 func generate_char(position, section):
-	var details = ResourceManager.CharFolderCharacterLoadDetails.new("Stormtrooper")
+	var details = ResourceManager.TTGCCharFolderCharacterLoadDetails.new("Stormtrooper")
 	details.load_details()
 	var c : Character = details.gen()
 	c.position = position

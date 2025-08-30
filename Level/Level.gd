@@ -24,7 +24,7 @@ func _ready():
 	
 	# generate party members
 	for party_member in level_data.Party:
-		var details = ResourceManager.CharFolderCharacterLoadDetails.new(party_member)
+		var details = ResourceManager.TTGCCharFolderCharacterLoadDetails.new(party_member)
 		details.load_details()
 		var c : Character = details.gen()
 		party.append(c)
