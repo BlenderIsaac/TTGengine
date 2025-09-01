@@ -14,33 +14,17 @@ var last_move_dir = Vector2()
 
 var not_air_anims = ["Idleloop", "Runloop"]
 
-var footsteps_played = 0
 
 # Set the correct navigational layer values
 func _ready():
-	anim.connect("animation_started", anim_started)
 	C.connect("revive", revive)
 	
 	last_move_dir = f.to_vec2(-rig.transform.basis.z)
 	move_delay_timer = move_delay
 	nav_agent.set_navigation_layer_value(1, true)
 
-func anim_started(anim_name):
-	if anim_name.ends_with("Runloop"):
-		footsteps_played = 0
-
 var on_floor_last_frame = true
-
 func exclusive_physics(delta):
-	
-	# footsteps
-	if anim.current_animation.ends_with("Runloop"):
-		var footsteps_times = C.details.animations[anim.current_animation].key_frames.footsteps
-		if footsteps_times.size() > footsteps_played:
-			var next_footstep_time = footsteps_times[footsteps_played]
-			if anim.current_animation_position > next_footstep_time:
-				footsteps_played += 1
-				audio.play("Run")
 	
 	# If we are in the air and we are playing one of the animations in not_air_anims
 	# Then make us be falling instead
@@ -114,8 +98,8 @@ func exclusive_physics(delta):
 	
 	# smoothly transition our current movement direction to our desired movement direction
 	var weight = .15
-	C.char_vel.x = lerp(C.char_vel.x, move_dir.x, weight * delta * 60)
-	C.char_vel.z = lerp(C.char_vel.z, move_dir.y, weight * delta * 60)
+	C.char_vel.x = lerp(C.char_vel.x, move_dir.x, weight * delta * 60.0)
+	C.char_vel.z = lerp(C.char_vel.z, move_dir.y, weight * delta * 60.0)
 	
 	# Set the velocity to our current movement direction as well as a bunch of other factors
 	#C.set_velocity(C.char_vel + C.push_vel + C.knock_vel)

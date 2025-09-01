@@ -41,9 +41,9 @@ func consume_damage(_damage):
 func player_input(_button):
 	return false
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	if active:
-		exclusive_physics(delta)
+		exclusive_physics(_delta)
 
-func exclusive_physics(delta):
+func exclusive_physics(_delta):
 	pass

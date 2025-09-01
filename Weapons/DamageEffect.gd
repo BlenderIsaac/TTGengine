@@ -1,7 +1,2 @@
-extends Node
+extends WeaponEffect
 class_name WeaponDamageEffect
-
-
-
-class LoadDetails:
-	pass

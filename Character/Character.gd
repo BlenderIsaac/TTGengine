@@ -132,6 +132,10 @@ var mesh_angle_to = 0.0
 # This is the history of where we can respawn
 var respawn_history = []
 
+var sfx_index = 0
+func anim_started():
+	sfx_index = 0
+
 # This function is called when this character is first added to the scene
 func _ready():
 	
@@ -172,8 +176,19 @@ func _process(_delta):
 		if respawn_left <= 0:
 			respawn()
 
-
 func _physics_process(delta):
+	
+	# sound effects
+	var animation = get_anim()
+	if animation:
+		
+		if animation.get_meta("has_sfx") == true:
+			var sfx_times = animation.get_meta("sfx")
+			if sfx_times.size() > sfx_index:
+				var next = sfx_times[sfx_index]
+				if anim.current_animation_position > next[1]:
+					sfx_index += 1
+					audio.play(next[0])
 	
 	# if we aren't dead, on the floor and our tail raycast is colliding...
 	# we are checking for respawns
@@ -260,6 +275,12 @@ func _physics_process(delta):
 	
 	# setup this for the next frame
 	prev_pose = get_root_pos()
+
+func get_anim():
+	if anim.current_animation == "":
+		return null
+	
+	return anim.get_animation(anim.current_animation)
 
 # Navigation function for NavLinks
 var ai_to = Vector3()

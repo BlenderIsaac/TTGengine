@@ -201,6 +201,17 @@ func key_press(key, control_type, controller_number=0):
 	
 	return false
 
+func gen_array(list):
+	var new_list = []
+	for element in list:
+		new_list.append(element.gen())
+	return new_list
+
+func gen_dict(dict):
+	var new_dict = {}
+	for element in dict.keys():
+		new_dict[element] = dict[element].gen()
+	return new_dict
 
 class Damage:
 	var amount = 1

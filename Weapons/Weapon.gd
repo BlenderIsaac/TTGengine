@@ -4,24 +4,27 @@ class_name Weapon
 var online := false
 var triggering := false
 
-var visual_effects := [] # mesh, trail, muzzle flash?
-var damage_effects := [] # projectile, hitbox
+var effects := {} # mesh, trail, muzzle flash?
 
 func trigger():
-	for effect in damage_effects:
+	for effect in effects.values():
 		effect.trigger()
 
 func _process(delta):
-	for effect in damage_effects:
+	for effect in effects.values():
 		effect.triggering = triggering and online
 
 
 class LoadDetails:
-	var visual_effects := []
-	var damage_effects := []
+	var effects := {}
 	
 	func gen():
-		var weapon = Weapon.new()
+		var weapon := Weapon.new()
 		
-		weapon.visual_effects = visual_effects
-		weapon.damage_effects = damage_effects
+		for key : String in effects.keys():
+			var fx = effects[key].gen()
+			weapon.effects[key] = fx
+			fx.weapon = Weapon
+			weapon.add_child(fx)
+		
+		return weapon

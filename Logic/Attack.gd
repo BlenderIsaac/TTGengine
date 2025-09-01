@@ -1,6 +1,6 @@
 extends Logic
 
-var animation : String
+var anim_name : String
 var take_logic_control := false
 
 var rate_seconds := 0.4
@@ -27,7 +27,6 @@ func _ready():
 	if not attack_charged:
 		queue_weapon_recharge()
 
-
 func player_input(button):
 	if button == "Action":
 		if C.current_weapon == weapon:
@@ -42,9 +41,14 @@ func trigger():
 	if take_logic_control:
 		C.current_logic = self
 	else:
-		anim.play(animation)
+		anim.play(anim_name)
 		weapon.trigger()
 		queue_weapon_recharge()
+
+
+func exclusive_physics(delta):
+	if can_move:
+		pass
 
 
 func queue_weapon_recharge():
@@ -55,8 +59,7 @@ func queue_weapon_recharge():
 	tween.tween_interval(rate_seconds)
 	tween.tween_callback(Callable(set).bind("attack_charged", true))
 
-#
+
 #func warn_target(target):
 	#if target.has_method("warn"):
 		#target.warn("projectile", [self])
-#

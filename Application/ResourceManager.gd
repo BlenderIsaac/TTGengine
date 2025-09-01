@@ -290,18 +290,6 @@ class CharacterLoadDetails:
 		
 		return character
 	
-	func gen_array(list):
-		var new_list = []
-		for element in list:
-			new_list.append(element.gen())
-		return new_list
-	
-	func gen_dict(dict):
-		var new_dict = {}
-		for element in dict.keys():
-			new_dict[element] = dict[element].gen()
-		return new_dict
-	
 	func gen_to(character : Character):
 		character.emit_signal("pre_switch")
 		
@@ -320,7 +308,7 @@ class CharacterLoadDetails:
 			character.get_node("Logics").add_child(char_logic)
 		character.base_logic = character.logics[base_logic]
 		
-		character.weapons = gen_dict(weapons)
+		character.weapons = f.gen_dict(weapons)
 		
 		character.max_hit_points = health
 		character.ai_hit_points = ai_health
@@ -395,6 +383,17 @@ class TTGCCharacterLoadDetails extends CharacterLoadDetails:
 	var path : LoadDir
 	var file : String
 	
+	var custom_classes = {
+			"anim" : TTGCAnimationLoadDetails,
+			"rig" : CharacterRigLoadDetails,
+			"box_col" : BoxColLoadDetails,
+			"capsule_col" : CapsuleColLoadDetails,
+			"matte" : TTGCMaterialLoadDetails,
+			
+			
+			
+		}
+	
 	enum {
 		SELF,
 		DICT,
@@ -422,6 +421,8 @@ class TTGCCharacterLoadDetails extends CharacterLoadDetails:
 		WEAPON,
 		WEAPON_MESH,
 		CUSTOM,
+		MODEL,
+		TIMED_SOUND_EFFECT,
 	}
 	var var_ids = {
 		"d" : DICT,
@@ -447,17 +448,19 @@ class TTGCCharacterLoadDetails extends CharacterLoadDetails:
 		"attachment" : ATTACHMENT,
 		"weapon" : WEAPON,
 		"weapon_mesh" : WEAPON_MESH,
+		"model" : MODEL,
+		"tsfx" : TIMED_SOUND_EFFECT,
 	}
 	func id(split):
 		if split == null:
 			return SELF
 		
-		var id = var_ids[split[0]]
+		var _id = var_ids.get(split[0])
 		
-		if not id:
+		if not _id:
 			return CUSTOM
 		
-		return id
+		return _id
 	
 	
 	func _init(_path : LoadDir, _file : String):
@@ -495,7 +498,7 @@ class TTGCCharacterLoadDetails extends CharacterLoadDetails:
 			
 			#debug print("\n", line)
 			
-			if var_ids[split[0]] == COMMAND:
+			if id(split) == COMMAND:
 				#debug printt("apply this command", split)
 				apply_command(split)
 			else:
@@ -584,6 +587,10 @@ class TTGCCharacterLoadDetails extends CharacterLoadDetails:
 				return WeaponMesh.LoadDetails.new()
 			CUSTOM:
 				return get_custom_class(split[0].split(".")).new()
+			MODEL:
+				return ModelLoadDetails.new()
+			TIMED_SOUND_EFFECT:
+				return [str(split[data_starts_at]), float(split[data_starts_at + 1])]
 			_:
 				assert(false, "object " + str(split) + " is invalid")
 		
@@ -741,22 +748,18 @@ class TTGCLogicLoadDetails extends LogicLoadDetails:
 
 class TTGCBoneAttachmentLoadDetails extends BoneAttachmentLoadDetails:
 	func _init(data):
-		dir = CharactersModelsFolderLoadDir.new()
-		file = data[0]
+		model = ModelLoadDetails.new()
+		model.dir = CharactersModelsFolderLoadDir.new()
+		model.file = data[0]
+		model.ext = data[1]
 
 class BoneAttachmentLoadDetails:
-	var dir : LoadDir
-	var file : String
-	#var format?
+	var model : ModelLoadDetails
 	var bone_attach : int
-	var materials := []
 	
 	func gen() -> BoneAttachment3D:
 		var attachment = BoneAttachment3D.new()
-		var mesh = MeshInstance3D.new()
-		mesh.mesh = ResourceManager.load_obj(dir, file)
-		for i in range(len(materials)):
-			mesh.set_surface_override_material(i, materials[i].gen())
+		var mesh = model.gen()
 		attachment.add_child(mesh)
 		
 		return attachment
@@ -766,9 +769,10 @@ class BoneAttachmentLoadDetails:
 		
 		character.model_attachments.append(genned)
 		character.skeleton.add_child(genned)
-		character.bits.append(genned)
-		character.meshes_to_modulate.append(genned.get_child(0))
-		genned.get_child(0).material_overlay = character.flash_material
+		character.bits.append_array(model.meshes.duplicate())
+		character.meshes_to_modulate.append_array(model.meshes.duplicate())
+		for mesh in model.meshes:
+			mesh.material_overlay = character.flash_material
 		
 		genned.bone_idx = bone_attach
 
@@ -799,13 +803,32 @@ class LogicLoadDetails:
 
 class AnimationLoadDetails:
 	var speed : float = 1.0
-	var key_frames : Dictionary = {}
+	var key_frames := {}
+	var sfx := []
 	var path : LoadDir
 	var file : String
 	var name : String
 	
+	
+	func sort_sfx(a, b):
+		return a[1] < b[1]
+	
 	func gen():
-		return load(path.get_dir() + file + ".res")
+		var anim : Animation = load(path.get_dir() + file + ".res")
+		
+		anim.set_meta("speed", speed)
+		anim.set_meta("has_sfx", !sfx.is_empty())
+		var sorted_sfx = sfx.duplicate()
+		sorted_sfx.sort_custom(sort_sfx)
+		if !sfx.is_empty():
+			anim.set_meta("sfx", sorted_sfx)
+		anim.set_meta("key_frames", key_frames)
+		
+		var track_idx = anim.add_track(Animation.TYPE_METHOD)
+		anim.track_set_path(track_idx, NodePath(".."))
+		anim.track_insert_key(track_idx, 0.0, {"method" : "anim_started", "args" : []})
+		
+		return anim
 
 class TTGCCharFolderCharacterLoadDetails extends TTGCCharacterLoadDetails:
 	func _init(character_name):
@@ -819,7 +842,7 @@ class TTGCCharFolderCharacterLoadDetails extends TTGCCharacterLoadDetails:
 var gltf_meshes = {}
 
 func load_gltf(load_details : GltfLoadDetails):
-	var id = load_details.dir.get_dir() + load_details.file
+	var id = load_details.dir.get_dir() + load_details.file + ".glb"
 	if !gltf_meshes.has(id):
 		var new_gltf = load_details.gen()
 		
@@ -913,7 +936,7 @@ func load_level_json(level):
 	return json
 
 #endregion
-#region COLLISION
+#region Collision
 
 class ColLoadDetails:
 	var offset
@@ -967,6 +990,40 @@ class CapsuleColLoadDetails extends ColLoadDetails:
 		shape.radius = radius + push_margin
 		col.shape = shape
 		return col
+
+#endregion
+#region Models
+
+class ModelLoadDetails:
+	var dir : LoadDir
+	var file : String
+	var ext : String
+	var material_array := []
+	var material_dict := {}
+	var meshes = []
+	
+	func gen():
+		var mesh : Node3D
+		
+		match ext:
+			"obj":
+				mesh = MeshInstance3D.new()
+				var obj = ResourceManager.load_obj(dir, file)
+				mesh.mesh = obj
+				meshes.append(mesh)
+				for i in range(len(material_array)):
+					mesh.set_surface_override_material(i, material_array[i].gen())
+			"glb":
+				mesh = ResourceManager.load_gltf(ResourceManager.GltfLoadDetails.new(dir, file))
+				for m in f.get_all_children(mesh):
+					if m is MeshInstance3D:
+						meshes.append(m)
+						for i in range(len(material_dict[mesh.name])):
+							mesh.set_surface_override_material(i, material_dict[mesh.name][i])
+			_:
+				assert(false, "support for a mesh of extension " + ext + " is not supported.")
+		
+		return mesh
 
 #endregion
 
