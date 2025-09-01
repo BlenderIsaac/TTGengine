@@ -144,10 +144,11 @@ func load_obj(path : LoadDir, file : String):
 #region Materials
 
 class MaterialLoadDetails:
-	var base_material = "basic"
-	var color = "ffffff"
+	var base_material := "basic"
+	var color := "ffffff"
 	var preset_color : String
 	var metallic_preset_color : String
+	var emissive_color : String
 	
 	var texture : TextureLoadDetails
 	var normal_texture : TextureLoadDetails
@@ -178,6 +179,9 @@ class MaterialLoadDetails:
 			id["lp"] = load_path.get_dir()
 			id["lf"] = load_file
 		
+		if emissive_color:
+			id["ec"] = emissive_color
+		
 		if texture:
 			id["t"] = texture
 		
@@ -192,8 +196,15 @@ class MaterialLoadDetails:
 		if base_material == "flash overlay":
 			return ResourceManager.material_types[base_material].duplicate()
 		
-		var matte = ResourceManager.material_types[base_material].duplicate()
+		var matte : StandardMaterial3D = ResourceManager.material_types[base_material].duplicate()
 		matte.albedo_color = get_color()
+		
+		if Color(get_color()).a < 1.0:
+			matte.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		
+		if emissive_color:
+			matte.emission_enabled = true
+			matte.emission = emissive_color
 		
 		if texture:
 			matte.albedo_texture = texture.gen()
@@ -213,7 +224,8 @@ var material_types = {
 	"add" : load("res://Materials/UnshadedAddMaterial.tres"),
 	"unshaded" : load("res://Materials/UnshadedMaterial.tres"),
 	"tag particle" : load("res://Materials/TagParticle.tres"),
-	"flash overlay" : load("res://Materials/FlashOverlay.tres")
+	"flash overlay" : load("res://Materials/FlashOverlay.tres"),
+	"emission" : load("res://Materials/EmissionMaterial.tres")
 }
 
 func load_material(details : MaterialLoadDetails):
@@ -298,17 +310,28 @@ class CharacterLoadDetails:
 		#character.identity = identity
 		#character.alignment = alignment
 		
+		
+		for logic in character.logics:
+			logic.queue_free()
 		character.logics.clear()
-		for child in character.get_node("Logics").get_children():
-			child.queue_free()
 		for logic_name in logics.keys():
-			var char_logic = logics[logic_name].duplicate()
+			var char_logic = logics[logic_name]
 			character.logics[logic_name] = char_logic
 			char_logic.C = character
 			character.get_node("Logics").add_child(char_logic)
 		character.base_logic = character.logics[base_logic]
 		
-		character.weapons = f.gen_dict(weapons)
+		for weapon in character.weapons:
+			weapon.queue_free()
+		character.weapons.clear()
+		for weapon_name in weapons.keys():
+			var weapon = weapons[weapon_name].gen()
+			
+			weapon.name = weapon_name
+			weapon.C = character
+			
+			character.weapons[weapon_name] = weapon
+			character.get_node("Weapons").add_child(weapon)
 		
 		character.max_hit_points = health
 		character.ai_hit_points = ai_health
@@ -366,6 +389,7 @@ class CharacterLoadDetails:
 				anim_library.add_animation(animation.name, animation.gen())
 			
 			character.anim.add_animation_library("", anim_library)
+		character.anim.set_process_callback(AnimationPlayer.ANIMATION_PROCESS_PHYSICS)
 		
 		for attachment in character.model_attachments:
 			attachment.queue_free()
@@ -385,15 +409,20 @@ class TTGCCharacterLoadDetails extends CharacterLoadDetails:
 	
 	var custom_classes = {
 			"anim" : TTGCAnimationLoadDetails,
-			"rig" : CharacterRigLoadDetails,
+			"rig" : TTGCCharacterRigLoadDetails,
 			"box_col" : BoxColLoadDetails,
 			"capsule_col" : CapsuleColLoadDetails,
 			"matte" : TTGCMaterialLoadDetails,
-			
-			
-			
+			"sound" : TTGCSoundLoadDetails,
+			"sounds" : TTGCSoundsLoadDetails,
+			"tex" : TTGCTextureLoadDetails,
+			"attachment" : TTGCBoneAttachmentLoadDetails,
+			"model" : ModelLoadDetails,
+			"weapon" : Weapon.LoadDetails,
+			"weapon_mesh" : WeaponMesh.LoadDetails,
+			"projectile_effect" : ProjectileDamageEffect.LoadDetails,
+			"projectile" : Projectile.LoadDetails,
 		}
-	
 	enum {
 		SELF,
 		DICT,
@@ -423,7 +452,7 @@ class TTGCCharacterLoadDetails extends CharacterLoadDetails:
 		CUSTOM,
 		MODEL,
 		TIMED_SOUND_EFFECT,
-	}
+		}
 	var var_ids = {
 		"d" : DICT,
 		"cd" : CLASS_DICT,
@@ -435,22 +464,10 @@ class TTGCCharacterLoadDetails extends CharacterLoadDetails:
 		"v2" : VECTOR2,
 		"v3" : VECTOR3,
 		"logic" : LOGIC,
-		"anim" : ANIM,
 		"c" : COMMAND,
-		"rig" : RIG,
-		"box_col" : BOX_COL,
-		"capsule_col" : CAPSULE_COL,
-		"matte" : MATTE,
 		"path" : PATH,
-		"sound" : SOUND,
-		"sounds" : SOUNDS,
-		"tex" : TEXTURE,
-		"attachment" : ATTACHMENT,
-		"weapon" : WEAPON,
-		"weapon_mesh" : WEAPON_MESH,
-		"model" : MODEL,
 		"tsfx" : TIMED_SOUND_EFFECT,
-	}
+		}
 	func id(split):
 		if split == null:
 			return SELF
@@ -542,8 +559,6 @@ class TTGCCharacterLoadDetails extends CharacterLoadDetails:
 				return float(split[data_starts_at])
 			BOOL:
 				return str(split[data_starts_at]).to_lower() == "true"
-			RIG:
-				return CharacterRigLoadDetails.new(split[data_starts_at])
 			VECTOR2:
 				return Vector2(
 					float(split[0 + data_starts_at]),
@@ -563,38 +578,21 @@ class TTGCCharacterLoadDetails extends CharacterLoadDetails:
 				return []
 			LOGIC:
 				return TTGCLogicLoadDetails.new(split.slice(data_starts_at)).gen()
-			ANIM:
-				return TTGCAnimationLoadDetails.new(split.slice(data_starts_at))
-			BOX_COL:
-				return BoxColLoadDetails.new()
-			CAPSULE_COL:
-				return CapsuleColLoadDetails.new()
-			MATTE:
-				return TTGCMaterialLoadDetails.new(split.slice(data_starts_at))
-			SOUNDS:
-				return TTGCSoundsLoadDetails.new(split.slice(data_starts_at))
-			SOUND:
-				return TTGCSoundLoadDetails.new(split[data_starts_at])
-			TEXTURE:
-				return TTGCTextureLoadDetails.new(split.slice(data_starts_at))
 			PATH:
 				return translate_path(split.slice(data_starts_at))
-			ATTACHMENT:
-				return TTGCBoneAttachmentLoadDetails.new(split.slice(data_starts_at))
 			WEAPON:
 				return Weapon.LoadDetails.new()
 			WEAPON_MESH:
 				return WeaponMesh.LoadDetails.new()
 			CUSTOM:
-				return get_custom_class(split[0].split(".")).new()
-			MODEL:
-				return ModelLoadDetails.new()
+				return custom_classes[split[0]].new(split.slice(data_starts_at))
 			TIMED_SOUND_EFFECT:
 				return [str(split[data_starts_at]), float(split[data_starts_at + 1])]
 			_:
 				assert(false, "object " + str(split) + " is invalid")
 		
 		return null
+	
 	
 	var path_translated = {
 		"b" : LoadDir,
@@ -604,14 +602,6 @@ class TTGCCharacterLoadDetails extends CharacterLoadDetails:
 		"models" : CharactersModelsFolderLoadDir,
 		"gltfs" : CharactersGltfsFolderLoadDir,
 	}
-	
-	func get_custom_class(classes):
-		var current = self
-		for c in classes:
-			current = current.get(c)
-		
-		return current
-	
 	func translate_path(data):
 		var p = path_translated[data[0]].new()
 		return p
@@ -696,10 +686,16 @@ class TTGCCharacterLoadDetails extends CharacterLoadDetails:
 			"copy":
 				update(split[2])
 
+class TTGCCharFolderCharacterLoadDetails extends TTGCCharacterLoadDetails:
+	func _init(character_name):
+		path = CharFolderLoadDir.new()
+		file = character_name
+
+
 class TTGCAnimationLoadDetails extends AnimationLoadDetails:
 	func _init(data):
 		name = data[0]
-		file = data[0]
+		file = data[0] if len(data) == 1 else data[1]
 		path = CharactersAnimsFolderLoadDir.new()
 
 class TTGCMaterialLoadDetails extends MaterialLoadDetails:
@@ -712,6 +708,14 @@ class TTGCMaterialLoadDetails extends MaterialLoadDetails:
 				preset_color = data[1]
 			"basic":
 				color = data[1]
+		
+		if data.size() > 2:
+			match data[2]:
+				"emission":
+					emissive_color = data[1]
+					base_material = "emission"
+				"metallic":
+					base_material = "metallic"
 
 class TTGCSoundLoadDetails extends SoundLoadDetails:
 	func _init(_file):
@@ -752,6 +756,11 @@ class TTGCBoneAttachmentLoadDetails extends BoneAttachmentLoadDetails:
 		model.dir = CharactersModelsFolderLoadDir.new()
 		model.file = data[0]
 		model.ext = data[1]
+
+class TTGCCharacterRigLoadDetails extends CharacterRigLoadDetails:
+	func _init(data):
+		super(data[0])
+
 
 class BoneAttachmentLoadDetails:
 	var model : ModelLoadDetails
@@ -830,10 +839,6 @@ class AnimationLoadDetails:
 		
 		return anim
 
-class TTGCCharFolderCharacterLoadDetails extends TTGCCharacterLoadDetails:
-	func _init(character_name):
-		path = CharFolderLoadDir.new()
-		file = character_name
 
 
 #endregion
@@ -939,7 +944,7 @@ func load_level_json(level):
 #region Collision
 
 class ColLoadDetails:
-	var offset
+	var offset := Vector3()
 	var push_margin = 0.1
 	
 	func gen():

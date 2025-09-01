@@ -18,6 +18,7 @@ var not_air_anims = ["Idleloop", "Runloop"]
 # Set the correct navigational layer values
 func _ready():
 	C.connect("revive", revive)
+	C.connect("death", death)
 	
 	last_move_dir = f.to_vec2(-rig.transform.basis.z)
 	move_delay_timer = move_delay
@@ -26,17 +27,8 @@ func _ready():
 var on_floor_last_frame = true
 func exclusive_physics(delta):
 	
-	# If we are in the air and we are playing one of the animations in not_air_anims
-	# Then make us be falling instead
-	if not C.is_on_floor():
-		for an in not_air_anims:
-			if anim.current_animation.ends_with(an):
-				# Play fallloop with a blend of .5
-				anim.play(C.weapon_prefix+"Fallloop", .5)
-				break
-	
 	# Get move_dir and moved
-	move_dir = input_vector * var_scale
+	move_dir = input_vector * var_scale * run_speed
 	var moved = (move_dir != Vector2())
 	
 	# If we did move, then set the mesh angle we want to go to
@@ -50,46 +42,41 @@ func exclusive_physics(delta):
 				move_delay_reset = false
 		
 		last_move_dir = move_dir
-		
-		# If we are on the floor and we have moved play the running animation
-		if C.is_on_floor():
-			anim.play("Runloop", .2)
 	else:
 		move_delay_reset = true
-		# If we have not moved
-		# and we are running then go to idle.
-		if anim.current_animation.ends_with("Runloop"):
-			anim.play("Idleloop", .4)
-			#anim.play("NULL", .04) # solution for other things
-		# If we are on the floor and nothing is playing then play idle
-		if C.is_on_floor():
-			if not anim.is_playing():
-				anim.play("Idleloop", .04)
 	
-	if anim.current_animation.ends_with("Runloop"):
+	if current_anim == "Run_loop":
 		run_anim_pos = anim.current_animation_position/anim.current_animation_length
-	else:
-		run_anim_pos = -1.0
 	
-	if move_delay_timer > move_delay:# and moved_since_online:
+	if move_delay_timer > move_delay or move_delay == 0.0:
 		C.mesh_angle_to = -last_move_dir.angle()-deg_to_rad(90)
-		#facing_move_dir = last_move_dir
 	else:
-		move_delay_timer += delta
+		if C.is_on_floor():
+			move_delay_timer += delta
+		else:
+			move_delay_timer = move_delay
 	
 	# If we are not on the floor, and nothing is playing, then play fallloop and queue land
 	# for when we hit the ground.
 	if not C.is_on_floor():
 		if not anim.is_playing():
-			anim.play("Fallloop", .1)
-			anim.queue("Land")
+			play_anim("Fall_loop", .1)
+			queue_anim("Land")
 	# If we are on the floor and we have just jumped or we are falling then play Land
 	else:
-		if anim.current_animation.ends_with("Fallloop"):
-			anim.play("Land", 0)
 		
-		elif anim.current_animation.ends_with("Jump"):
-			anim.play("Land", .1)
+		if f.to_vec2(C.char_vel).length_squared() >= run_speed * var_scale * 0.75:
+			if current_anim != "Run_loop":
+				play_anim("Run_loop", 0.1)
+				anim.seek(run_anim_pos, true)
+		else:
+			if current_anim == "Fall_loop":
+				play_anim("Land", 0)
+			elif current_anim == "Jump":
+				play_anim("Land", .1)
+			else:
+				if current_anim == "Run_loop" or not anim.is_playing():
+					play_anim("Idle_loop", 0.4)
 	
 	if C.is_on_floor() == true and on_floor_last_frame == false:
 		audio.play("Land")
@@ -100,28 +87,13 @@ func exclusive_physics(delta):
 	var weight = .15
 	C.char_vel.x = lerp(C.char_vel.x, move_dir.x, weight * delta * 60.0)
 	C.char_vel.z = lerp(C.char_vel.z, move_dir.y, weight * delta * 60.0)
-	
-	# Set the velocity to our current movement direction as well as a bunch of other factors
-	#C.set_velocity(C.char_vel + C.push_vel + C.knock_vel)
-	# Update our position based on CharacterBody physics using move_and_slide
-	#C.move_and_slide()
-	
-	#if move_delay_time_left > move_delay:
-	# Smoothly change our rotation to our desired rotation
-	#C.mesh_angle_lerp(delta, 0.2)
 
 
 
 func enter():
 	super()
-	#moved_since_online = false
 	move_delay_reset = true
 	last_move_dir = f.to_vec2(-rig.transform.basis.z)
-	#last_move_dir = mesh.transform.basis.z#facing_move_dir
-	#move_delay_timer = move_delay + 0.1
-	#last_move_dir = facing_move_dir
-	#move_dir = facing_move_dir
-	#move_delay_timer = 0.0#move_delay+0.0
 
 
 var run_anim_pos:float = -1
@@ -165,6 +137,8 @@ func has_nav(details):
 	
 	return false
 
+func death():
+	play_anim("Idleloop")
 
 func revive():
 	last_move_dir = f.to_vec2(-rig.transform.basis.z)

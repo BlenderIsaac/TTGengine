@@ -34,8 +34,14 @@ var begin_transform_override = false:
 
 var camera_velocity = Vector3()
 var direction = Vector3(0, 0, 0)
+var player_list = []
 
 func _ready():
+	var game_manager : GameManager = get_node("/root/Application Manager/Game Manager")
+	player_list = game_manager.players
+	game_manager.connect("players_changed", Callable(self, "update_targets"))
+	update_targets()
+	
 	collision.position = position
 
 func _process(_delta):
@@ -148,7 +154,7 @@ func _process(_delta):
 		var avg = get_target_avg_pos()
 		var pos = get_special_avg_pos()
 		
-		var dist2d = to_vec2(global_position).distance_to(to_vec2(target_agent.get_final_position()))
+		var dist2d = f.to_vec2(global_position).distance_to(f.to_vec2(target_agent.get_final_position()))
 		
 		pos.y = position.y
 		target_agent.target_position = Vector3(pos)
@@ -194,7 +200,7 @@ func _process(_delta):
 		movement_at = 1.0
 		
 		rotation.z = 0
-		if to_vec2(global_position-avg) == Vector2():
+		if f.to_vec2(global_position-avg) == Vector2():
 			rotation.x = -PI/2
 			rotation.y = 0
 		else:
@@ -225,8 +231,11 @@ func _physics_process(_delta):
 	#DebugDraw3D.draw_arrow(position, position+col.get_angle(0))
 	#print(col)
 
-func to_vec2(pos):
-	return Vector2(pos.x, pos.z)
+func update_targets():
+	targets.clear()
+	for player in player_list:
+		if player.controlling:
+			targets.append(player.controlling)
 
 func get_path_length(vector_array):
 	var path_length = 0
@@ -242,7 +251,7 @@ func snap():
 	global_position = (target_agent.get_final_position() + Vector3(0, -0.3, 0))+Vector3(0.01, 0, 0)
 	collision.global_position = global_position
 	
-	if to_vec2(global_position-target_average) == Vector2():
+	if f.to_vec2(global_position-target_average) == Vector2():
 		rotation.x = -PI/2
 		rotation.y = 0
 	else:

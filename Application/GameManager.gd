@@ -7,6 +7,8 @@ var level_manager : LevelManager
 var interface : Interface
 var players : Array = []
 
+signal players_changed
+
 func _ready():
 	print("Starting Game Manager")
 	name = "Game Manager"
@@ -29,6 +31,7 @@ func party_created(new_party):
 	
 	for i in range(len(players)):
 		players[i].controlling = new_party[i]
+	emit_signal("players_changed")
 
 
 func spawn_level_manager():

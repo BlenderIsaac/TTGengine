@@ -1,22 +1,29 @@
-extends WeaponDamageEffect
+extends WeaponEffect
 class_name ProjectileDamageEffect
 
-var projectile_details : Projectile.LoadDetails
-var trigger_command_name : String
+var projectile : Projectile.LoadDetails
+var fire_position : Vector3
 
-func trigger():
-	projectile_details.gen()
+func trigger(_target):
+	await get_tree().process_frame
+	var proj = projectile.gen()
+	
+	proj.transform = global_transform
+	proj.translate_object_local(fire_position)
+	
+	if _target:
+		proj.look_at_from_position(proj.position, _target.position + _target.aim_pos)
+	
+	weapon.C.section.add_child(proj)
 
-class LoadDetails:
+class LoadDetails extends WeaponEffect.LoadDetails:
 	var projectile : Projectile.LoadDetails
-	var trigger_command_name := "FirePosition"
 	var fire_position : Vector3
 	
-	func gen():
+	func gen2():
 		var effect = ProjectileDamageEffect.new()
 		
 		effect.fire_position = fire_position
-		effect.projectile_details = projectile
-		effect.trigger_command_name = trigger_command_name
+		effect.projectile = projectile
 		
 		return effect

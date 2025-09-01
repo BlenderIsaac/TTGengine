@@ -86,7 +86,7 @@ var identity
 var alignment
 
 var weapons = {}
-var current_weapon# : Weapon
+var current_weapon : Weapon
 
 # our current velocity, move direction, knockback velocity, and pushed velocity
 var char_vel = Vector3()
@@ -139,11 +139,15 @@ func anim_started():
 # This function is called when this character is first added to the scene
 func _ready():
 	
+	current_weapon = weapons["Blaster"]
+	
 	# Define some velocity settings
 	set_up_direction(Vector3.UP)
 	set_floor_stop_on_slope_enabled(true)
 	set_max_slides(4)
 	set_floor_max_angle(PI/3)
+	
+	anim.connect("animation_finished", anim_finished)
 
 
 func _process(_delta):
@@ -281,6 +285,28 @@ func get_anim():
 		return null
 	
 	return anim.get_animation(anim.current_animation)
+
+var anim_queue := []
+var current_anim : String
+
+func play_anim(anim_name, blending = null):
+	current_anim = anim_name
+	
+	if current_weapon:
+		anim_name = current_weapon.adapt_anim(anim_name)
+	
+	anim.play(anim_name, blending if blending else 0.0)
+
+func queue_anim(anim_name, blending = null):
+	anim_queue.append([anim_name, blending])
+
+func anim_finished(_anim_name):
+	if anim_queue.size() > 0:
+		var next = anim_queue.pop_front()
+		play_anim(next[0], next[1])
+
+func clear_anim_queue():
+	anim_queue.clear()
 
 # Navigation function for NavLinks
 var ai_to = Vector3()
@@ -543,9 +569,6 @@ func die():
 		# Explode into a million pieces
 		drop_bits()
 		
-		# Reset the animation to IdleLoop
-		anim.play("Idleloop")
-		
 		# Play all the audio and clear the current loops
 		audio.play("Death")
 		audio.play("FallApart")
@@ -719,7 +742,7 @@ func change_health(amount):
 	if hit_points > max_hit_points:
 		hit_points = max_hit_points
 
-
+var enemy_history = []
 func find_opponent(max_angle, max_range, dist_weight = 1, angle_weight = 2, _friend_penalty = 3):
 	# add raycast
 	
@@ -727,9 +750,7 @@ func find_opponent(max_angle, max_range, dist_weight = 1, angle_weight = 2, _fri
 	
 	for destroyable in get_tree().get_nodes_in_group("AttackLockOn"):
 		
-		var can_be_targeted = true
-		
-		if not destroyable == self and can_be_targeted:
+		if not destroyable == self:
 			var target_pos2 = destroyable.global_position
 			var self_pos2 = global_position
 			var dist = target_pos2.distance_squared_to(self_pos2)
@@ -759,12 +780,14 @@ func find_opponent(max_angle, max_range, dist_weight = 1, angle_weight = 2, _fri
 		else:
 			# if there is something to compare to
 			var their_des = opponent.get_desirability(angle_weight, dist_weight)
-			var our_des = opponent.get_desirability(angle_weight, dist_weight)
+			var our_des = most_desirable.get_desirability(angle_weight, dist_weight)
 			
-			if our_des < their_des:
+			if our_des > their_des:
 				most_desirable = opponent
 	
-	return most_desirable
+	if most_desirable:
+		return most_desirable.object
+	return null
 
 
 class TargetData:

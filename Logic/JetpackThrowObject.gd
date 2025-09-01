@@ -60,4 +60,3 @@ func exclusive_physics(_delta):
 		thrown = true
 	
 	#C.mesh_angle_lerp(0.2)
-

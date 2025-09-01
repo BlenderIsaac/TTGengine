@@ -8,7 +8,6 @@ var controlling : Character
 func trigger_action(logic):# : Logic):
 	pass
 
-@warning_ignore("unused_parameter")
 func press_button(button : String):
 	for logic in controlling.logics.values():
 		if logic.player_input(button):

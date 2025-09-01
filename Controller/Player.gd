@@ -18,16 +18,22 @@ var switch_right_key := KEY_O
 var money := 0
 var player_color : Color
 
-func _process(_delta):
-	set_input_vector(get_axis())
-	if Input.is_physical_key_pressed(jump_key):
-		press_button("Jump")
+func _physics_process(delta):
+	var axis = get_axis()
+	axis = axis.rotated(-get_viewport().get_camera_3d().rotation.y + PI)
+	set_input_vector(axis)
+
+func _input(event):
 	
-	if Input.is_physical_key_pressed(action_key):
-		press_button("Action")
-	
-	if Input.is_physical_key_pressed(special_key):
-		press_button("Special")
+	if event is InputEventKey and event.echo == false and event.pressed == true:
+		
+		match event.physical_keycode:
+			jump_key:
+				press_button("Jump")
+			action_key:
+				press_button("Action")
+			special_key:
+				press_button("Special")
 
 func get_axis():
 	var vector = Vector2()

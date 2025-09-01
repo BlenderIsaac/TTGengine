@@ -6,8 +6,9 @@ var animation : String = "Jump"
 var sound : String = "Jump"
 var speed = 2.3
 
+
 func trigger():
-	anim.play(animation)
+	play_anim(animation)
 	audio.play(sound)
 	C.char_vel.y = speed * var_scale
 

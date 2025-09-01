@@ -1,19 +1,16 @@
-extends BoneAttachment3D
+extends WeaponEffect
 class_name WeaponMesh
 
 var mesh_node : Node3D
 var animation_player : AnimationPlayer
 
 
-class LoadDetails:
+class LoadDetails extends WeaponEffect.LoadDetails:
 	var model : ResourceManager.ModelLoadDetails
-	var bone : int
 	var materials := []
 	
-	func gen():
+	func gen2():
 		var weapon_mesh = WeaponMesh.new()
-		
-		weapon_mesh.bone_idx = bone
 		
 		var mesh = model.gen()
 		

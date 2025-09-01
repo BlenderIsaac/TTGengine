@@ -598,5 +598,5 @@ override_pose = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_adpho")
+&"": SubResource("AnimationLibrary_adpho")
 }

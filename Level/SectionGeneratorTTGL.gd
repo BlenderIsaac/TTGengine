@@ -89,7 +89,6 @@ func generate(data : Level.SectionLoadCommand) -> Section:
 							
 							##char_index += 1
 						if attr.has("STARTCAMERA"):
-							print("start cam")
 							var cam_node = gltf.get_node_or_null(props.NAME)
 							if cam_node:
 								section.camera = ResourceManager.create_scene("Level/GameCam", Vector3(), section)

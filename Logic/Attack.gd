@@ -1,6 +1,7 @@
 extends Logic
 
 var anim_name : String
+var sound_name : String
 var take_logic_control := false
 
 var rate_seconds := 0.4
@@ -20,8 +21,8 @@ var friend_penalty := 3.0
 var weapon : Weapon
 var weapon_name : String
 
-
 func _ready():
+	assert(weapon_name)
 	weapon = C.weapons[weapon_name]
 	
 	if not attack_charged:
@@ -40,13 +41,20 @@ func player_input(button):
 func trigger():
 	if take_logic_control:
 		C.current_logic = self
-	else:
-		anim.play(anim_name)
-		weapon.trigger()
-		queue_weapon_recharge()
+	
+	attack_charged = false
+	
+	audio.play(sound_name)
+	
+	if C.is_on_floor():
+		if input_vector == Vector2():
+			play_anim(anim_name, 0.1)
+	
+	weapon.trigger(C.find_opponent(target_cone, target_range))
+	queue_weapon_recharge()
 
 
-func exclusive_physics(delta):
+func exclusive_physics(_delta):
 	if can_move:
 		pass
 

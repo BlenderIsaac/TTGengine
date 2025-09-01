@@ -1,2 +1,0 @@
-extends WeaponEffect
-class_name WeaponDamageEffect
