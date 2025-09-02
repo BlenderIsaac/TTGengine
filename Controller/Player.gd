@@ -19,9 +19,10 @@ var money := 0
 var player_color : Color
 
 func _physics_process(delta):
-	var axis = get_axis()
-	axis = axis.rotated(-get_viewport().get_camera_3d().rotation.y + PI)
-	set_input_vector(axis)
+	if controlling:
+		var axis = get_axis()
+		axis = axis.rotated(-get_viewport().get_camera_3d().rotation.y + PI)
+		set_input_vector(axis)
 
 func _input(event):
 	

@@ -8,6 +8,7 @@ func trigger(_target):
 	await get_tree().process_frame
 	var proj = projectile.gen()
 	
+	proj.impact_sender.creator = weapon.C
 	proj.transform = global_transform
 	proj.translate_object_local(fire_position)
 	

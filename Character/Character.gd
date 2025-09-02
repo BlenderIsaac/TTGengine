@@ -63,6 +63,8 @@ var iframes_left = 0.0
 var bodys_pushing = []
 var push_strength = 20
 
+var impact_reciever : ImpactReciever
+
 # our movement state
 # Probably change variable name
 var current_logic : Logic :
@@ -114,12 +116,10 @@ signal post_switch
 var max_hit_points = 4.0:
 	set(value):
 		max_hit_points = value
-		emit_signal("health_changed")
 var hit_points = 4.0:
 	set(value):
 		hit_points = value
 		health_ratio_accurate = false
-		emit_signal("health_changed")
 var ai_hit_points = 4.0
 var health_ratio = 0.0
 var health_ratio_accurate = false
@@ -458,7 +458,7 @@ var heart_min_height = 1.5
 func drop_heart():
 	
 	# Create a new heart
-	var heart = ResourceManager.create_scene("Objects/Heart", global_position+Vector3(0, 1, 0), section)
+	var heart = ResourceManager.create_scene("Objects/HeartPickup", global_position+Vector3(0, 1, 0), section)
 	
 	# Randomize a value between the min and max height for the heart velocity
 	var rand_vel_up = randf_range(heart_min_height, heart_max_height)
@@ -623,10 +623,6 @@ func respawn(): # only for players really
 	# Reset our health to max
 	hit_points = max_hit_points
 	
-	# reset our animation
-	anim.play("Idleloop", 0.0)
-	###weapon_prefix = ""
-	
 	# Set our current velocity to nothing
 	char_vel = Vector3()
 	
@@ -699,29 +695,25 @@ func get_logic_for_nav(nav_deets):
 	#add here that there is an exception added for this navLink
 	return null
 
-func take_damage(damage:f.Damage):
+
+func take_knockback(knockback : Vector3):
+	knock_vel += knockback
+
+
+func take_damage(damage : float, iframes : float = 0.2):
 	
-	assert(damage.iframes is float)
-	
-	# make sure we can actually take damage
 	if not is_invincible():
-		
-		for logic in logics:
-			if logic.consume_damage(damage):
-				return
-		
-		if damage.amount > 0:
+		if damage > 0:
 			# Play the flash animation and then queue reset
 			modulate_anim.stop()
 			modulate_anim.play("FlashAnims/Flash")
-			iframes_left = damage.iframes
+			iframes_left = iframes
 			modulate_anim.queue("FlashAnims/RESET")
+			
+			emit_signal("damaged")
 		
 		# Change our health by the amount of damage, just negative
-		change_health(-damage.amount)
-		knock_vel += damage.knockback
-		
-		emit_signal("damaged")
+		change_health(-damage)
 
 
 # A function for changing health
@@ -741,6 +733,8 @@ func change_health(amount):
 	# If we have more health than we should we cap our health to the max health
 	if hit_points > max_hit_points:
 		hit_points = max_hit_points
+	
+	emit_signal("health_changed")
 
 var enemy_history = []
 func find_opponent(max_angle, max_range, dist_weight = 1, angle_weight = 2, _friend_penalty = 3):

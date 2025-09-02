@@ -310,6 +310,9 @@ class CharacterLoadDetails:
 		#character.identity = identity
 		#character.alignment = alignment
 		
+		var impact_reciever = ImpactReciever.new()
+		impact_reciever.host = character
+		character.impact_reciever = impact_reciever
 		
 		for logic in character.logics:
 			logic.queue_free()
@@ -319,6 +322,9 @@ class CharacterLoadDetails:
 			character.logics[logic_name] = char_logic
 			char_logic.C = character
 			character.get_node("Logics").add_child(char_logic)
+			
+			if char_logic.has_method("adapt_sender"):
+				impact_reciever.modifiers.append(char_logic)
 		character.base_logic = character.logics[base_logic]
 		
 		for weapon in character.weapons:
@@ -332,6 +338,9 @@ class CharacterLoadDetails:
 			
 			character.weapons[weapon_name] = weapon
 			character.get_node("Weapons").add_child(weapon)
+			
+			if weapon.has_method("adapt_sender"):
+				impact_reciever.modifiers.append(weapon)
 		
 		character.max_hit_points = health
 		character.ai_hit_points = ai_health
@@ -422,6 +431,7 @@ class TTGCCharacterLoadDetails extends CharacterLoadDetails:
 			"weapon_mesh" : WeaponMesh.LoadDetails,
 			"projectile_effect" : ProjectileDamageEffect.LoadDetails,
 			"projectile" : Projectile.LoadDetails,
+			"sender" : ImpactSender,
 		}
 	enum {
 		SELF,

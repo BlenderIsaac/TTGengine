@@ -138,7 +138,8 @@ func has_nav(details):
 	return false
 
 func death():
-	play_anim("Idleloop")
+	play_anim("Idle_loop")
 
 func revive():
+	play_anim("Idle_loop")
 	last_move_dir = f.to_vec2(-rig.transform.basis.z)
