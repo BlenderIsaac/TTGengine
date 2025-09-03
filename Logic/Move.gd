@@ -23,6 +23,8 @@ func _ready():
 	last_move_dir = f.to_vec2(-rig.transform.basis.z)
 	move_delay_timer = move_delay
 	nav_agent.set_navigation_layer_value(1, true)
+	
+	run_anim_pos = randf_range(0, C.anim.get_animation("Run_loop").length)
 
 var on_floor_last_frame = true
 func exclusive_physics(delta):
@@ -139,9 +141,9 @@ func has_nav(details):
 
 func death():
 	if active:
-		play_anim("Idle_loop")
+		play_anim("Idle_loop", 0.0)
 
 func revive():
 	if active:
-		play_anim("Idle_loop")
+		play_anim("Idle_loop", 0.0)
 	last_move_dir = f.to_vec2(-rig.transform.basis.z)

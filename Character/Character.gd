@@ -41,16 +41,10 @@ var details : ResourceManager.CharacterLoadDetails
 var prev_pose = Vector3()
 
 # icon storage
-var icon = null
-
-# character sounds for audio
-var character_sounds = {
-	"CharacterSwitch" : ["TOGGLECHAR.WAV"],
-	"CharacterTag" : ["SWCHAR.WAV"],
-	"HeartCollect" : ["HEART.WAV"],
-	"CoinCollect" : ["COIN1.WAV", "COIN2.WAV"],
-	"BlueCoinCollect" : ["COINBLUE.WAV"],
-}
+var icon = null :
+	set(value):
+		icon = value
+		emit_signal("icon_changed", value)
 
 # variables to do with respawn wait
 var respawn_left = 3.0
@@ -103,7 +97,9 @@ var logic_switched_vars = {}
 # aim_pos - where projectiles aim
 var aim_pos = Vector3(0, 0.9, 0)
 
-signal health_changed
+signal pickup_collided(pickup)
+signal health_changed(new_health)
+signal icon_changed(new_icon)
 signal damaged(damage : f.Damage)
 signal revive
 signal death
@@ -538,6 +534,7 @@ func die():
 		
 		# set our health to 0, just in case it wasn't already
 		hit_points = 0
+		emit_signal("health_changed", hit_points)
 		
 		# Explode into a million pieces
 		drop_bits()
@@ -577,17 +574,22 @@ func die():
 			respawn_left = respawn_wait
 			# set ourselves to be dead so this script doesn't trigger again
 			dead = true
-			# Run the freeze function which sets us to not be moving, and without collision
-			death_freeze()
 			
-			current_logic.exit()
-			current_logic = null
+			collision.call_deferred("set", "disabled", true)
+			# Reset our velocity
+			knock_vel = Vector3()
+			char_vel = Vector3()
+			
+			emit_signal("death")
 			
 			if current_weapon:
 				current_weapon.active = false
 			current_weapon = null
 			
-			emit_signal("death")
+			current_logic.exit()
+			current_logic = null
+			
+			hide()
 			
 			# Set our position back to the respawn point. The good thing about this
 			# is that we don't need to do anything with the camera targeting.
@@ -596,11 +598,15 @@ func die():
 # A function that compiles all the things that happen when we respawn
 func respawn(): # only for players really
 	
-	# use the un_death_freeze() function to add back collision etc
-	un_death_freeze()
+	knock_vel = Vector3()
+	char_vel = Vector3()
+	
+	# Re enable the collision
+	collision.disabled = false
 	
 	# Reset our health to max
 	hit_points = max_hit_points
+	emit_signal("health_changed", hit_points)
 	
 	# Set our current velocity to nothing
 	char_vel = Vector3()
@@ -615,6 +621,9 @@ func respawn(): # only for players really
 	current_logic = base_logic
 	
 	emit_signal("revive")
+	
+	await get_tree().process_frame
+	show()
 
 # A function to easily get the point at which we want to respawn
 func get_respawn_point():
@@ -625,22 +634,6 @@ func get_respawn_point():
 	# If respawn_history is empty then return respawn_point, which is a backup respawn position
 	return respawn_point
 
-# A function that compiles all the things that happen when we die, including collision and resetting knockback
-func death_freeze():
-	# It was giving  me errors when I set it to disabled normally, so I'm using call_deferred
-	collision.call_deferred("set", "disabled", true)
-	# Reset the knockback
-	knock_vel = Vector3()
-	
-	# Make so the character is no longer visible
-	hide()
-
-# A function that compiles some things that happen when we respawn, like collision
-func un_death_freeze():
-	# Re enable the collision
-	collision.disabled = false
-	# Make the character visible
-	show()
 
 # Functions to do with movement states/logics
 # This is a function that finds the suitable logic for a particular NavLink
@@ -708,7 +701,7 @@ func change_health(amount):
 	if hit_points > max_hit_points:
 		hit_points = max_hit_points
 	
-	emit_signal("health_changed")
+	emit_signal("health_changed", hit_points)
 
 var enemy_history = []
 func find_opponent(max_angle, max_range, dist_weight = 1, angle_weight = 2, _friend_penalty = 3):
@@ -718,7 +711,7 @@ func find_opponent(max_angle, max_range, dist_weight = 1, angle_weight = 2, _fri
 	
 	for destroyable in get_tree().get_nodes_in_group("AttackLockOn"):
 		
-		if not destroyable == self:
+		if not destroyable == self and not destroyable.dead:
 			var target_pos2 = destroyable.global_position
 			var self_pos2 = global_position
 			var dist = target_pos2.distance_squared_to(self_pos2)

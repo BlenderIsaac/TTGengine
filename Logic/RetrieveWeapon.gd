@@ -11,6 +11,7 @@ var dismiss_sound := "In"
 var visibile_tween : Tween
 
 func player_input(_button):
+	
 	if _button == "Action":
 		if C.current_weapon == null:
 			grab_weapon()

@@ -50,7 +50,6 @@ func _process(_delta):
 		BOBHEART.scale.x = s
 		BOBHEART.scale.y = s
 
-
 func update_heart_visuals():
 	for heart in range(1, max_hearts+1):
 		var HEART = get_node("Heart"+str(heart))
@@ -74,7 +73,6 @@ func update_heart_visuals():
 			HEART.position.y += offset_y*row
 			HEART.position.x += offset_x*column*mltply
 
-
 func create_heart():
 	var HEART = Sprite2D.new()
 	HEART.texture = load(heart_texture)
@@ -83,3 +81,6 @@ func create_heart():
 	add_child(HEART)
 	
 	hearts_generated += 1
+
+func set_hearts(value):
+	hearts = value

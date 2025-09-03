@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dh8mqd6nimim"
-path.s3tc="res://.godot/imported/blackback.png-f82d398fc264ff1dfa267676ac5d6fdf.s3tc.ctex"
-path.etc2="res://.godot/imported/blackback.png-f82d398fc264ff1dfa267676ac5d6fdf.etc2.ctex"
+path.s3tc="res://.godot/imported/BlackBack.png-3754be42b82fd451f5e442f80e69957d.s3tc.ctex"
+path.etc2="res://.godot/imported/BlackBack.png-3754be42b82fd451f5e442f80e69957d.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://Textures/blackback.png"
-dest_files=["res://.godot/imported/blackback.png-f82d398fc264ff1dfa267676ac5d6fdf.s3tc.ctex", "res://.godot/imported/blackback.png-f82d398fc264ff1dfa267676ac5d6fdf.etc2.ctex"]
+source_file="res://Textures/BlackBack.png"
+dest_files=["res://.godot/imported/BlackBack.png-3754be42b82fd451f5e442f80e69957d.s3tc.ctex", "res://.godot/imported/BlackBack.png-3754be42b82fd451f5e442f80e69957d.etc2.ctex"]
 
 [params]
 

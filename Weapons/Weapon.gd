@@ -15,7 +15,7 @@ var active := false :
 		update_visibility()
 var triggering := false
 
-var effects := {} # mesh, trail, muzzle flash?
+var effects := {} # mesh, trail, muzzle flash
 
 func _ready():
 	top_level = true

@@ -1,4 +1,5 @@
 extends RigidBody3D
+class_name Stud
 
 var collected = false
 var collected_player_number = -1
@@ -35,10 +36,9 @@ func set_type(t):
 
 
 func _on_area_body_entered(body):
-	if collected == false:
-		if body.is_in_group("Character"):
-			if body.player and not body.AI:
-				collect(body)
+	if body is Character:
+		if not body.dead:
+			body.emit_signal("pickup_collided", self)
 
 
 func collect(character):

@@ -50,14 +50,17 @@ func load_materials():
 
 
 func _on_body_entered(body):
-	if body.is_in_group("Character"):
-		if !body.dead and body.player and !body.AI:
-			##Levels.i_am_dead(self)
-			
-			var _proj_pos = Vector2()
-			var cam : Camera3D = get_tree().get_first_node_in_group("GAMECAM")
-			
-			_proj_pos = cam.unproject_position(global_position)
-			
-			##Interface.collectable_found(proj_pos, type)
-			queue_free()
+	if body is Character:
+		if not body.dead:
+			body.emit_signal("pickup_collided", self)
+	#if body.is_in_group("Character"):
+		#if !body.dead and body.player and !body.AI:
+			###Levels.i_am_dead(self)
+			#
+			#var _proj_pos = Vector2()
+			#var cam : Camera3D = get_tree().get_first_node_in_group("GAMECAM")
+			#
+			#_proj_pos = cam.unproject_position(global_position)
+			#
+			###Interface.collectable_found(proj_pos, type)
+			#queue_free()

@@ -18,6 +18,11 @@ func _ready():
 	
 	# spawn player 1
 	add_player(0)
+	add_player(1)
+	add_player(2)
+	add_player(3)
+	interface.player_huds[3].set_player(null)
+	#add_player(4)
 	
 	interface.load_screen(Interface.MAIN_MENU)
 

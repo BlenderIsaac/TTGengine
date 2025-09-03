@@ -16,7 +16,9 @@ var player_colors = [
 	Color.RED,
 	Color.YELLOW,
 	Color.DEEP_PINK,
+	Color.BLACK,
 	Color.REBECCA_PURPLE,
+	Color.WHITE,
 ]
 var player_backs = [
 	"Blue",
@@ -24,7 +26,9 @@ var player_backs = [
 	"Red",
 	"Yellow",
 	"Pink",
+	"Black",
 	"Purple",
+	"White",
 	]
 
 var screens := []
@@ -62,16 +66,30 @@ func update_players(players):
 
 func create_hud(player):
 	var hud = ResourceManager.create_scene("Application/Interface/PlayerHUD", Vector2(), self)
+	hud.number = player.number
 	player_huds[player.number] = hud
-	hud.player = player
+	hud.set_player(player)
 	update_hud_position(hud)
+	update_hud_visual(hud)
+
+func update_hud_visual(hud):
+	var dir = ResourceManager.ResLoadDir.new()
+	var back = get_player_icon_back(hud.number)
+	var texture_details = ResourceManager.TextureLoadDetails.new(dir, "Textures/" + back + "Back.png")
+	
+	var color = Color.WHITE
+	if hud.number > len(player_backs):
+		color = get_player_color(hud.number)
+	
+	hud.get_node("Outline").texture = texture_details.gen()
+	hud.get_node("Outline").modulate = color
 
 func update_hud_positions():
 	for hud in player_huds.values():
 		update_hud_position(hud)
 
 func update_hud_position(hud : PlayerHUD):
-	var number = hud.player.number
+	var number = hud.number
 	var window_size = get_window().size
 	
 	match number:

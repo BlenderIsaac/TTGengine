@@ -20,6 +20,22 @@ var player_color : Color
 
 var number : int
 
+var audio : AudioPlayer
+
+func _ready():
+	audio = AudioPlayer.new()
+	audio.universal = true
+	add_child(audio)
+	
+	var dir = ResourceManager.ResLoadDir.new()
+	
+	var heart_sound = ResourceManager.SoundLoadDetails.new(dir, "Sounds/HEART.WAV")
+	audio.set_sound("HeartPickup", [heart_sound])
+	
+	# add coins
+	# add switching
+	# add tagging
+
 func _physics_process(_delta):
 	if controlling:
 		var axis = get_axis()
@@ -50,6 +66,8 @@ func get_axis():
 func reset_control_of(old_controlling : Character):
 	old_controlling.will_respawn = false
 	old_controlling.disconnect("death", player_death)
+	old_controlling.disconnect("pickup_collided", player_pickup_collided)
+	emit_signal("controlling_changed", controlling)
 
 func set_control_to(new_controlling : Character):
 	if controlling:
@@ -57,8 +75,11 @@ func set_control_to(new_controlling : Character):
 	
 	new_controlling.will_respawn = true
 	new_controlling.connect("death", player_death)
+	new_controlling.connect("pickup_collided", player_pickup_collided)
 	
 	controlling = new_controlling
+	
+	emit_signal("controlling_changed", controlling)
 
 func delete():
 	if controlling:
@@ -81,6 +102,12 @@ func player_death():
 		controlling.drop_stud(stud)
 	
 	money -= drop
+
+func player_pickup_collided(pickup):
+	if pickup is HeartPickup:
+		controlling.change_health(1)
+		audio.play("HeartPickup")
+		pickup.queue_free()
 
 # A function that tags a character
 # The number of particles that spawn when tagging
