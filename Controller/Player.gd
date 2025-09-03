@@ -18,7 +18,9 @@ var switch_right_key := KEY_O
 var money := 0
 var player_color : Color
 
-func _physics_process(delta):
+var number : int
+
+func _physics_process(_delta):
 	if controlling:
 		var axis = get_axis()
 		axis = axis.rotated(-get_viewport().get_camera_3d().rotation.y + PI)
@@ -43,15 +45,17 @@ func get_axis():
 	vector.y += int(Input.is_physical_key_pressed(up_key))
 	vector.y -= int(Input.is_physical_key_pressed(down_key))
 	
-	return vector
+	return vector.normalized()
 
-func reset_control_of(old_controlling):
+func reset_control_of(old_controlling : Character):
+	old_controlling.will_respawn = false
 	old_controlling.disconnect("death", player_death)
 
-func set_control_to(new_controlling):
+func set_control_to(new_controlling : Character):
 	if controlling:
 		reset_control_of(controlling)
 	
+	new_controlling.will_respawn = true
 	new_controlling.connect("death", player_death)
 	
 	controlling = new_controlling

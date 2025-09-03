@@ -3,16 +3,17 @@ extends Node3D
 
 func _ready():
 	var mod = "Ahsoka Show"
-	var export_path = SETTINGS.mod_path+"/"+mod+"/characters/anims/"
+	var export_path = "res://mods/Ahsoka Show/characters/anims/"
 	
 	#var special_folder = ""#"hello"
 	#
 	#if special_folder != "":
 		#export_path += special_folder + "/"
 	
-	var glb_path = "res://Animations/Anims/attacktest.glb"
+	var glb_path = "res://Animations/Anims/blastershoot.glb"
 	
-	f.make(glb_path, Vector3(), self)
+	var obj = load(glb_path).instantiate()
+	add_child(obj)
 	
 	for anim_name in get_child(0).get_node("AnimationPlayer").get_animation_list():
 		var anim_path = export_path + anim_name + ".res"

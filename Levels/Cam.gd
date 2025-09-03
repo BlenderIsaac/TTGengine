@@ -34,13 +34,11 @@ var begin_transform_override = false:
 
 var camera_velocity = Vector3()
 var direction = Vector3(0, 0, 0)
-var player_list = []
 
 func _ready():
 	var game_manager : GameManager = get_node("/root/Application Manager/Game Manager")
-	player_list = game_manager.players
 	game_manager.connect("players_changed", Callable(self, "update_targets"))
-	update_targets()
+	update_targets(game_manager.players)
 	
 	collision.position = position
 
@@ -231,7 +229,7 @@ func _physics_process(_delta):
 	#DebugDraw3D.draw_arrow(position, position+col.get_angle(0))
 	#print(col)
 
-func update_targets():
+func update_targets(player_list):
 	targets.clear()
 	for player in player_list:
 		if player.controlling:

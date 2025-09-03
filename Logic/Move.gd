@@ -61,7 +61,7 @@ func exclusive_physics(delta):
 	if not C.is_on_floor():
 		if not anim.is_playing():
 			play_anim("Fall_loop", .1)
-			queue_anim("Land")
+			queue_anim("Land", 0.0)
 	# If we are on the floor and we have just jumped or we are falling then play Land
 	else:
 		
@@ -71,9 +71,9 @@ func exclusive_physics(delta):
 				anim.seek(run_anim_pos, true)
 		else:
 			if current_anim == "Fall_loop":
-				play_anim("Land", 0)
+				play_anim("Land", 0.0)
 			elif current_anim == "Jump":
-				play_anim("Land", .1)
+				play_anim("Land", 0.1)
 			else:
 				if current_anim == "Run_loop" or not anim.is_playing():
 					play_anim("Idle_loop", 0.4)
@@ -138,8 +138,10 @@ func has_nav(details):
 	return false
 
 func death():
-	play_anim("Idle_loop")
+	if active:
+		play_anim("Idle_loop")
 
 func revive():
-	play_anim("Idle_loop")
+	if active:
+		play_anim("Idle_loop")
 	last_move_dir = f.to_vec2(-rig.transform.basis.z)

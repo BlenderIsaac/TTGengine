@@ -61,23 +61,3 @@ func _on_body_entered(body):
 			
 			##Interface.collectable_found(proj_pos, type)
 			queue_free()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-var h = 0

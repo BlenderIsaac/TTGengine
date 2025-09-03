@@ -30,8 +30,8 @@ func _ready():
 
 func player_input(button):
 	if button == "Action":
-		if C.current_weapon == weapon:
-			if C.current_logic == C.base_logic:
+		if weapon.active:
+			if C.base_logic.active:
 				if attack_charged:
 					trigger()
 					return true
@@ -48,7 +48,7 @@ func trigger():
 	
 	if C.is_on_floor():
 		if input_vector == Vector2():
-			play_anim(anim_name, 0.1)
+			play_anim(anim_name, 0.0)
 	
 	weapon.trigger(C.find_opponent(target_cone, target_range))
 	queue_weapon_recharge()

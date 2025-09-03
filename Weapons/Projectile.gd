@@ -1,6 +1,8 @@
 extends Area3D
 class_name Projectile
 
+var creator
+
 var speed : float
 var impact_sender : ImpactSender
 
@@ -20,6 +22,9 @@ func _process(delta):
 
 
 func body_enter(body):
+	if body == creator:
+		return
+	
 	if "impact_reciever" in body:
 		impact_sender.send_to(body.impact_reciever)
 	

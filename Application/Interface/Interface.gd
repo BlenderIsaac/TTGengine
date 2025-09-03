@@ -8,7 +8,26 @@ enum {
 	MAIN_MENU
 }
 
-var screens = []
+var basic_hud_offset := Vector2(134, 87)
+var player_huds := {}
+var player_colors = [
+	Color.BLUE,
+	Color.LAWN_GREEN,
+	Color.RED,
+	Color.YELLOW,
+	Color.DEEP_PINK,
+	Color.REBECCA_PURPLE,
+]
+var player_backs = [
+	"Blue",
+	"Green",
+	"Red",
+	"Yellow",
+	"Pink",
+	"Purple",
+	]
+
+var screens := []
 
 signal choose_level(load_command : LevelManager.LevelLoadCommand)
 signal choose_mod(mod)
@@ -16,6 +35,8 @@ signal choose_mod(mod)
 func _ready():
 	create_screens()
 	
+	get_window().connect("size_changed", update_hud_positions)
+	game_manager.connect("players_changed", update_players)
 	game_manager.level_manager.connect("level_loading", reset_screen)
 	
 	name = "Interface"
@@ -33,6 +54,65 @@ func create_screen(screen_class):
 	screens.append(screen)
 	
 	return screen
+
+func update_players(players):
+	for player : Player in players:
+		if not player.number in player_huds:
+			create_hud(player)
+
+func create_hud(player):
+	var hud = ResourceManager.create_scene("Application/Interface/PlayerHUD", Vector2(), self)
+	player_huds[player.number] = hud
+	hud.player = player
+	update_hud_position(hud)
+
+func update_hud_positions():
+	for hud in player_huds.values():
+		update_hud_position(hud)
+
+func update_hud_position(hud : PlayerHUD):
+	var number = hud.player.number
+	var window_size = get_window().size
+	
+	match number:
+		0:
+			hud.position = basic_hud_offset
+			hud.horizontal = "LEFT"
+			hud.vertical = "UP"
+		1:
+			hud.position = (basic_hud_offset * Vector2(-1, 1)) + Vector2(window_size.x, 0)
+			hud.horizontal = "RIGHT"
+			hud.vertical = "UP"
+		2:
+			hud.position = (basic_hud_offset * Vector2(1, -1)) + Vector2(0, window_size.y)
+			hud.horizontal = "LEFT"
+			hud.vertical = "DOWN"
+		3:
+			hud.position = (basic_hud_offset * Vector2(-1, -1)) + Vector2(window_size)
+			hud.horizontal = "RIGHT"
+			hud.vertical = "DOWN"
+	
+	hud.update_positions()
+
+func get_player_color(number):
+	if number > len(player_colors):
+		var rando = [0, 1, randf_range(0, 1)]
+		var color = Color()
+		for channel in ["r", "g", "b"]:
+			var value = rando.pick_random()
+			rando.erase(value)
+			
+			color.set(channel, value)
+		
+		return color
+	
+	return player_colors[number]
+
+func get_player_icon_back(number):
+	if number > len(player_backs):
+		return "White"
+	
+	return player_backs[number]
 
 func load_screen(screen_idx):
 	if current_screen:

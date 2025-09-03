@@ -7,22 +7,26 @@ var level_manager : LevelManager
 var interface : Interface
 var players : Array = []
 
-signal players_changed
+signal players_changed(new_players)
 
 func _ready():
 	print("Starting Game Manager")
 	name = "Game Manager"
 	
-	# spawn basic player
-	var player = Player.new()
-	add_child(player)
-	players.append(player)
-	
 	spawn_level_manager()
 	spawn_interface()
 	
+	# spawn player 1
+	add_player(0)
+	
 	interface.load_screen(Interface.MAIN_MENU)
 
+func add_player(id):
+	var player = Player.new()
+	player.number = id
+	add_child(player)
+	players.append(player)
+	emit_signal("players_changed", players)
 
 func party_created(new_party):
 	while len(players) > len(new_party):
@@ -30,8 +34,8 @@ func party_created(new_party):
 		removed_player.delete()
 	
 	for i in range(len(players)):
-		players[i].controlling = new_party[i]
-	emit_signal("players_changed")
+		players[i].set_control_to(new_party[i])
+	emit_signal("players_changed", players)
 
 
 func spawn_level_manager():

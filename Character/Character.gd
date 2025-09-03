@@ -27,7 +27,8 @@ var gravity = -6.0
 @export var var_scale := 4.1
 
 # flash value that character meshes borrows from
-@export var flash_value := Color(1.0, 1.0, 1.0, 0.0)
+#@export var flash_value := Color(1.0, 1.0, 1.0, 0.0)
+@export var flash_value := Vector4(1, 1, 1, 0)
 var meshes_to_modulate = []
 var flash_material : Material
 
@@ -44,7 +45,6 @@ var icon = null
 
 # character sounds for audio
 var character_sounds = {
-	"FallApart" : ["FALLAPART01.WAV", "FALLAPART02.WAV", "FALLAPART03.WAV", "FALLAPART04.WAV"],
 	"CharacterSwitch" : ["TOGGLECHAR.WAV"],
 	"CharacterTag" : ["SWCHAR.WAV"],
 	"HeartCollect" : ["HEART.WAV"],
@@ -73,9 +73,9 @@ var current_logic : Logic :
 			current_logic.exit()
 		
 		current_logic = value
-		current_logic.enter()
-	get():
-		return current_logic
+		
+		if current_logic:
+			current_logic.enter()
 
 var logics = {}
 var base_logic : Logic
@@ -139,8 +139,6 @@ func anim_started():
 # This function is called when this character is first added to the scene
 func _ready():
 	
-	current_weapon = weapons["Blaster"]
-	
 	# Define some velocity settings
 	set_up_direction(Vector3.UP)
 	set_floor_stop_on_slope_enabled(true)
@@ -148,7 +146,6 @@ func _ready():
 	set_floor_max_angle(PI/3)
 	
 	anim.connect("animation_finished", anim_finished)
-
 
 func _process(_delta):
 	
@@ -166,12 +163,7 @@ func _process(_delta):
 	
 	# every frame, loop through all the meshes we 
 	# want to change colour apon taking damage/respawn/switching character
-	flash_material.set_shader_parameter("my_color", Vector4(
-		flash_value.r,
-		flash_value.g,
-		flash_value.b,
-		flash_value.a
-		))
+	flash_material.set_shader_parameter("my_color", flash_value)
 	
 	# if we are dead work toward us undeadening
 	if dead:
@@ -275,7 +267,7 @@ func _physics_process(delta):
 		set_velocity(push_vel + knock_vel + char_vel)
 		
 		move_and_slide()
-		mesh_angle_lerp(delta, 0.2)
+		rig.rotation.y = fmod(lerp_angle(rig.rotation.y, mesh_angle_to, 0.2*delta*60), PI * 2)
 	
 	# setup this for the next frame
 	prev_pose = get_root_pos()
@@ -286,6 +278,12 @@ func get_anim():
 	
 	return anim.get_animation(anim.current_animation)
 
+func get_anim_key_frames():
+	if anim.current_animation == "":
+		return {}
+	
+	return get_anim().get_meta("key_frames")
+
 var anim_queue := []
 var current_anim : String
 
@@ -295,7 +293,8 @@ func play_anim(anim_name, blending = null):
 	if current_weapon:
 		anim_name = current_weapon.adapt_anim(anim_name)
 	
-	anim.play(anim_name, blending if blending else 0.0)
+	if anim_name in anim.get_animation_list():
+		anim.play(anim_name, blending if blending else 0.0)
 
 func queue_anim(anim_name, blending = null):
 	anim_queue.append([anim_name, blending])
@@ -337,17 +336,6 @@ func _on_agent_link_reached(link_deets):
 		ai_from = global_position
 		current_link = null
 
-
-# A function for setting the material of a particular piece
-func set_material(part_name, id, material):
-	# Declare a variable with a reference to the part we are changing the material of
-	var MESH = skeleton.get_node_or_null(part_name)
-	
-	if MESH:
-		# Set the material based on the id
-		MESH.set_surface_override_material(id, material)
-
-
 func dispose_audio_player():
 	var audio_player = $AudioPlayer
 	
@@ -365,7 +353,6 @@ func dispose_audio_player():
 	new_AudioPlayer.sound_effects = audio_player.sound_effects
 	
 	new_AudioPlayer.name = "AudioPlayer"
-
 
 func standing_on(group):
 	
@@ -404,7 +391,6 @@ func get_root_pos():
 	var pos = skeleton.get_bone_global_pose_no_override(0).origin
 	return pos
 
-
 func get_root_vel(start, end):
 	
 	var root_vel = Vector3()
@@ -418,18 +404,10 @@ func get_root_vel(start, end):
 	
 	return root_vel
 
-
-# a function that holds a generic lerping to the facing of mesh_angle_to
-func mesh_angle_lerp(delta, weight):
-	rig.rotation.y = lerp_angle(rig.rotation.y, mesh_angle_to, weight*delta*60)
-	rig.rotation.y -= deg_to_rad(int(rad_to_deg(rig.rotation.y)/360)*360)
-
-
 # Variables to control how high and far studs fly out when we drop them
 var stud_spread = 4
 var stud_max_height = 6.0
 var stud_min_height = 1.0
-
 func drop_stud(type):
 	# Create a new stud
 	var stud = ResourceManager.create_scene("Objects/Stud", global_position+Vector3(0, 1, 0), section)
@@ -454,7 +432,6 @@ func drop_stud(type):
 var heart_spread = 2.0
 var heart_max_height = 3.0
 var heart_min_height = 1.5
-
 func drop_heart():
 	
 	# Create a new heart
@@ -474,7 +451,6 @@ func drop_heart():
 
 # This is a variable that stores what the bits are
 var bits = []
-
 # A function to spawn the lego bits that a character drops apon death
 func drop_bits():
 	
@@ -505,7 +481,6 @@ func drop_bits():
 		# apply the rotational and positional velocity, adding our current movement to the positional velocity as well
 		bit.apply_torque(rand_torque)
 		bit.apply_impulse(rand_vel + (knock_vel) + char_vel + push_vel)
-
 
 func generate_bit(bit):
 	# Duplicate the mesh
@@ -554,10 +529,8 @@ func generate_bit(bit):
 	# return the rigid body - NOTE: it's not added to the scene yet
 	return rigid
 
-
 # A variable to store whether or not we are currently dead
 var dead = false
-
 func die():
 	
 	# We only want to die once, so make sure we are currently alive
@@ -607,12 +580,18 @@ func die():
 			# Run the freeze function which sets us to not be moving, and without collision
 			death_freeze()
 			
+			current_logic.exit()
+			current_logic = null
+			
+			if current_weapon:
+				current_weapon.active = false
+			current_weapon = null
+			
 			emit_signal("death")
 			
 			# Set our position back to the respawn point. The good thing about this
 			# is that we don't need to do anything with the camera targeting.
 			position = get_respawn_point()
-
 
 # A function that compiles all the things that happen when we respawn
 func respawn(): # only for players really
@@ -633,8 +612,9 @@ func respawn(): # only for players really
 	# Set dead to false so we are able to die again
 	dead = false
 	
+	current_logic = base_logic
+	
 	emit_signal("revive")
-
 
 # A function to easily get the point at which we want to respawn
 func get_respawn_point():
@@ -645,20 +625,10 @@ func get_respawn_point():
 	# If respawn_history is empty then return respawn_point, which is a backup respawn position
 	return respawn_point
 
-
-# A (in progress) function to determine whether we can be targeted.
-# Could be removed in the future
-func can_be_targeted():
-	# The only current stipulation is that we aren't dead
-	if dead:
-		return false
-	return true
-
-
 # A function that compiles all the things that happen when we die, including collision and resetting knockback
 func death_freeze():
 	# It was giving  me errors when I set it to disabled normally, so I'm using call_deferred
-	$Col.call_deferred("set", "disabled", true)
+	collision.call_deferred("set", "disabled", true)
 	# Reset the knockback
 	knock_vel = Vector3()
 	
@@ -668,13 +638,11 @@ func death_freeze():
 # A function that compiles some things that happen when we respawn, like collision
 func un_death_freeze():
 	# Re enable the collision
-	$Col.disabled = false
+	collision.disabled = false
 	# Make the character visible
 	show()
 
-
 # Functions to do with movement states/logics
-
 # This is a function that finds the suitable logic for a particular NavLink
 func get_logic_for_nav(nav_deets):
 	
@@ -695,10 +663,16 @@ func get_logic_for_nav(nav_deets):
 	#add here that there is an exception added for this navLink
 	return null
 
+func set_weapon(weapon):
+	if current_weapon:
+		current_weapon.active = false
+	
+	current_weapon = weapon
+	if weapon:
+		weapon.active = true
 
 func take_knockback(knockback : Vector3):
 	knock_vel += knockback
-
 
 func take_damage(damage : float, iframes : float = 0.2):
 	

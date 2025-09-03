@@ -5,6 +5,14 @@ var weapon : Weapon
 
 var triggering := false
 
+func _ready():
+	if not weapon.active:
+		hide()
+	weapon.connect("set_visible", update_visibility)
+
+func update_visibility(value):
+	visible = value
+
 func trigger(_target):
 	pass
 

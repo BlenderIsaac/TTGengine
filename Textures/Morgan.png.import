@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://6ediol0mp3qp"
-path="res://.godot/imported/BrownBack.png-55a56320b0caf77fd5801b7119d292e4.ctex"
+uid="uid://cof3lwrq1ip7q"
+path="res://.godot/imported/Morgan.png-6a552199698e77514a5a270a5f2595c7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Textures/BrownBack.png"
-dest_files=["res://.godot/imported/BrownBack.png-55a56320b0caf77fd5801b7119d292e4.ctex"]
+source_file="res://Textures/Morgan.png"
+dest_files=["res://.godot/imported/Morgan.png-6a552199698e77514a5a270a5f2595c7.ctex"]
 
 [params]
 
@@ -31,4 +31,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=0
+detect_3d/compress_to=1

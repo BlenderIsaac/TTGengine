@@ -9,6 +9,7 @@ func trigger(_target):
 	var proj = projectile.gen()
 	
 	proj.impact_sender.creator = weapon.C
+	proj.creator = weapon.C
 	proj.transform = global_transform
 	proj.translate_object_local(fire_position)
 	

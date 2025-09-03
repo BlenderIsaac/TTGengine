@@ -3,7 +3,6 @@ extends Node2D
 
 @export var offset_x = 30
 @export var offset_y = 30
-@export var initial_pos = Vector2(208, 102)
 
 var heart_texture = "res://Textures/Heart.png"
 
@@ -40,14 +39,6 @@ func _ready():
 	hearts = hearts
 
 func _process(_delta):
-	#if Input.is_action_just_pressed("Click"):
-		#for child in get_children():
-			#child.free()
-		#
-		#hearts_generated = 0
-		#while hearts_generated < max_hearts:
-			#create_heart()
-	
 	if hearts > 0:
 		
 		t += _delta*4.0
@@ -72,21 +63,21 @@ func update_heart_visuals():
 		
 		var heart_index = heart-1
 		if per_row == -1 or heart_index < per_row:
-			HEART.position = initial_pos
+			HEART.position = Vector2()
 			HEART.position.x += offset_x*heart_index*mltply
 		else:
 			var column = fmod(heart_index, per_row)
 			@warning_ignore("integer_division")
 			var row = floor(int(heart_index)/int(per_row))
 			
-			HEART.position = initial_pos
+			HEART.position = Vector2()
 			HEART.position.y += offset_y*row
 			HEART.position.x += offset_x*column*mltply
 
 
 func create_heart():
 	var HEART = Sprite2D.new()
-	HEART.texture = l.get_load(heart_texture)
+	HEART.texture = load(heart_texture)
 	
 	HEART.name = "Heart"+str(hearts_generated+1)
 	add_child(HEART)
