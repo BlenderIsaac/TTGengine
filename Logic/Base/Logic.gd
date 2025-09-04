@@ -52,8 +52,8 @@ var current_anim : String :
 	get():
 		return C.current_anim
 
-func play_anim(anim_name, blending = null):
-	C.play_anim(anim_name, blending)
+func play_anim(anim_name, blending = null, type = ""):
+	C.play_anim(anim_name, blending, type)
 
-func queue_anim(anim_name, blending = null):
-	C.play_anim(anim_name, blending)
+func queue_anim(anim_name, blending = null, type = ""):
+	C.play_anim(anim_name, blending, type)

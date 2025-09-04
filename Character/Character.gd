@@ -37,9 +37,6 @@ var flash_material : Material
 
 var details : ResourceManager.CharacterLoadDetails
 
-# variables for root vel
-var prev_pose = Vector3()
-
 # icon storage
 var icon = null :
 	set(value):
@@ -89,7 +86,7 @@ var char_vel = Vector3()
 var push_vel = Vector3()
 var knock_vel = Vector3()
 
-# respawn variable
+# respawn variables
 var respawn_point = Vector3()
 
 var logic_switched_vars = {}
@@ -97,10 +94,11 @@ var logic_switched_vars = {}
 # aim_pos - where projectiles aim
 var aim_pos = Vector3(0, 0.9, 0)
 
+@warning_ignore("unused_signal")
 signal pickup_collided(pickup)
 signal health_changed(new_health)
 signal icon_changed(new_icon)
-signal damaged(damage : f.Damage)
+signal damaged
 signal revive
 signal death
 @warning_ignore("unused_signal")
@@ -128,8 +126,10 @@ var mesh_angle_to = 0.0
 # This is the history of where we can respawn
 var respawn_history = []
 
+signal anim_start(animation)
 var sfx_index = 0
 func anim_started():
+	emit_signal("anim_start", current_anim)
 	sfx_index = 0
 
 # This function is called when this character is first added to the scene
@@ -145,7 +145,8 @@ func _ready():
 
 func _process(_delta):
 	
-	skeleton.position = -get_root_pos()
+	if current_logic:
+		$Label3D.text = str(current_logic.name)
 	
 	if iframes_left > 0.0:
 		iframes_left -= _delta
@@ -260,13 +261,15 @@ func _physics_process(delta):
 			if char_vel.y > 0.0:
 				char_vel.y = 0.0
 		
-		set_velocity(push_vel + knock_vel + char_vel)
+		var root_vel = (anim.get_root_motion_position()/delta).rotated(Vector3.UP, rig.rotation.y)
+		set_velocity(push_vel + knock_vel + char_vel + root_vel)
 		
 		move_and_slide()
 		rig.rotation.y = fmod(lerp_angle(rig.rotation.y, mesh_angle_to, 0.2*delta*60), PI * 2)
 	
-	# setup this for the next frame
-	prev_pose = get_root_pos()
+	#if get_anim():
+	#	print(get_anim().track_get_path(0))
+	
 
 func get_anim():
 	if anim.current_animation == "":
@@ -282,8 +285,9 @@ func get_anim_key_frames():
 
 var anim_queue := []
 var current_anim : String
+var anim_type : String = ""
 
-func play_anim(anim_name, blending = null):
+func play_anim(anim_name, blending = null, type = ""):
 	current_anim = anim_name
 	
 	if current_weapon:
@@ -291,14 +295,16 @@ func play_anim(anim_name, blending = null):
 	
 	if anim_name in anim.get_animation_list():
 		anim.play(anim_name, blending if blending else 0.0)
+	
+	anim_type = type
 
-func queue_anim(anim_name, blending = null):
-	anim_queue.append([anim_name, blending])
+func queue_anim(anim_name, blending = null, type = ""):
+	anim_queue.append([anim_name, blending, type])
 
 func anim_finished(_anim_name):
 	if anim_queue.size() > 0:
 		var next = anim_queue.pop_front()
-		play_anim(next[0], next[1])
+		play_anim(next[0], next[1], next[2])
 
 func clear_anim_queue():
 	anim_queue.clear()
@@ -381,24 +387,6 @@ func set_mesh(mesh):
 				child.material_overlay = flash_material
 				meshes_to_modulate.append(child)
 				bits.append(child)
-
-func get_root_pos():
-	#var root = $Mesh/Armature/Skeleton3D/ROOT
-	var pos = skeleton.get_bone_global_pose_no_override(0).origin
-	return pos
-
-func get_root_vel(start, end):
-	
-	var root_vel = Vector3()
-	
-	var bone_pos = get_root_pos()-prev_pose
-	var anim_progress = anim.current_animation_position/anim.current_animation_length
-	
-	if anim_progress >= start and anim_progress <= end:
-		
-		root_vel = bone_pos.rotated(Vector3.UP, rig.rotation.y)
-	
-	return root_vel
 
 # Variables to control how high and far studs fly out when we drop them
 var stud_spread = 4

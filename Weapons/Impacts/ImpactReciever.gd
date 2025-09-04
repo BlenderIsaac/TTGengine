@@ -10,4 +10,4 @@ func recieve_from(sender : ImpactSender):
 		modifier.adapt_sender(sender)
 	
 	host.take_damage(sender.damage)
-	host.take_knockback(sender.get_knockback())
+	host.take_knockback(sender.get_knockback(host.global_position))

@@ -44,6 +44,9 @@ func _ready():
 	game_manager.level_manager.connect("level_loading", reset_screen)
 	
 	name = "Interface"
+	
+	spawn_hud(0)
+	spawn_hud(1)
 
 func create_screens():
 	## main menu
@@ -61,16 +64,25 @@ func create_screen(screen_class):
 
 func update_players(players):
 	for player : Player in players:
-		if not player.number in player_huds:
-			create_hud(player)
+		var in_huds = player.number in player_huds
+		
+		if !in_huds:
+			add_hud_for(player)
+		else:
+			player_huds[player.number].set_player(player)
 
-func create_hud(player):
-	var hud = ResourceManager.create_scene("Application/Interface/PlayerHUD", Vector2(), self)
-	hud.number = player.number
-	player_huds[player.number] = hud
+func add_hud_for(player):
+	var hud = spawn_hud(player.number)
 	hud.set_player(player)
+
+func spawn_hud(number):
+	var hud = ResourceManager.create_scene("Application/Interface/PlayerHUD", Vector2(), self)
+	hud.number = number
+	player_huds[number] = hud
+	
 	update_hud_position(hud)
 	update_hud_visual(hud)
+	return hud
 
 func update_hud_visual(hud):
 	var dir = ResourceManager.ResLoadDir.new()

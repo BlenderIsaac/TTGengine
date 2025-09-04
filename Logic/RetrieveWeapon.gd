@@ -52,7 +52,7 @@ func dismiss_weapon():
 
 func delay_forced_visibility(weapon, delay):
 	if visibile_tween:
-		visibile_tween.stop()
+		visibile_tween.kill()
 	
 	var tween = create_tween()
 	tween.tween_interval(delay)
@@ -62,5 +62,5 @@ func delay_forced_visibility(weapon, delay):
 func update_current_anim():
 	var anim_position = anim.current_animation_position
 	
-	play_anim(current_anim, 0.3)
+	play_anim(current_anim, 0.3, C.anim_type)
 	anim.seek(anim_position, true)

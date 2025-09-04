@@ -5,16 +5,13 @@ var intermidiary
 
 var iframes : float
 var damage : float
-var simple_knockback : float
-var knockback : Vector3
-var knockback_local_transform := true
+var simple_knockback := Vector3()
+var knockback := Vector3()
+var explosion_knockback := 0.0
 var type : String
 
 func _init(data):
 	damage = float(data[0])
-	
-	if data.size() > 1:
-		simple_knockback = float(data[1])
 
 
 func send_to(reciever : ImpactReciever):
@@ -31,17 +28,16 @@ func get_origin():
 	return null
 
 
-func get_knockback():
+func get_knockback(obj_pos):
+	var accum := Vector3()
+	
 	var knockback_relativiser : Node3D = get_origin()
+	if knockback_relativiser:
+		accum += knockback_relativiser.basis * simple_knockback
+		
+		accum += (obj_pos - knockback_relativiser.global_position).normalized() * explosion_knockback
 	
-	if !knockback_relativiser:
-		return knockback
-	
-	var full_simple_knockback = knockback_relativiser.basis * Vector3(0, 0, -simple_knockback)
-	if knockback_local_transform:
-		return (knockback_relativiser.basis * knockback) + full_simple_knockback
-	else:
-		return knockback + full_simple_knockback
+	return accum
 
 
 func copy():
@@ -51,7 +47,7 @@ func copy():
 	sender.damage = damage
 	sender.knockback = knockback
 	sender.simple_knockback = simple_knockback
-	sender.knockback_local_transform = knockback_local_transform
+	sender.explosion_knockback = explosion_knockback
 	sender.type = type
 	
 	sender.creator = creator

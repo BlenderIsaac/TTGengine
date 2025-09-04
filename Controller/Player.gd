@@ -1,21 +1,12 @@
 extends CharacterController
 class_name Player
 
-var up_key := KEY_UP
-var down_key := KEY_DOWN
-var left_key := KEY_LEFT
-var right_key := KEY_RIGHT
+var game_manager : GameManager
 
-var action_key := KEY_J
-var jump_key := KEY_K
-var special_key := KEY_L
+var keybind : GameManager.Keybind
+var controller_device = 0
 
-var tag_key := KEY_I
-
-var switch_left_key := KEY_U
-var switch_right_key := KEY_O
-
-var money := 0
+var money := 200
 var player_color : Color
 
 var number : int
@@ -43,41 +34,67 @@ func _physics_process(_delta):
 		set_input_vector(axis)
 
 func _input(event):
-	
-	if event is InputEventKey and event.echo == false and event.pressed == true:
-		
-		match event.physical_keycode:
-			jump_key:
-				press_button("Jump")
-			action_key:
-				press_button("Action")
-			special_key:
-				press_button("Special")
+	match keybind.control_type:
+		0:
+			if event is InputEventKey and event.echo == false and event.pressed == true:
+				input(event.physical_keycode)
+		1:
+			if event is InputEventJoypadButton and event.pressed and event.device == controller_device:
+				input(event.button_index)
+
+func input(code):
+	match code:
+		keybind.jump_key:
+			press_button("Jump")
+		keybind.action_key:
+			press_button("Action")
+		keybind.special_key:
+			press_button("Special")
+		keybind.tag_key:
+			attempt_tag()
+
+func is_bind_pressed(bind):
+	match keybind.control_type:
+		0:
+			print(Input.is_key_pressed(keybind.get(bind)))
+			return Input.is_key_pressed(keybind.get(bind))
+		1:
+			return Input.is_joy_button_pressed(controller_device, keybind.get(bind))
 
 func get_axis():
-	var vector = Vector2()
-	vector.x += int(Input.is_physical_key_pressed(left_key))
-	vector.x -= int(Input.is_physical_key_pressed(right_key))
-	vector.y += int(Input.is_physical_key_pressed(up_key))
-	vector.y -= int(Input.is_physical_key_pressed(down_key))
-	
-	return vector.normalized()
+	if keybind.control_type == 0:
+		var vector = Vector2()
+		vector.x += int(Input.is_physical_key_pressed(keybind.left_key))
+		vector.x -= int(Input.is_physical_key_pressed(keybind.right_key))
+		vector.y += int(Input.is_physical_key_pressed(keybind.up_key))
+		vector.y -= int(Input.is_physical_key_pressed(keybind.down_key))
+		
+		return vector.normalized()
+	else:
+		var x = Input.get_joy_axis(controller_device, JOY_AXIS_LEFT_X)
+		var y = Input.get_joy_axis(controller_device, JOY_AXIS_LEFT_Y)
+		
+		var deadzone = 0.1
+		if abs(x) < deadzone:x = 0.0
+		if abs(y) < deadzone:y = 0.0
+		
+		return -Vector2(x, y).normalized()
 
 func reset_control_of(old_controlling : Character):
-	old_controlling.will_respawn = false
+	set_input_vector(Vector2(0, 0))
 	old_controlling.disconnect("death", player_death)
 	old_controlling.disconnect("pickup_collided", player_pickup_collided)
-	emit_signal("controlling_changed", controlling)
+	emit_signal("controlling_changed", null)
 
 func set_control_to(new_controlling : Character):
 	if controlling:
 		reset_control_of(controlling)
 	
-	new_controlling.will_respawn = true
 	new_controlling.connect("death", player_death)
 	new_controlling.connect("pickup_collided", player_pickup_collided)
 	
 	controlling = new_controlling
+	set_input_vector(Vector2(0, 0))
 	
 	emit_signal("controlling_changed", controlling)
 
@@ -109,6 +126,61 @@ func player_pickup_collided(pickup):
 		audio.play("HeartPickup")
 		pickup.queue_free()
 
+
+func attempt_tag():
+	if game_manager.level_manager.current_level and controlling and !controlling.dead:
+		var tag = find_tag()
+		
+		if tag:
+			var other_players = game_manager.players
+			
+			for player : Player in other_players:
+				if player != self:
+					if player.controlling == tag:
+						if player.is_bind_pressed("tag_key"):
+							tag_character(tag, player)
+						return
+			
+			tag_character(tag)
+
+func find_tag():
+	var party = game_manager.level_manager.current_level.party
+	
+	var best_member = null
+	for member : Character in party:
+		if member == controlling:
+			continue
+		
+		if member.dead:
+			continue
+		
+		if best_member == null:
+			var des = get_des(member)
+			if des:
+				best_member = member
+			continue
+		
+		var best_des = get_des(best_member)
+		var new_des = get_des(member)
+		
+		if new_des and best_des:
+			if new_des < best_des:
+				best_member = member
+	
+	return best_member
+
+func get_des(character : Character):
+	var dist_squared = character.global_position.distance_squared_to(controlling.global_position)
+	var angle = abs(f.angle_to_angle(controlling.mesh_angle_to, Basis.looking_at(character.global_position - controlling.global_position).get_euler().y))
+	
+	if dist_squared > 2 * 2:
+		return null
+	 
+	if angle > PI/3:
+		return null
+	
+	return angle * (dist_squared * 3)
+
 # A function that tags a character
 # The number of particles that spawn when tagging
 var tag_part_num = 3
@@ -123,9 +195,9 @@ func create_particles(tag_from : Character, tag_to : Character):
 		tag_particle.target = tag_to
 		
 		# Generate random coordinates for the particle to be placed at, based off tag_particle_spread
-		var tag_x = randf_range(-tag_from.tag_particle_spread.x, tag_from.tag_particle_spread.x)
-		var tag_y = randf_range(-tag_from.tag_particle_spread.y, tag_from.tag_particle_spread.y)
-		var tag_z = randf_range(-tag_from.tag_particle_spread.z, tag_from.tag_particle_spread.z)
+		var tag_x = randf_range(-tag_particle_spread.x, tag_particle_spread.x)
+		var tag_y = randf_range(-tag_particle_spread.y, tag_particle_spread.y)
+		var tag_z = randf_range(-tag_particle_spread.z, tag_particle_spread.z)
 		
 		# Set the material override to the tag particle material - TODO: globalize later into a global particle material
 		var matte_details = ResourceManager.MaterialLoadDetails.new()
@@ -141,13 +213,26 @@ func create_particles(tag_from : Character, tag_to : Character):
 		# Add the tag particle to the scene
 		controlling.section.add_child(tag_particle)
 
-
-func tag_character(tag : Character):
+func tag_character(tag : Character, other_player = null):
 	
 	# loop for the number of particles
 	create_particles(controlling, tag)
-	#create_particles(tag, self)
+	if other_player:
+		other_player.create_particles(tag, controlling)
+	
+	var from = controlling
+	var to = tag
+	
+	set_control_to(to)
+	if other_player:
+		other_player.set_control_to(from)
 	
 	# Stop the anim on the tag's Modulation and play DropIn to show the player that they have switched
-	tag.get_node("Modulation").stop()
-	tag.get_node("Modulation").play("DropIn")
+	to.get_node("Modulation").stop()
+	to.get_node("Modulation").play("DropIn")
+	
+	if other_player:
+		from.get_node("Modulation").stop()
+		from.get_node("Modulation").play("DropIn")
+	
+	game_manager.emit_signal("players_changed", game_manager.players)

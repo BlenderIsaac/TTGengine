@@ -27,6 +27,7 @@ func _ready():
 		var details = ResourceManager.TTGCCharFolderCharacterLoadDetails.new(party_member)
 		details.load_details()
 		var c : Character = details.gen()
+		c.will_respawn = true
 		party.append(c)
 	
 	emit_signal("party_created", party)

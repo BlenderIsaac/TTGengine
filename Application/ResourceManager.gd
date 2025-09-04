@@ -145,7 +145,7 @@ func load_obj(path : LoadDir, file : String):
 
 class MaterialLoadDetails:
 	var base_material := "basic"
-	var color := "ffffff"
+	var color : Color = "ffffff"
 	var preset_color : String
 	var metallic_preset_color : String
 	var emissive_color : String
@@ -391,6 +391,7 @@ class CharacterLoadDetails:
 			for i in range(len(materials[key])):
 				part.set_surface_override_material(i, materials[key][i].gen())
 		
+		character.anim.root_motion_track = "Armature/Skeleton3D:Parent"
 		character.anim.remove_animation_library("")
 		if animations:
 			var anim_library = AnimationLibrary.new()
@@ -432,6 +433,7 @@ class TTGCCharacterLoadDetails extends CharacterLoadDetails:
 			"projectile_effect" : ProjectileDamageEffect.LoadDetails,
 			"projectile" : Projectile.LoadDetails,
 			"sender" : ImpactSender,
+			"weapon_collider" : ColliderDamageEffect.LoadDetails,
 		}
 	enum {
 		SELF,
@@ -507,10 +509,11 @@ class TTGCCharacterLoadDetails extends CharacterLoadDetails:
 		var data_stack = []
 		while !file_access.eof_reached():
 			var line = file_access.get_line()
-			if line.begins_with("#") or line == "":
+			var trimmed = line.strip_edges()
+			
+			if trimmed.begins_with("#") or trimmed == "":
 				continue
 			
-			var trimmed = line.strip_edges()
 			var split = trimmed.split(" ")
 			var indent = line.count("\t")
 			
@@ -728,8 +731,8 @@ class TTGCMaterialLoadDetails extends MaterialLoadDetails:
 					base_material = "metallic"
 
 class TTGCSoundLoadDetails extends SoundLoadDetails:
-	func _init(_file):
-		file = _file
+	func _init(data):
+		file = data[0]
 		path = CharactersSoundFolderLoadDir.new()
 
 class TTGCSoundsLoadDetails extends SoundsLoadDetails:
@@ -737,7 +740,7 @@ class TTGCSoundsLoadDetails extends SoundsLoadDetails:
 		name = data[0]
 		
 		for sound in data.slice(1):
-			sounds.append(TTGCSoundLoadDetails.new(sound))
+			sounds.append(TTGCSoundLoadDetails.new([sound]))
 
 class TTGCTextureLoadDetails extends TextureLoadDetails:
 	func _init(data):
@@ -763,9 +766,14 @@ class TTGCLogicLoadDetails extends LogicLoadDetails:
 class TTGCBoneAttachmentLoadDetails extends BoneAttachmentLoadDetails:
 	func _init(data):
 		model = ModelLoadDetails.new()
-		model.dir = CharactersModelsFolderLoadDir.new()
+		
 		model.file = data[0]
 		model.ext = data[1]
+		match data[1]:
+			"glb":
+				model.dir = CharactersGltfsFolderLoadDir.new()
+			"obj":
+				model.dir = CharactersModelsFolderLoadDir.new()
 
 class TTGCCharacterRigLoadDetails extends CharacterRigLoadDetails:
 	func _init(data):
@@ -1033,8 +1041,9 @@ class ModelLoadDetails:
 				for m in f.get_all_children(mesh):
 					if m is MeshInstance3D:
 						meshes.append(m)
-						for i in range(len(material_dict[mesh.name])):
-							mesh.set_surface_override_material(i, material_dict[mesh.name][i])
+						if str(mesh.name) in material_dict:
+							for i in range(len(material_dict.get(str(mesh.name)))):
+								mesh.set_surface_override_material(i, material_dict[mesh.name][i])
 			_:
 				assert(false, "support for a mesh of extension " + ext + " is not supported.")
 		
@@ -1043,130 +1052,130 @@ class ModelLoadDetails:
 #endregion
 
 var material_data = {
-	# basic colors
-	"White" : "F4F4F4",
-	"Very Light Gray" : "E8E8E8",
-	"Very Light Grey" : "E8E8E8",
-	"Very Light Bluish Gray" : "E4E5D9",
-	"Very Light Bluish Grey" : "E4E5D9",
-	"Light Bluish Gray" : "A3A2A4",
-	"Light Bluish Grey" : "A3A2A4",
-	"Light Gray" : "A1A5A2",
-	"Light Grey" : "A1A5A2",
-	"Dark Gray" : "545955",
-	"Dark Grey" : "545955",
-	"Dark Bluish Gray" : "4D5156",
-	"Dark Bluish Grey" : "4D5156",
-	"Black" : "101010",
-	"Dark Red" : "7C021F",
-	"Red" : "D6001E",
-	"Coral" : "FF6666",
-	"Salmon" : "F06D61",
-	"Light Salmon" : "F9B7A5",
-	"Sand Red" : "88605E",
-	"Dark Brown" : "2E0F06",
-	"Brown" : "543324",
-	"Light Brown" : "7C503A",
-	"Medium Brown" : "755945",
-	"Reddish Brown" : "5B2D0E",
-	"Fabuland Brown" : "B3694E",
-	"Dark Tan" : "8A7553",
-	"Medium Tan" : "CCA373",
-	"Tan" : "D5BC7C",
-	"Light Nougat" : "FAD1B1",
-	"Nougat" : "D09168",
-	"Medium Nougat" : "B17A49",
-	"Earth Orange" : "D86D2C",
-	"Dark Orange" : "91501C",
-	"Rust" : "B52C20",
-	"Orange" : "F57D23",
-	"Medium Orange" : "F58624",
-	"Bright Light Orange" : "FCB100",
-	"Light Orange" : "F9A777",
-	"Yellow" : "F8C718",
-	"Light Yellow" : "FFE383",
-	"Bright Light Yellow" : "FDF683",
-	"Neon Yellow" : "E6FF00",
-	"Light Lime" : "DEEA92",
-	"Yellowish Green" : "E0FC9A",
-	"Medium Lime" : "B7D425",
-	"Lime" : "94BC0E",
-	"Olive Green" : "808452",
-	"Dark Green" : "053515",
-	"Green" : "157D26",
-	"Bright Green" : "1B9822",
-	"Medium Green" : "73DCA1",
-	"Light Green" : "A5DBB5",
-	"Sand Green" : "618365",
-	"Dark Turquoise" : "069D9F",
-	"Light Turquoise" : "31B5CA",
-	"Aqua" : "9CD6CC",
-	"Light Aqua" : "D5F2EA",
-	"Dark Blue" : "0A2441",
-	"Blue" : "2653A7",
-	"Dark Azure" : "078BC9",
-	"Maersk Blue" : "6BADD6",
-	"Medium Azure" : "2ACDE8",
-	"Sky Blue" : "77C9D8",
-	"Medium Blue" : "558AC5",
-	"Bright Light Blue" : "8FBFE9",
-	"Light Blue" : "7ED9F2",
-	"Sand Blue" : "61738C",
-	"Dark Blue-Violet" : "0E3E9A",
-	"Violet" : "675BBF",
-	"Blue-Violet" : "506CEF",
-	"Medium Violet" : "9391E4",
-	"Light Violet" : "C1CADE",
-	"Dark Purple" : "491D8E",
-	"Purple" : "A5499C",
-	"Light Purple" : "B4348C",
-	"Medium Lavender" : "A06AB9",
-	"Lavender" : "CDA1DE",
-	"Sand Purple" : "845E84",
-	"Magenta" : "98006C",
-	"Dark Pink" : "D82E8D",
-	"Medium Dark Pink" : "F785B1",
-	"Bright Pink" : "EA9BC4",
-	"Pink" : "FFC0CB",
+	#basic colors
+	"White":"F4F4F4",
+	"VeryLightGray":"E8E8E8",
+	"VeryLightGrey":"E8E8E8",
+	"VeryLightBluishGray":"E4E5D9",
+	"VeryLightBluishGrey":"E4E5D9",
+	"LightBluishGray":"A3A2A4",
+	"LightBluishGrey":"A3A2A4",
+	"LightGray":"A1A5A2",
+	"LightGrey":"A1A5A2",
+	"DarkGray":"545955",
+	"DarkGrey":"545955",
+	"DarkBluishGray":"4D5156",
+	"DarkBluishGrey":"4D5156",
+	"Black":"101010",
+	"DarkRed":"7C021F",
+	"Red":"D6001E",
+	"Coral":"FF6666",
+	"Salmon":"F06D61",
+	"LightSalmon":"F9B7A5",
+	"SandRed":"88605E",
+	"DarkBrown":"2E0F06",
+	"Brown":"543324",
+	"LightBrown":"7C503A",
+	"MediumBrown":"755945",
+	"ReddishBrown":"5B2D0E",
+	"FabulandBrown":"B3694E",
+	"DarkTan":"8A7553",
+	"MediumTan":"CCA373",
+	"Tan":"D5BC7C",
+	"LightNougat":"FAD1B1",
+	"Nougat":"D09168",
+	"MediumNougat":"B17A49",
+	"EarthOrange":"D86D2C",
+	"DarkOrange":"91501C",
+	"Rust":"B52C20",
+	"Orange":"F57D23",
+	"MediumOrange":"F58624",
+	"BrightLightOrange":"FCB100",
+	"LightOrange":"F9A777",
+	"Yellow":"F8C718",
+	"LightYellow":"FFE383",
+	"BrightLightYellow":"FDF683",
+	"NeonYellow":"E6FF00",
+	"LightLime":"DEEA92",
+	"YellowishGreen":"E0FC9A",
+	"MediumLime":"B7D425",
+	"Lime":"94BC0E",
+	"OliveGreen":"808452",
+	"DarkGreen":"053515",
+	"Green":"157D26",
+	"BrightGreen":"1B9822",
+	"MediumGreen":"73DCA1",
+	"LightGreen":"A5DBB5",
+	"SandGreen":"618365",
+	"DarkTurquoise":"069D9F",
+	"LightTurquoise":"31B5CA",
+	"Aqua":"9CD6CC",
+	"LightAqua":"D5F2EA",
+	"DarkBlue":"0A2441",
+	"Blue":"2653A7",
+	"DarkAzure":"078BC9",
+	"MaerskBlue":"6BADD6",
+	"MediumAzure":"2ACDE8",
+	"SkyBlue":"77C9D8",
+	"MediumBlue":"558AC5",
+	"BrightLightBlue":"8FBFE9",
+	"LightBlue":"7ED9F2",
+	"SandBlue":"61738C",
+	"DarkBlue-Violet":"0E3E9A",
+	"Violet":"675BBF",
+	"Blue-Violet":"506CEF",
+	"MediumViolet":"9391E4",
+	"LightViolet":"C1CADE",
+	"DarkPurple":"491D8E",
+	"Purple":"A5499C",
+	"LightPurple":"B4348C",
+	"MediumLavender":"A06AB9",
+	"Lavender":"CDA1DE",
+	"SandPurple":"845E84",
+	"Magenta":"98006C",
+	"DarkPink":"D82E8D",
+	"MediumDarkPink":"F785B1",
+	"BrightPink":"EA9BC4",
+	"Pink":"FFC0CB",
 	
-	# not really real ones
-	"Flesh" : "d09168",
-	"Light Flesh" : "fad1b1",
-	"Medium Flesh" : "CCA373",
+	#not reall yreal ones
+	"Flesh":"d09168",
+	"LightFlesh":"fad1b1",
+	"MediumFlesh":"CCA373",
 	
-	# metallic
-	"Chrome Gold": "DFC176",
-	"Chrome Silver": "CECECE",
-	"Chrome Antique Brass": "B8925C",
-	"Chrome Black": "1B2A34",
-	"Chrome Blue": "6C96BF",
-	"Chrome Green": "3CB371",
-	"Chrome Pink": "AA4D8E",
-	"Pearl White": "F6F3EC",
-	"Pearl Very Light Gray": "D4D2CD",
-	"Pearl Very Light Grey": "D4D2CD",
-	"Pearl Light Gray": "A0A0A0",
-	"Pearl Light Grey": "A0A0A0",
-	"Flat Silver": "8E9496",
-	"Bionicle Silver": "A59287",
-	"Pearl Dark Gray": "3E3C39",
-	"Pearl Dark Grey": "3E3C39",
-	"Pearl Black": "282725",
-	"Pearl Light Gold": "DEAC66",
-	"Pearl Gold": "A68031",
-	"Reddish Gold": "E7891B",
-	"Bionicle Gold": "B9752F",
-	"Flat Dark Gold": "83724F",
-	"Reddish Copper": "D57036",
-	"Copper": "AC6C53",
-	"Bionicle Copper": "985750",
-	"Pearl Sand Blue": "5686AE",
-	"Pearl Sand Purple": "B5A1BA",
-	"Metallic Silver": "C0C0C0",
-	"Metallic Green": "899B5F",
-	"Metallic Gold": "BB9442",
-	"Metallic Copper": "A77768",
-	"Milky White": "F4F4F4",
+	#metallic
+	"ChromeGold":"DFC176",
+	"ChromeSilver":"CECECE",
+	"ChromeAntiqueBrass":"B8925C",
+	"ChromeBlack":"1B2A34",
+	"ChromeBlue":"6C96BF",
+	"ChromeGreen":"3CB371",
+	"ChromePink":"AA4D8E",
+	"PearlWhite":"F6F3EC",
+	"PearlVeryLightGray":"D4D2CD",
+	"PearlVeryLightGrey":"D4D2CD",
+	"PearlLightGray":"A0A0A0",
+	"PearlLightGrey":"A0A0A0",
+	"FlatSilver":"8E9496",
+	"BionicleSilver":"A59287",
+	"PearlDarkGray":"3E3C39",
+	"PearlDarkGrey":"3E3C39",
+	"PearlBlack":"282725",
+	"PearlLightGold":"DEAC66",
+	"PearlGold":"A68031",
+	"ReddishGold":"E7891B",
+	"BionicleGold":"B9752F",
+	"FlatDarkGold":"83724F",
+	"ReddishCopper":"D57036",
+	"Copper":"AC6C53",
+	"BionicleCopper":"985750",
+	"PearlSandBlue":"5686AE",
+	"PearlSandPurple":"B5A1BA",
+	"MetallicSilver":"C0C0C0",
+	"MetallicGreen":"899B5F",
+	"MetallicGold":"BB9442",
+	"MetallicCopper":"A77768",
+	"MilkyWhite":"F4F4F4",
 }
 
 # idk what this is

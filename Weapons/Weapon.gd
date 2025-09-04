@@ -37,6 +37,7 @@ func trigger(target = null):
 func _process(_delta):
 	for effect in effects.values():
 		effect.triggering = triggering and active
+		effect.active = active
 
 func adapt_anim(anim_name):
 	return name + anim_name

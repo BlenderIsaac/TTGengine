@@ -1,19 +1,16 @@
 extends Logic
 
-var walk_speed = 0.6
-var run_speed = 1.2
-var move_delay = 0.0
+var walk_speed := 0.6
+var run_speed := 1.2
+var move_delay := 0.0
 
 # move delay time left
-var move_delay_timer = 0.0
-var move_delay_reset = false
+var move_delay_timer := 0.0
+var move_delay_reset := false
 #var moved_since_online = true
 
-var move_dir = Vector2()
-var last_move_dir = Vector2()
-
-var not_air_anims = ["Idleloop", "Runloop"]
-
+var move_dir := Vector2()
+var last_move_dir := Vector2()
 
 # Set the correct navigational layer values
 func _ready():
@@ -36,9 +33,7 @@ func exclusive_physics(delta):
 	# If we did move, then set the mesh angle we want to go to
 	if moved:
 		
-		var change = last_move_dir.normalized().dot(move_dir.normalized())
-		
-		if change < -0.6:
+		if get_change() < -0.6 and C.is_on_floor():
 			if move_delay_reset == true:
 				move_delay_timer = 0.0
 				move_delay_reset = false
@@ -62,19 +57,15 @@ func exclusive_physics(delta):
 	# for when we hit the ground.
 	if not C.is_on_floor():
 		if not anim.is_playing():
-			play_anim("Fall_loop", .1)
-			queue_anim("Land", 0.0)
+			play_anim("Fall_loop", .1, "air")
 	# If we are on the floor and we have just jumped or we are falling then play Land
 	else:
-		
 		if f.to_vec2(C.char_vel).length_squared() >= run_speed * var_scale * 0.75:
 			if current_anim != "Run_loop":
 				play_anim("Run_loop", 0.1)
 				anim.seek(run_anim_pos, true)
 		else:
-			if current_anim == "Fall_loop":
-				play_anim("Land", 0.0)
-			elif current_anim == "Jump":
+			if C.anim_type == "air":
 				play_anim("Land", 0.1)
 			else:
 				if current_anim == "Run_loop" or not anim.is_playing():
@@ -90,6 +81,9 @@ func exclusive_physics(delta):
 	C.char_vel.x = lerp(C.char_vel.x, move_dir.x, weight * delta * 60.0)
 	C.char_vel.z = lerp(C.char_vel.z, move_dir.y, weight * delta * 60.0)
 
+
+func get_change():
+	return last_move_dir.normalized().dot(move_dir.normalized())
 
 
 func enter():

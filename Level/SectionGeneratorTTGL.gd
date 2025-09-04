@@ -75,8 +75,8 @@ func generate(data : Level.SectionLoadCommand) -> Section:
 							
 							section.player_starting_positions.append(props.POSITION)
 						if attr.has("ENEMY_SPAWN"):
-							
-							gltf.add_child(generate_char(props.POSITION, section))
+							pass
+							#gltf.add_child(generate_char(props.POSITION, section))
 							##var dead = false
 							
 							##if Levels.char_spawn_dead.has(N_section):

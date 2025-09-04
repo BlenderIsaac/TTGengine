@@ -2,11 +2,12 @@ extends BoneAttachment3D
 class_name WeaponEffect
 
 var weapon : Weapon
+var active : bool = false
 
 var triggering := false
 
 func _ready():
-	if not weapon.active:
+	if not active:
 		hide()
 	weapon.connect("set_visible", update_visibility)
 

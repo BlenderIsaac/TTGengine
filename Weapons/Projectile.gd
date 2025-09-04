@@ -32,7 +32,7 @@ func body_enter(body):
 
 func reset_lifetime():
 	if death_tween:
-		death_tween.stop()
+		death_tween.kill()
 	
 	death_tween = create_tween()
 	death_tween.tween_interval(lifetime)

@@ -16,6 +16,10 @@ var character : Character
 
 var number : int
 
+func _ready():
+	$DropInPrompt.visible = player == null
+	modulate.a = 0.5 if player == null else 1.0
+
 func set_player(new_player):
 	if player:disconnect_from_player(player)
 	player = new_player
@@ -26,15 +30,19 @@ func set_player(new_player):
 
 func connect_to_player(p : Player):
 	p.connect("controlling_changed", set_character)
+	p.connect("tree_exited", set_player.bind(null))
 	set_character(p.controlling)
 
 func disconnect_from_player(p : Player):
 	p.disconnect("controlling_changed", set_character)
+	p.disconnect("tree_exited", set_player.bind(null))
 
 func set_character(new_char : Character):
 	if character:
-		$Head.texture = null
 		character.disconnect("health_changed", $HeartParent.set_hearts)
+		
+		character.disconnect("icon_changed", $Head.set_texture)
+		$Head.texture = null
 	
 	character = new_char
 	
