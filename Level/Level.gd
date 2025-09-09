@@ -12,8 +12,20 @@ var load_data : LevelManager.LevelLoadCommand
 var level_data : Dictionary
 var player_money_data = {}
 
+var mode := LevelMode.STORY
+
+enum LevelMode {
+	STORY,
+	FREEPLAY,
+	SUPERFREEPLAY,
+	HUB,
+}
+
 var party = []
-var freeplay_characters_details = []
+var freeplay_characters_details = [
+	ResourceManager.TTGCCharFolderCharacterLoadDetails.new("Stormtrooper"),
+	ResourceManager.TTGCCharFolderCharacterLoadDetails.new("JediBob"),
+]
 
 func _init(_load_command : LevelManager.LevelLoadCommand):
 	load_data = _load_command
@@ -22,21 +34,12 @@ func _ready():
 	section_generator = SectionGeneratorTTGL.new()
 	load_level_data()
 	
-	# generate party members
-	for party_member in level_data.Party:
-		var details = ResourceManager.TTGCCharFolderCharacterLoadDetails.new(party_member)
-		details.load_details()
-		var c : Character = details.gen()
-		c.will_respawn = true
-		party.append(c)
-	
-	emit_signal("party_created", party)
+	generate_party()
 	
 	if load_data.section_override:
 		load_section(load_data.section_override)
 	else:
 		load_section(level_data.StartSection)
-
 
 func load_level_data():
 	level_data = ResourceManager.load_level_json(load_data.level)
@@ -63,6 +66,25 @@ func load_section(section_name : String):
 	emit_signal("entering_section")
 	add_child(current_section)
 	emit_signal("entered_section")
+
+func generate_party():
+	match mode:
+		LevelMode.STORY:
+			for party_member in level_data.Party:
+				create_party_character(ResourceManager.TTGCCharFolderCharacterLoadDetails.new(party_member))
+		LevelMode.FREEPLAY:
+			for i in range(4):
+				var c = create_party_character(freeplay_characters_details[i % len(freeplay_characters_details)])
+				c.freeplay_char_idx = i
+	
+	emit_signal("party_created", party)
+
+func create_party_character(details):
+	details.load_details()
+	var c : Character = details.gen()
+	c.will_respawn = true
+	party.append(c)
+	return c
 
 class SectionLoadCommand:
 	var mod_override : String

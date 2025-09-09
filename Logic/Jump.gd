@@ -1,10 +1,10 @@
 extends Logic
 
-var is_backjump : bool = false
-var is_airjump : bool = false
-var animation : String = "Jump"
-var sound : String = "Jump"
-var height = 2.3
+@export var is_backjump : bool = false
+@export var is_airjump : bool = false
+@export var animation : String = "Jump"
+@export var sound : String = "Jump"
+@export var height = 2.3
 
 
 func trigger():

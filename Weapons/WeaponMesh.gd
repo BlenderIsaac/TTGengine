@@ -12,7 +12,7 @@ class LoadDetails extends WeaponEffect.LoadDetails:
 	func gen2():
 		var weapon_mesh = WeaponMesh.new()
 		
-		var mesh = model.gen()
+		var mesh = model.gen().duplicate()
 		
 		weapon_mesh.add_child(mesh)
 		weapon_mesh.mesh_node = mesh

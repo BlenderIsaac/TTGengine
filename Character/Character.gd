@@ -4,6 +4,7 @@ class_name Character
 var section : Section
 
 var will_respawn := false
+var freeplay_char_idx := -1 # this has no relevance to this script technically, but it's easier to store here
 
 # Some references
 var anim : AnimationPlayer
@@ -145,8 +146,8 @@ func _ready():
 
 func _process(_delta):
 	
-	if current_logic:
-		$Label3D.text = str(current_logic.name)
+	#if current_logic:
+	#	$Label3D.text = str(current_logic.name)
 	
 	if iframes_left > 0.0:
 		iframes_left -= _delta
@@ -933,7 +934,6 @@ func attach_softbody(model_path, model_file, attach_no, bone, materials, indices
 		var deets = ResourceManager.MaterialLoadDetails.new()
 		
 		node.set_surface_override_material(int(matte_no), ResourceManager.load_material(deets))###Materials.get_matte(materials.get(matte_no), origin_mod))
-	
 	
 	var flash_overlay_details = ResourceManager.MaterialLoadDetails.new()
 	flash_overlay_details.base_material = "flash overlay"

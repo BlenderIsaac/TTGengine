@@ -1,8 +1,8 @@
 extends Logic
 
-var walk_speed := 0.6
-var run_speed := 1.2
-var move_delay := 0.0
+@export var walk_speed := 0.6
+@export var run_speed := 1.2
+@export var move_delay := 0.0
 
 # move delay time left
 var move_delay_timer := 0.0
@@ -16,6 +16,8 @@ var last_move_dir := Vector2()
 func _ready():
 	C.connect("revive", revive)
 	C.connect("death", death)
+	
+	play_anim("Idle_loop")
 	
 	last_move_dir = f.to_vec2(-rig.transform.basis.z)
 	move_delay_timer = move_delay
@@ -95,7 +97,7 @@ func enter():
 var run_anim_pos:float = -1
 
 # This is so we can copy some variables across switches
-var vars_copied_on_switch = ["run_anim_pos"]
+@export var vars_copied_on_switch = ["run_anim_pos"]
 func get_switched_var():
 	var vars = {}
 	

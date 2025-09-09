@@ -24,20 +24,14 @@ func load_level(load_command):
 		current_level = null
 	
 	current_level = Level.new(load_command)
+	current_level.mode = load_command.mode
 	current_level.connect("party_created", game_manager.assign_party)
 	add_child(current_level)
 
 
 class LevelLoadCommand:
 	
-	enum {
-		STORY,
-		FREEPLAY,
-		SUPERFREEPLAY,
-		HUB,
-	}
-	
-	var mode = STORY
+	var mode = Level.LevelMode.STORY
 	var mod = null
 	var level = null
 	var section_override = null

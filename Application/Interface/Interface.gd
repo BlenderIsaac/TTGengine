@@ -182,7 +182,7 @@ class MainMenuScreen extends InterfaceScreen:
 		
 		load_command.mod = mod
 		load_command.level = "HUB"
-		load_command.mode = LevelManager.LevelLoadCommand.HUB
+		load_command.mode = Level.LevelMode.HUB
 		
 		emit_signal("choose_mod", mod)
 		emit_signal("choose_level", load_command)
@@ -193,7 +193,7 @@ class MainMenuScreen extends InterfaceScreen:
 		load_command.mod = mod
 		load_command.level = level
 		load_command.section_override = section
-		load_command.mode = LevelManager.LevelLoadCommand.STORY
+		load_command.mode = Level.LevelMode.FREEPLAY
 		
 		emit_signal("choose_mod", mod)
 		emit_signal("choose_level", load_command)

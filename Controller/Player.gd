@@ -1,8 +1,6 @@
 extends CharacterController
 class_name Player
 
-var game_manager : GameManager
-
 var keybind : GameManager.Keybind
 var controller_device = 0
 
@@ -11,21 +9,18 @@ var player_color : Color
 
 var number : int
 
-var audio : AudioPlayer
-
 func _ready():
-	audio = AudioPlayer.new()
-	audio.universal = true
-	add_child(audio)
+	super()
 	
 	var dir = ResourceManager.ResLoadDir.new()
 	
 	var heart_sound = ResourceManager.SoundLoadDetails.new(dir, "Sounds/HEART.WAV")
 	audio.set_sound("HeartPickup", [heart_sound])
 	
+	var tag_sound = ResourceManager.SoundLoadDetails.new(dir, "Sounds/SWCHAR.WAV")
+	audio.set_sound("Tag", [tag_sound])
+	
 	# add coins
-	# add switching
-	# add tagging
 
 func _physics_process(_delta):
 	if controlling:
@@ -52,11 +47,16 @@ func input(code):
 			press_button("Special")
 		keybind.tag_key:
 			attempt_tag()
+		keybind.switch_left_key:
+			if can_switch():
+				switch(1)
+		keybind.switch_right_key:
+			if can_switch():
+				switch(-1)
 
 func is_bind_pressed(bind):
 	match keybind.control_type:
 		0:
-			print(Input.is_key_pressed(keybind.get(bind)))
 			return Input.is_key_pressed(keybind.get(bind))
 		1:
 			return Input.is_joy_button_pressed(controller_device, keybind.get(bind))
@@ -125,7 +125,6 @@ func player_pickup_collided(pickup):
 		controlling.change_health(1)
 		audio.play("HeartPickup")
 		pickup.queue_free()
-
 
 func attempt_tag():
 	if game_manager.level_manager.current_level and controlling and !controlling.dead:
@@ -214,6 +213,11 @@ func create_particles(tag_from : Character, tag_to : Character):
 		controlling.section.add_child(tag_particle)
 
 func tag_character(tag : Character, other_player = null):
+	
+	audio.play("Tag")
+	# removed because no need and sounds weird
+	#if other_player:
+		#other_player.audio.play("Tag")
 	
 	# loop for the number of particles
 	create_particles(controlling, tag)

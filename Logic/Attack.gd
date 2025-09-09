@@ -1,31 +1,31 @@
 extends Logic
 
-var anim_name : String
-var sound_name : String
-var take_logic_control := false
+@export var anim_name : String
+@export var sound_name : String
+@export var take_logic_control := false
 
-var rate_seconds := 0.4
+@export var rate_seconds := 0.4
 
-var do_target := true
-var target_range := 100.0
-var target_cone := 0.8
+@export var do_target := true
+@export var target_range := 100.0
+@export var target_cone := 0.8
 
-var can_move := true
-var activate_in_air := true
+@export var can_move := true
+@export var activate_in_air := true
 
-var look_at_opponent := true
+@export var look_at_opponent := true
 
-var attack_charged := false
+@export var attack_charged := false
 
-var dist_weight := 1.0
-var angle_weight := 2.0
-var friend_penalty := 3.0
+@export var dist_weight := 1.0
+@export var angle_weight := 2.0
+@export var friend_penalty := 3.0
 
 var weapon : Weapon
-var weapon_name : String
+@export var weapon_name : String
 
-var chain_into : String
-var freeze_moment := 0.0
+@export var chain_into : String
+@export var freeze_moment := 0.0
 var is_chaining := false
 var time_left_tween : Tween
 
@@ -67,7 +67,6 @@ func trigger():
 		
 		start()
 
-
 func start():
 	attack_charged = false
 	
@@ -79,7 +78,6 @@ func start():
 	
 	weapon.trigger(opponent)
 	queue_weapon_recharge()
-
 
 func enter():
 	super()
@@ -102,16 +100,13 @@ func enter():
 		time_left_tween.tween_interval(freeze_moment)
 	time_left_tween.tween_callback(end)
 
-
 func chain():
 	time_left_tween.kill()
 	C.current_logic = C.logics[chain_into]
 
-
 func exclusive_physics(_delta):
 	if can_move:
 		pass
-
 
 func freeze():
 	is_freezing = true
@@ -119,10 +114,8 @@ func freeze():
 	if is_chaining:
 		chain()
 
-
 func end():
 	C.current_logic = C.base_logic
-
 
 func queue_weapon_recharge():
 	if rate_seconds <= 0.0:

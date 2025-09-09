@@ -294,6 +294,8 @@ class CharacterLoadDetails:
 	
 	var icon_details : TextureLoadDetails
 	
+	var starting_y_rotation = 0.0
+	
 	func gen():# -> Character:
 		# create a new character
 		var character = ResourceManager.load_scene("Character/Character").instantiate()
@@ -303,9 +305,47 @@ class CharacterLoadDetails:
 		return character
 	
 	func gen_to(character : Character):
+		var parent = null
+		if character.get_parent():
+			parent = character.get_parent()
+			parent.remove_child(character)
+		
 		character.emit_signal("pre_switch")
+		if character.current_logic:
+			character.current_logic.exit()
 		
 		character.details = self
+		
+		character.max_hit_points = health
+		character.ai_hit_points = ai_health
+		
+		character.nav_agent = character.get_node("Agent")
+		character.modulate_anim = character.get_node("Modulation")
+		character.audio = character.get_node("AudioPlayer")
+		character.tail = character.get_node("Tail")
+		character.tailcast = character.get_node("TailCast")
+		character.pushaway_collision = character.get_node("Pushaway")
+		
+		# erase everything
+		for logic in character.logics.values():
+			logic.free()
+		character.logics.clear()
+		
+		for weapon in character.weapons.values():
+			weapon.free()
+		character.weapons.clear()
+		
+		
+		character.meshes_to_modulate.clear()
+		character.bits.clear()
+		var y_rot = starting_y_rotation
+		if character.rig:
+			y_rot = character.rig.rotation.y
+			character.rig.free()
+		
+		if character.collision:character.collision.free()
+		
+		character.model_attachments.clear()
 		
 		#character.identity = identity
 		#character.alignment = alignment
@@ -314,11 +354,9 @@ class CharacterLoadDetails:
 		impact_reciever.host = character
 		character.impact_reciever = impact_reciever
 		
-		for logic in character.logics:
-			logic.queue_free()
-		character.logics.clear()
+		
 		for logic_name in logics.keys():
-			var char_logic = logics[logic_name]
+			var char_logic = logics[logic_name].duplicate()
 			character.logics[logic_name] = char_logic
 			char_logic.C = character
 			character.get_node("Logics").add_child(char_logic)
@@ -327,9 +365,6 @@ class CharacterLoadDetails:
 				impact_reciever.modifiers.append(char_logic)
 		character.base_logic = character.logics[base_logic]
 		
-		for weapon in character.weapons:
-			weapon.queue_free()
-		character.weapons.clear()
 		for weapon_name in weapons.keys():
 			var weapon = weapons[weapon_name].gen()
 			
@@ -341,16 +376,6 @@ class CharacterLoadDetails:
 			
 			if weapon.has_method("adapt_sender"):
 				impact_reciever.modifiers.append(weapon)
-		
-		character.max_hit_points = health
-		character.ai_hit_points = ai_health
-		
-		character.nav_agent = character.get_node("Agent")
-		character.modulate_anim = character.get_node("Modulation")
-		character.audio = character.get_node("AudioPlayer")
-		character.tail = character.get_node("Tail")
-		character.tailcast = character.get_node("TailCast")
-		character.pushaway_collision = character.get_node("Pushaway")
 		
 		var library = {}
 		for sound_name in sounds.keys():
@@ -367,16 +392,13 @@ class CharacterLoadDetails:
 		if icon_details:character.icon = icon_details.gen()
 		
 		assert(rig != null, "There is no rig for this character")
-		character.meshes_to_modulate.clear()
-		character.bits.clear()
-		if character.rig:character.rig.queue_free()
 		var rig_gen = rig.gen()
 		character.add_child(rig_gen)
 		character.set_mesh(rig_gen)
 		character.rig_class = rig_class
+		rig_gen.rotation.y = y_rot
 		
 		assert(collision != null, "There is no collision for this character")
-		if character.collision:character.collision.queue_free()
 		var col_gen = collision.gen()
 		character.collision = col_gen
 		character.add_child(col_gen)
@@ -393,6 +415,7 @@ class CharacterLoadDetails:
 		
 		character.anim.root_motion_track = "Armature/Skeleton3D:Parent"
 		character.anim.remove_animation_library("")
+		
 		if animations:
 			var anim_library = AnimationLibrary.new()
 			for animation : AnimationLoadDetails in animations.values():
@@ -401,15 +424,15 @@ class CharacterLoadDetails:
 			character.anim.add_animation_library("", anim_library)
 		character.anim.set_process_callback(AnimationPlayer.ANIMATION_PROCESS_PHYSICS)
 		
-		for attachment in character.model_attachments:
-			attachment.queue_free()
-		character.model_attachments.clear()
 		if attachments:
 			for attachment in attachments:
 				attachment.gen_on_character(character)
 		
 		character.current_weapon = null
 		character.reset_logic()
+		
+		if parent:
+			parent.add_child(character)
 		
 		character.emit_signal("post_switch")
 
@@ -793,13 +816,14 @@ class BoneAttachmentLoadDetails:
 	
 	func gen_on_character(character : Character):
 		var genned = gen()
+		var mesh = genned.get_child(0)
 		
 		character.model_attachments.append(genned)
 		character.skeleton.add_child(genned)
-		character.bits.append_array(model.meshes.duplicate())
-		character.meshes_to_modulate.append_array(model.meshes.duplicate())
-		for mesh in model.meshes:
-			mesh.material_overlay = character.flash_material
+		character.bits.append_array(mesh.get_meta("meshes"))
+		character.meshes_to_modulate.append_array(mesh.get_meta("meshes"))
+		for m in mesh.get_meta("meshes"):
+			m.material_overlay = character.flash_material
 		
 		genned.bone_idx = bone_attach
 
@@ -1023,10 +1047,10 @@ class ModelLoadDetails:
 	var ext : String
 	var material_array := []
 	var material_dict := {}
-	var meshes = []
 	
 	func gen():
 		var mesh : Node3D
+		var meshes = []
 		
 		match ext:
 			"obj":
@@ -1047,6 +1071,7 @@ class ModelLoadDetails:
 			_:
 				assert(false, "support for a mesh of extension " + ext + " is not supported.")
 		
+		mesh.set_meta("meshes", meshes)
 		return mesh
 
 #endregion

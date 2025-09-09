@@ -1,12 +1,12 @@
 extends Logic
 
-var weapon_name : String
+@export var weapon_name : String
 
-var grab_anim := "Activate"
-var dismiss_anim := "Deactivate"
+@export var grab_anim := "Activate"
+@export var dismiss_anim := "Deactivate"
 
-var grab_sound := "Out"
-var dismiss_sound := "In"
+@export var grab_sound := "Out"
+@export var dismiss_sound := "In"
 
 var visibile_tween : Tween
 
