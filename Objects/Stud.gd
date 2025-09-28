@@ -2,9 +2,11 @@ extends RigidBody3D
 class_name Stud
 
 var collected = false
-var collected_player_number = -1
+#var collected_player_number = -1
 var type = "Silver"
 var infinite = false
+
+var value = 0
 
 var stud_data = {
 	"Blue" : ["3e76fb", true],
@@ -15,6 +17,8 @@ var emitting = false
 
 
 func _ready():
+	
+	value = f.stud_value[type]
 	
 	# When it spawns in we set the animation to the type the stud is
 	$Sprite.animation = type
@@ -47,7 +51,6 @@ func collect(character):
 	else:
 		character.audio.play("CoinCollect")
 	
-	collected_player_number = character.player_number
 	collected = true
 
 
@@ -76,27 +79,27 @@ func _process(_delta):
 		var pos = sprite.global_position
 		
 		# just in case the stud is currently transparent make so the stud is opaque
-		sprite.modulate = "ffffffff"
+		#sprite.modulate = "ffffffff"
 		
 		# get the current camera
-		var cam = get_tree().get_first_node_in_group("GAMECAM")
+		#var cam = get_tree().get_first_node_in_group("GAMECAM")
 		# remove the sprite from ourselves
-		remove_child(sprite)
+		#remove_child(sprite)
 		# get the OnUI node child and add the sprite as a child of OnUI
-		cam.get_node("OnUI").add_child(sprite)
+		#cam.get_node("OnUI").add_child(sprite)
 		# set the sprites position to the position we recorded (just in case it changed)
-		sprite.global_position = pos
+		#sprite.global_position = pos
 		
 		# get the value of the stud
-		var value = f.stud_value.get(type)
+		#var value = f.stud_value.get(type)
 		# get the hud and add the money in memory
 		#get_tree().get_first_node_in_group("LEVELROOT").add_money(collected_player_number, value)
 		
 		# set all the metadata that the camera needs to know in order to animate the Sprite3D
-		sprite.set_meta("PickupPos", pos-cam.global_position)
-		sprite.set_meta("Value", value)
-		sprite.set_meta("CharacterNumber", collected_player_number)
-		sprite.set_meta("Type", type)
+		#sprite.set_meta("PickupPos", pos-cam.global_position)
+		#sprite.set_meta("Value", value)
+		#sprite.set_meta("CharacterNumber", collected_player_number)
+		#sprite.set_meta("Type", type)
 		
 		# kill this rigid body
 		queue_free()

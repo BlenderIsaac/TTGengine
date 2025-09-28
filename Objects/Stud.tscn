@@ -81,6 +81,7 @@ alpha_cut = 2
 sprite_frames = ExtResource("2_aka8s")
 animation = &"Blue"
 autoplay = "Silver"
+frame_progress = 0.114172
 metadata/PickupPos = Vector3(0, 0, 0)
 metadata/Value = 0
 metadata/CharacterNumber = -1
@@ -95,7 +96,7 @@ disabled = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_c3xdy")
+&"": SubResource("AnimationLibrary_c3xdy")
 }
 
 [node name="PickupDelay" type="Timer" parent="."]

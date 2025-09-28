@@ -1,6 +1,8 @@
 extends Node3D
 class_name Section
 
+var level : Level
+
 var doors = []
 var collectables = []
 var level_script

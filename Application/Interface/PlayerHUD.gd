@@ -5,6 +5,11 @@ class_name PlayerHUD
 @export_enum("LEFT", "RIGHT") var horizontal : String = "LEFT"
 @export_enum("UP", "DOWN") var vertical : String = "UP"
 
+var money = 0:
+	set(value):
+		money = value
+		$MoneyParent/Money.text = f.format_num(value)
+
 var d_i_p_pos = Vector2(58, 30)
 var coin_pos = Vector2(74, -13)
 var money_text_pos = Vector2(25.02, -17.98)
@@ -31,11 +36,14 @@ func set_player(new_player):
 func connect_to_player(p : Player):
 	p.connect("controlling_changed", set_character)
 	p.connect("tree_exited", set_player.bind(null))
+	p.connect("spawn_visual_stud", spawn_visual_stud)
 	set_character(p.controlling)
+	money = p.money
 
 func disconnect_from_player(p : Player):
 	p.disconnect("controlling_changed", set_character)
 	p.disconnect("tree_exited", set_player.bind(null))
+	p.disconnect("spawn_visual_stud", spawn_visual_stud)
 
 func set_character(new_char : Character):
 	if character:
@@ -53,6 +61,31 @@ func set_character(new_char : Character):
 		new_char.connect("icon_changed", $Head.set_texture)
 		$Head.texture = new_char.icon
 
+func get_camera_focal_length(camera):
+	var rect = get_viewport().get_visible_rect()
+	return rect.size.y / (2.0 * tan(deg_to_rad(camera.fov) * 0.5))
+
+func spawn_visual_stud(pos, frame, type, value):
+	# TODO: different cameras
+	var camera : Camera3D = get_viewport().get_camera_3d()
+	var pos2d = camera.unproject_position(pos)
+	var size = get_camera_focal_length(camera) / camera.position.distance_to(pos)
+	var sprite : AnimatedSprite2D = ResourceManager.create_scene("Application/Interface/stud_vis", pos2d, self)
+	sprite.scale = Vector2(size, size) * 0.007
+	sprite.play(type)
+	sprite.frame = frame
+	
+	var move_tween = create_tween()
+	move_tween.tween_property(sprite, "position", $MoneyParent/CoinHUD.global_position, 0.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	move_tween.parallel().tween_property(sprite, "scale", $MoneyParent/CoinHUD.global_scale, 0.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	
+	move_tween.tween_callback(add_visual_money.bind(value, type, frame))
+	move_tween.tween_callback(sprite.queue_free)
+
+func add_visual_money(amount, type, frame):
+	money += amount
+	$MoneyParent/Anim.stop()
+	$MoneyParent/Anim.play("Juice")
 
 func update_positions():
 	var x = 1 if horizontal == "LEFT" else -1

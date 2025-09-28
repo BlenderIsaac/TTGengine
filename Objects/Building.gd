@@ -50,8 +50,8 @@ var convex_col = null
 
 func _ready():
 	add_to_group("Build")
-	audio_player = f.make("res://Scripts/AudioPlayer.tscn", position, self)
-	audio_player.add_library(sounds, current_mod)
+	audio_player = ResourceManager.create_scene("Scripts/AudioPlayer", position, self)
+	audio_player.add_library(sounds)
 	setup()
 	
 	for b in b_pos.keys():
@@ -187,7 +187,7 @@ func finish():
 
 func final_touches():
 	
-	var particles = l.get_load("res://Objects/built.tscn").instantiate()
+	var particles = ResourceManager.load_scene("Objects/built").instantiate()#l.get_load("res://Objects/built.tscn").instantiate()
 	
 	particles.position = aabb.position+position + aabb.size/2
 	particles.emission_box_extents = aabb.size/2
@@ -247,7 +247,7 @@ var stud_spawn_range = .1
 
 func drop_stud(type):
 	# Get a reference to the stud in memory
-	var sTUD_pICKUP = l.get_load("res://Objects/Stud.tscn")
+	var sTUD_pICKUP = ResourceManager.load_scene("Objects/Stud")
 	
 	# Create a new stud
 	var stud = sTUD_pICKUP.instantiate()
@@ -278,7 +278,7 @@ func drop_stud(type):
 
 
 func spawn_replacement():
-	var replacement = l.get_load("res://Objects/MoistureEvapourater.tscn").instantiate()
+	var replacement = ResourceManager.load_scene("Objects/MoistureEvapourater").instantiate()
 	
 	replacement.position = position
 	replacement.rotation = rotation

@@ -206,8 +206,11 @@ func _process(_delta):
 			var new_transform = global_transform.looking_at(avg, Vector3.UP)
 			global_transform = global_transform.interpolate_with(new_transform, (2 * _delta)*movement_at)
 	
-	
 	start_timer += 1
+
+func get_camera_focal_length():
+	var rect = get_viewport().get_visible_rect()
+	return rect.size.y / (2.0 * tan(deg_to_rad(fov) * 0.5))
 
 func _physics_process(_delta):
 	#DebugDraw3D.draw_position(Transform3D(Basis(), position))
@@ -255,7 +258,6 @@ func snap():
 	else:
 		look_at(target_average)
 
-
 func get_special_avg_pos():
 	if targets.size() > 0:
 		
@@ -282,7 +284,6 @@ func get_special_avg_pos():
 		return target_pos
 	else:
 		return Vector3()
-
 
 func get_target_avg_pos():
 	if targets.size() > 0:

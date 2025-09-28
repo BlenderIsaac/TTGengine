@@ -44,7 +44,9 @@ func _ready():
 func load_level_data():
 	level_data = ResourceManager.load_level_json(load_data.level)
 
-func load_section(section_name : String):
+func load_section(section_name : String, door_id = -1):
+	await get_tree().process_frame
+	
 	emit_signal("exiting_section")
 	if current_section:
 		# extract party members
@@ -53,14 +55,17 @@ func load_section(section_name : String):
 			current_section.remove_child(party_member)
 		
 		current_section.queue_free()
+		current_section = null
 	
 	var load_command = SectionLoadCommand.new(section_name, load_data.level)
 	current_section = section_generator.generate(load_command)
+	current_section.level = self
 	
 	# inject party members
 	for party_member in party:
 		party_member.section = current_section
 		party_member.position = current_section.player_starting_positions[0] #TODO techincally we need to average from 1 to 2
+		
 		current_section.add_child(party_member)
 	
 	emit_signal("entering_section")

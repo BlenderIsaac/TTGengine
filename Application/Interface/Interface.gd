@@ -172,7 +172,7 @@ class MainMenuScreen extends InterfaceScreen:
 					InterfaceImage.new("res://Textures/ahsokamenu2.png"),
 					InterfaceLineEdit.new("Mod", set_mod, "Ahsoka Show"),
 					InterfaceButton.new("Load Hub", button_load_hub),
-					InterfaceLineEdit.new("Level", set_level, "EscapeOnArcana"),
+					InterfaceLineEdit.new("Level", set_level, "Debe"),
 					InterfaceLineEdit.new("Section", set_section, ""),
 					InterfaceButton.new("Load Level", button_load_level),
 				])

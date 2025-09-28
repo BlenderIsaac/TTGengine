@@ -9,6 +9,8 @@ var player_color : Color
 
 var number : int
 
+signal spawn_visual_stud(position : Vector3, frame : int, type : String, value : int)
+
 func _ready():
 	super()
 	
@@ -84,6 +86,7 @@ func reset_control_of(old_controlling : Character):
 	set_input_vector(Vector2(0, 0))
 	old_controlling.disconnect("death", player_death)
 	old_controlling.disconnect("pickup_collided", player_pickup_collided)
+	old_controlling.disconnect("door_entered", on_player_door_enter)
 	emit_signal("controlling_changed", null)
 
 func set_control_to(new_controlling : Character):
@@ -92,6 +95,7 @@ func set_control_to(new_controlling : Character):
 	
 	new_controlling.connect("death", player_death)
 	new_controlling.connect("pickup_collided", player_pickup_collided)
+	new_controlling.connect("door_entered", on_player_door_enter)
 	
 	controlling = new_controlling
 	set_input_vector(Vector2(0, 0))
@@ -125,6 +129,13 @@ func player_pickup_collided(pickup):
 		controlling.change_health(1)
 		audio.play("HeartPickup")
 		pickup.queue_free()
+	elif pickup is Stud:
+		emit_signal("spawn_visual_stud", pickup.global_position, pickup.get_node("Sprite").frame, pickup.type, pickup.value)
+		pickup.collect(controlling)
+		money += pickup.value
+
+func on_player_door_enter(door):
+	door.enter()
 
 func attempt_tag():
 	if game_manager.level_manager.current_level and controlling and !controlling.dead:

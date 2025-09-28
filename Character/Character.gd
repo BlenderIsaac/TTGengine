@@ -98,6 +98,8 @@ var aim_pos = Vector3(0, 0.9, 0)
 @warning_ignore("unused_signal")
 signal pickup_collided(pickup)
 signal health_changed(new_health)
+@warning_ignore("unused_signal")
+signal door_entered(door)
 signal icon_changed(new_icon)
 signal damaged
 signal revive

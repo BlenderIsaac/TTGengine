@@ -264,6 +264,7 @@ func generate(data : Level.SectionLoadCommand) -> Section:
 								var door = generate_area(obj, "Door"+str(door_idx), "DoorCol"+str(door_idx))
 								door.rotation = obj.rotation
 								door.set_script(ResourceManager.load_script("Objects/Door"))
+								door.section = section
 								
 								door.DoorId = int(props.ID)
 								var door_dest = {}
@@ -517,12 +518,12 @@ class TtglTranslatedMaterialLoadDetails extends ResourceManager.MaterialLoadDeta
 		
 		for item in matte_array.slice(3):
 			if item.begins_with("ALBEDO"):
-				color = item.trim_prefix("ALBEDO")
+				color = item.trim_prefix("ALBEDO").replace(" ", "")
 			if item.begins_with("PRESET"):
 				if matte_array.has("METALLIC"):
-					metallic_preset_color = item.trim_prefix("PRESET")
+					metallic_preset_color = item.trim_prefix("PRESET").replace(" ", "")
 				else:
-					preset_color = item.trim_prefix("PRESET")
+					preset_color = item.trim_prefix("PRESET").replace(" ", "")
 			if item.begins_with("TEXTURE"):
 				var texture_string = item.trim_prefix("TEXTURE")
 				var translation = translate_location_string(texture_string)

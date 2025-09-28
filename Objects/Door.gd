@@ -1,8 +1,11 @@
 extends Area3D
 
+var section : Section
+
 var DoorId = null
 
-var destination = {}#{"Type" : "SectionChange", "Section" : "HangarA", "DoorId" : 0}
+var destination = {}
+#var destination = {"Type" : "SectionChange", "Section" : "HangarA", "DoorId" : 0}
 #var destination = {"Type" : "Visual"}
 #var destination = {"Type" : "HubIntoLevel", "Mod" : "Basic Characters", "Level" : "SandStuff"}
 #var destination = {"Type" : "CycleHubs", "Direction" : "Forward"}
@@ -51,10 +54,8 @@ func _ready():
 
 
 func body_entered(body):
-	
 	if body.is_in_group("Character"):
-		if not body.AI:
-			enter()
+		body.emit_signal("door_entered", self)
 
 
 func enter():
@@ -79,7 +80,7 @@ func enter():
 		
 		#Levels.cycle_hubs("Basic Characters", player_data, destination.Direction)
 	elif destination.Type == "SectionChange":
-		pass
+		section.level.load_section(destination.Section)
 		#Levels.change_section(destination.Section, destination.DoorId)
 	elif destination.Type == "Visual":
 		pass

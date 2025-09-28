@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://dm71q8ahqaklp"]
+
+[ext_resource type="SpriteFrames" uid="uid://d4lndggo86ea7" path="res://Objects/StudAnims.tres" id="1_pn4hi"]
+
+[node name="StudVis" type="AnimatedSprite2D"]
+top_level = true
+sprite_frames = ExtResource("1_pn4hi")
+animation = &"Blue"
+frame_progress = 0.264279

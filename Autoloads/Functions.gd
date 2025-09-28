@@ -294,12 +294,13 @@ func _process(_delta):
 
 # This was ripped from online
 # from https://ask.godotengine.org/18559/how-to-add-commas-to-an-integer-or-float-in-gdscript
-func format_num(num):
-	var i : int = num.length() - 3
+func format_num(num : int):
+	var str_num = str(num)
+	var i : int = str_num.length() - 3
 	while i > 0:
-		num = num.insert(i, ",")
+		str_num = str_num.insert(i, ",")
 		i = i - 3
-	return num
+	return str_num
 
 
 var exceptions = ["vec3", "array"]
