@@ -895,7 +895,7 @@ func load_gltf(load_details : GltfLoadDetails):
 		
 		gltf_meshes[id] = new_gltf
 	
-	return gltf_meshes.get(id)
+	return gltf_meshes.get(id).duplicate()
 
 class GltfLoadDetails:
 	var dir : LoadDir
@@ -1063,11 +1063,13 @@ class ModelLoadDetails:
 			"glb":
 				mesh = ResourceManager.load_gltf(ResourceManager.GltfLoadDetails.new(dir, file))
 				for m in f.get_all_children(mesh):
+					
 					if m is MeshInstance3D:
 						meshes.append(m)
-						if str(mesh.name) in material_dict:
-							for i in range(len(material_dict.get(str(mesh.name)))):
-								mesh.set_surface_override_material(i, material_dict[mesh.name][i])
+						
+						if str(m.name) in material_dict:
+							for i in range(len(material_dict.get(str(m.name)))):
+								m.set_surface_override_material(i, material_dict[m.name][i].gen())
 			_:
 				assert(false, "support for a mesh of extension " + ext + " is not supported.")
 		

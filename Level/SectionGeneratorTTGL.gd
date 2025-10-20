@@ -1,7 +1,7 @@
 extends SectionGenerator
 class_name SectionGeneratorTTGL
 
-
+var begin_cam_transform : Transform3D
 
 func generate(data : Level.SectionLoadCommand) -> Section:
 	
@@ -91,10 +91,8 @@ func generate(data : Level.SectionLoadCommand) -> Section:
 						if attr.has("STARTCAMERA"):
 							var cam_node = gltf.get_node_or_null(props.NAME)
 							if cam_node:
-								section.camera = ResourceManager.create_scene("Level/GameCam", Vector3(), section)
-								section.camera.begin_transform_override = true
-								section.camera.transform = cam_node.transform
-								section.camera.get_node("Collision").position = cam_node.position
+								begin_cam_transform = transform_based_on_parent(gltf, cam_node)
+								cam_node.current = false
 					elif obj_type == "NAV_LNK":
 						section.add_child(create_navlink(Vector3(0, 0, 0), props.POSITION_FROM, props.POSITION_TO, props.LINKS, props.BIDI))
 					elif obj_type == "STUD":
@@ -267,6 +265,7 @@ func generate(data : Level.SectionLoadCommand) -> Section:
 								door.section = section
 								
 								door.DoorId = int(props.ID)
+								section.doors[door.DoorId] = door
 								var door_dest = {}
 								match props.TYPE:
 									"HUB_NTO_LVL":
@@ -290,7 +289,9 @@ func generate(data : Level.SectionLoadCommand) -> Section:
 								if "CAMERA" in props:
 									var cam_node = gltf.get_node_or_null(props.CAMERA)
 									if cam_node:
-										door.cam = cam_node
+										cam_node.top_level = true
+										cam_node.current = false
+										door.cam_transform = transform_based_on_parent(gltf, cam_node)
 								
 								door.destination = door_dest
 								

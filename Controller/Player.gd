@@ -4,12 +4,13 @@ class_name Player
 var keybind : GameManager.Keybind
 var controller_device = 0
 
-var money := 200
+var money := 0
 var player_color : Color
 
 var number : int
 
 signal spawn_visual_stud(position : Vector3, frame : int, type : String, value : int)
+signal force_update_money
 
 func _ready():
 	super()
@@ -25,7 +26,7 @@ func _ready():
 	# add coins
 
 func _physics_process(_delta):
-	if controlling:
+	if controlling and get_viewport().get_camera_3d():
 		var axis = get_axis()
 		axis = axis.rotated(-get_viewport().get_camera_3d().rotation.y + PI)
 		set_input_vector(axis)
@@ -123,6 +124,7 @@ func player_death():
 		controlling.drop_stud(stud)
 	
 	money -= drop
+	emit_signal("force_update_money")
 
 func player_pickup_collided(pickup):
 	if pickup is HeartPickup:

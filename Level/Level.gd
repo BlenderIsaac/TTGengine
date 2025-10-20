@@ -59,17 +59,26 @@ func load_section(section_name : String, door_id = -1):
 	
 	var load_command = SectionLoadCommand.new(section_name, load_data.level)
 	current_section = section_generator.generate(load_command)
+	current_section.door_entered = door_id
 	current_section.level = self
 	
+	if door_id == -1:
+		current_section.switch_game_cam_to(section_generator.begin_cam_transform)
+	else:
+		current_section.switch_game_cam_to(current_section.doors[door_id].cam_transform)
+	
 	# inject party members
+	var idx = 0
 	for party_member in party:
 		party_member.section = current_section
-		party_member.position = current_section.player_starting_positions[0] #TODO techincally we need to average from 1 to 2
+		party_member.position = current_section.get_starting_position(idx, len(party))
 		
 		current_section.add_child(party_member)
+		idx += 1
 	
 	emit_signal("entering_section")
 	add_child(current_section)
+	
 	emit_signal("entered_section")
 
 func generate_party():

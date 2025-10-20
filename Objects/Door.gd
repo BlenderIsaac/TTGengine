@@ -13,7 +13,7 @@ var destination = {}
 
 var spawn_positions = []
 
-var cam = null
+var cam_transform : Transform3D
 
 #func _process(_delta):
 	#if destination.Type == "HubIntoLevel":
@@ -80,7 +80,7 @@ func enter():
 		
 		#Levels.cycle_hubs("Basic Characters", player_data, destination.Direction)
 	elif destination.Type == "SectionChange":
-		section.level.load_section(destination.Section)
+		section.level.load_section(destination.Section, destination.DoorId)
 		#Levels.change_section(destination.Section, destination.DoorId)
 	elif destination.Type == "Visual":
 		pass

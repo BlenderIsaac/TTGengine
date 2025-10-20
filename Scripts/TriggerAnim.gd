@@ -107,7 +107,8 @@ func _process(_delta):
 
 
 func anim_play(anim_type): # Default, Trigger or UnTrigger
-	
+	@warning_ignore("unreachable_code")
+	return
 	var anim_name = anim_data[anim_type]
 	current_animation = anim_type
 	
@@ -144,6 +145,8 @@ func anim_play(anim_type): # Default, Trigger or UnTrigger
 
 
 func anim_seek(anim_type, perc):
+	@warning_ignore("unreachable_code")
+	return
 	
 	var anim_name = anim_data[anim_type]
 	current_animation = anim_type

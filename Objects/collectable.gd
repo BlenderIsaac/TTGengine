@@ -1,53 +1,66 @@
 extends Area3D
 
-@export var mattes = {
-	0 : {
-		"Type" : "Preset",
-		"Preset" : "White",
-	},
-	1 : {
-		"Type" : "Preset",
-		"Preset" : "Dark Bluish Grey",
-	},
-	2 : {
-		"Type" : "Preset",
-		"Preset" : "Red", # Glowing
-	},
-	3 : {
-		"Type" : "Preset",
-		"Preset" : "Light Bluish Grey",
-	},
-	4 : {
-		"Type" : "Preset",
-		"Preset" : "Black"
-	},
-	5 : {
-		"Type" : "Preset",
-		"Preset" : "Green", # Glowing
-	},
-}
+@export var model_path = "Models/Minikit"
+@export var model_ext = "glb"
 
-@export var type = "Minikit"
+@export var material_dict = {
+	"Minikit_001" : {
+		0 : {
+			"Type" : "Preset",
+			"Preset" : "White",
+		},
+		1 : {
+			"Type" : "Preset",
+			"Preset" : "Dark Bluish Grey",
+		},
+		2 : {
+			"Type" : "Preset",
+			"Preset" : "Red", # Glowing
+		},
+		3 : {
+			"Type" : "Preset",
+			"Preset" : "Light Bluish Grey",
+		},
+		4 : {
+			"Type" : "Preset",
+			"Preset" : "Black"
+		},
+		5 : {
+			"Type" : "Preset",
+			"Preset" : "Green", # Glowing
+		},
+	}
+}
+@export var material_array = []
+
+@export_enum("Minikit", "RedBrick") var type = "Minikit"
+
+var mesh : Node3D
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	load_materials()
+	var path = ResourceManager.ResLoadDir.new()
+	var load_details = ResourceManager.ModelLoadDetails.new()
+	load_details.dir = path
+	load_details.ext = model_ext
+	load_details.file = model_path
+	load_details.material_dict = get_material_dict()
+	load_details.material_array = get_material_array()
+	var model = load_details.gen()
+	add_child(model)
+	mesh = model
 
 var rotate_speed = 1.0
 
 # Called evey frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	$Mesh.rotation.y += rotate_speed*delta
-	$Mesh.rotation.y = fmod($Mesh.rotation.y, PI*2)
+	mesh.rotation.y = fmod(mesh.rotation.y + (rotate_speed * delta), PI*2)
 
+func get_material_dict():
+	pass
 
-func load_materials():
-	for idx in mattes.keys():
-		var _matte_data = mattes[idx]
-		
-		##var material = Materials.get_modless_matte(matte_data)
-		##$Mesh.set_surface_override_material(idx, material)
-
+func get_material_array():
+	pass
 
 func _on_body_entered(body):
 	if body is Character:

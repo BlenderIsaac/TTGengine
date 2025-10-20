@@ -28,6 +28,7 @@ var begin_transform_override = false:
 	set(value):
 		begin_transform_override = value
 		begin_transform_delay = 2.0
+var smooth_transform_in = 0.0
 
 @onready var target_agent = $MoveCloser
 @onready var pull_back = $PullBack
@@ -52,9 +53,9 @@ func _process(_delta):
 	if begin_transform_override:
 		if begin_transform_delay > 0:
 			begin_transform_delay -= _delta
-	
+	DebugDraw2D.set_text("movement at", movement_at)
 	if begin_transform_delay <= 0:
-		movement_at = lerp(movement_at, movement_to, _delta)
+		movement_at = lerp(movement_at, 1.0, _delta * 2)
 	else:
 		movement_at = 0.0
 	
@@ -194,8 +195,8 @@ func _process(_delta):
 		direction = direction.lerp(velocity_to, _delta*3)
 		
 		var speed = 1
-		global_position += (direction*speed)#+Vector3(0, -0.04, 0)
-		movement_at = 1.0
+		global_position += (direction*speed)*movement_at#+Vector3(0, -0.04, 0)
+		#movement_at = 1.0
 		
 		rotation.z = 0
 		if f.to_vec2(global_position-avg) == Vector2():
@@ -204,7 +205,7 @@ func _process(_delta):
 		else:
 			
 			var new_transform = global_transform.looking_at(avg, Vector3.UP)
-			global_transform = global_transform.interpolate_with(new_transform, (2 * _delta)*movement_at)
+			global_transform = global_transform.interpolate_with(new_transform, (4 * _delta)*movement_at)
 	
 	start_timer += 1
 

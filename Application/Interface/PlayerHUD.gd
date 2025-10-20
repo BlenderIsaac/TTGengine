@@ -22,6 +22,7 @@ var character : Character
 var number : int
 
 func _ready():
+	update_visual_money()
 	$DropInPrompt.visible = player == null
 	modulate.a = 0.5 if player == null else 1.0
 
@@ -37,13 +38,15 @@ func connect_to_player(p : Player):
 	p.connect("controlling_changed", set_character)
 	p.connect("tree_exited", set_player.bind(null))
 	p.connect("spawn_visual_stud", spawn_visual_stud)
+	p.connect("force_update_money", update_visual_money)
 	set_character(p.controlling)
-	money = p.money
+	update_visual_money()
 
 func disconnect_from_player(p : Player):
 	p.disconnect("controlling_changed", set_character)
 	p.disconnect("tree_exited", set_player.bind(null))
 	p.disconnect("spawn_visual_stud", spawn_visual_stud)
+	p.disconnect("force_update_money", update_visual_money)
 
 func set_character(new_char : Character):
 	if character:
@@ -86,6 +89,12 @@ func add_visual_money(amount, type, frame):
 	money += amount
 	$MoneyParent/Anim.stop()
 	$MoneyParent/Anim.play("Juice")
+
+func update_visual_money():
+	if player:
+		money = player.money
+	else:
+		money = 0
 
 func update_positions():
 	var x = 1 if horizontal == "LEFT" else -1
